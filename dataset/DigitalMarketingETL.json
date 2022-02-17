@@ -1,0 +1,138 @@
+{
+	"name": "DigitalMarketingETL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "parentdatastream",
+				"fileSystem": "dlsg2markfilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "SOURCE",
+				"type": "UTF8"
+			},
+			{
+				"name": "xMediaGroup",
+				"type": "UTF8"
+			},
+			{
+				"name": "MEDIATYPE",
+				"type": "UTF8"
+			},
+			{
+				"name": "xMediaChannel",
+				"type": "UTF8"
+			},
+			{
+				"name": "AgencyChannel_Name",
+				"type": "UTF8"
+			},
+			{
+				"name": "CampaignName",
+				"type": "UTF8"
+			},
+			{
+				"name": "Account",
+				"type": "UTF8"
+			},
+			{
+				"name": "LOB",
+				"type": "UTF8"
+			},
+			{
+				"name": "BU",
+				"type": "UTF8"
+			},
+			{
+				"name": "PARENTCAMPAIGN_NAME",
+				"type": "UTF8"
+			},
+			{
+				"name": "SUBCAMPAIGNNAME",
+				"type": "UTF8"
+			},
+			{
+				"name": "COUNTRYCODE",
+				"type": "UTF8"
+			},
+			{
+				"name": "COUNTRYNAME",
+				"type": "UTF8"
+			},
+			{
+				"name": "REGION",
+				"type": "UTF8"
+			},
+			{
+				"name": "xCampaignQuarter",
+				"type": "UTF8"
+			},
+			{
+				"name": "SearchKeywordType",
+				"type": "UTF8"
+			},
+			{
+				"name": "SearchMatchType",
+				"type": "UTF8"
+			},
+			{
+				"name": "EmeaRegion",
+				"type": "UTF8"
+			},
+			{
+				"name": "EmeaSubRegion",
+				"type": "UTF8"
+			},
+			{
+				"name": "xAccountCurrency",
+				"type": "UTF8"
+			},
+			{
+				"name": "Compliant",
+				"type": "UTF8"
+			},
+			{
+				"name": "AgencyOwnerMarket",
+				"type": "UTF8"
+			},
+			{
+				"name": "CampaignScale",
+				"type": "UTF8"
+			},
+			{
+				"name": "CampaignObjective",
+				"type": "UTF8"
+			},
+			{
+				"name": "MediaBriefName",
+				"type": "UTF8"
+			},
+			{
+				"name": "Impression",
+				"type": "UTF8"
+			},
+			{
+				"name": "Click",
+				"type": "UTF8"
+			},
+			{
+				"name": "View",
+				"type": "UTF8"
+			},
+			{
+				"name": "Swipe_rate",
+				"type": "UTF8"
+			}
+		]
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 3",
+	"properties": {
+		"content": {
+			"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE tblparentdatastream (\n\t[SOURCE] nvarchar(4000),\n\t[xMediaGroup] nvarchar(4000),\n\t[MEDIATYPE] nvarchar(4000),\n\t[xMediaChannel] nvarchar(4000),\n\t[AgencyChannelName] nvarchar(4000),\n\t[CampaignName] nvarchar(4000),\n\t[Account] nvarchar(4000),\n\t[LOB] nvarchar(4000),\n\t[BU] nvarchar(4000),\n\t[PARENTCAMPAIGNNAME] nvarchar(4000),\n\t[SUBCAMPAIGNNAME] nvarchar(4000),\n\t[COUNTRYCODE] nvarchar(4000),\n\t[COUNTRYNAME] nvarchar(4000),\n\t[REGION] nvarchar(4000),\n\t[xCampaignQuarter] nvarchar(4000),\n\t[SearchKeywordType] nvarchar(4000),\n\t[SearchMatchType] nvarchar(4000),\n\t[EmeaRegion] nvarchar(4000),\n\t[EmeaSubRegion] nvarchar(4000),\n\t[xAccountCurrency] nvarchar(4000),\n\t[Compliant] nvarchar(4000),\n\t[AgencyOwnerMarket] nvarchar(4000),\n\t[CampaignScale] nvarchar(4000),\n\t[CampaignObjective] nvarchar(4000),\n\t[MediaBriefName] nvarchar(4000),\n\t[Impression] nvarchar(4000),\n\t[Click] nvarchar(4000),\n\t[View] nvarchar(4000),\n\t[Swiperate] nvarchar(4000),\n\t[Year] nvarchar(4000),\n\t[Quarter] nvarchar(4000)\n\t)\n\tWITH (\n\tLOCATION = 'parentdatastream/part-00000-tid-2886452130161708956-505b6f93-044e-4c7f-827f-9afed77f318c-4-1-c000.snappy.parquet',\n\tDATA_SOURCE = [dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\n\nSELECT TOP 100 * FROM dbo.tblparentdatastream\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "DigitalMarketing",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
