@@ -1,0 +1,846 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"type": "string",
+			"metadata": "Workspace name",
+			"defaultValue": "marksynapseworkspace"
+		},
+		"AzureSqlDatabase1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase1'"
+		},
+		"marksynapseworkspace-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'marksynapseworkspace-WorkspaceDefaultSqlServer'"
+		},
+		"marksynapseworkspace-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://synapsedlakestgen2mark.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/csvtoparquet')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_867",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "dlsg2markfilesystem/parentdatastream/"
+							},
+							{
+								"name": "Destination",
+								"value": "dlsg2markfilesystem/parentdatastream/"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": false,
+									"wildcardFileName": "*",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings",
+									"skipLineCount": 0
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_867",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_867",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-02-17T08:48:17Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/SourceDataset_867')]",
+				"[concat(variables('workspaceId'), '/datasets/DestinationDataset_867')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Dataset')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "Parent Data Stream.csv",
+						"folderPath": "parentdatastream",
+						"fileSystem": "dlsg2markfilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DestinationDataset_867')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "parentdatastream",
+						"fileSystem": "dlsg2markfilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DestinationDataset_flb')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "parentdatastream",
+						"fileSystem": "dlsg2markfilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DigitalMarketingAds360')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "part-00000-tid-2886452130161708956-505b6f93-044e-4c7f-827f-9afed77f318c-4-1-c000.snappy.parquet",
+						"folderPath": "parentdatastream",
+						"fileSystem": "dlsg2markfilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "SOURCE",
+						"type": "UTF8"
+					},
+					{
+						"name": "xMediaGroup",
+						"type": "UTF8"
+					},
+					{
+						"name": "MEDIATYPE",
+						"type": "UTF8"
+					},
+					{
+						"name": "xMediaChannel",
+						"type": "UTF8"
+					},
+					{
+						"name": "AgencyChannelName",
+						"type": "UTF8"
+					},
+					{
+						"name": "CampaignName",
+						"type": "UTF8"
+					},
+					{
+						"name": "Account",
+						"type": "UTF8"
+					},
+					{
+						"name": "LOB",
+						"type": "UTF8"
+					},
+					{
+						"name": "BU",
+						"type": "UTF8"
+					},
+					{
+						"name": "PARENTCAMPAIGNNAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "SUBCAMPAIGNNAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "COUNTRYCODE",
+						"type": "UTF8"
+					},
+					{
+						"name": "COUNTRYNAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "REGION",
+						"type": "UTF8"
+					},
+					{
+						"name": "xCampaignQuarter",
+						"type": "UTF8"
+					},
+					{
+						"name": "SearchKeywordType",
+						"type": "UTF8"
+					},
+					{
+						"name": "SearchMatchType",
+						"type": "UTF8"
+					},
+					{
+						"name": "EmeaRegion",
+						"type": "UTF8"
+					},
+					{
+						"name": "EmeaSubRegion",
+						"type": "UTF8"
+					},
+					{
+						"name": "xAccountCurrency",
+						"type": "UTF8"
+					},
+					{
+						"name": "Compliant",
+						"type": "UTF8"
+					},
+					{
+						"name": "AgencyOwnerMarket",
+						"type": "UTF8"
+					},
+					{
+						"name": "CampaignScale",
+						"type": "UTF8"
+					},
+					{
+						"name": "CampaignObjective",
+						"type": "UTF8"
+					},
+					{
+						"name": "MediaBriefName",
+						"type": "UTF8"
+					},
+					{
+						"name": "Impression",
+						"type": "UTF8"
+					},
+					{
+						"name": "Click",
+						"type": "UTF8"
+					},
+					{
+						"name": "View",
+						"type": "UTF8"
+					},
+					{
+						"name": "Swiperate",
+						"type": "UTF8"
+					},
+					{
+						"name": "Year",
+						"type": "UTF8"
+					},
+					{
+						"name": "Quarter",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DigitalMarketingETL')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "parentdatastream",
+						"fileSystem": "dlsg2markfilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "SOURCE",
+						"type": "UTF8"
+					},
+					{
+						"name": "xMediaGroup",
+						"type": "UTF8"
+					},
+					{
+						"name": "MEDIATYPE",
+						"type": "UTF8"
+					},
+					{
+						"name": "xMediaChannel",
+						"type": "UTF8"
+					},
+					{
+						"name": "AgencyChannel_Name",
+						"type": "UTF8"
+					},
+					{
+						"name": "CampaignName",
+						"type": "UTF8"
+					},
+					{
+						"name": "Account",
+						"type": "UTF8"
+					},
+					{
+						"name": "LOB",
+						"type": "UTF8"
+					},
+					{
+						"name": "BU",
+						"type": "UTF8"
+					},
+					{
+						"name": "PARENTCAMPAIGN_NAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "SUBCAMPAIGNNAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "COUNTRYCODE",
+						"type": "UTF8"
+					},
+					{
+						"name": "COUNTRYNAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "REGION",
+						"type": "UTF8"
+					},
+					{
+						"name": "xCampaignQuarter",
+						"type": "UTF8"
+					},
+					{
+						"name": "SearchKeywordType",
+						"type": "UTF8"
+					},
+					{
+						"name": "SearchMatchType",
+						"type": "UTF8"
+					},
+					{
+						"name": "EmeaRegion",
+						"type": "UTF8"
+					},
+					{
+						"name": "EmeaSubRegion",
+						"type": "UTF8"
+					},
+					{
+						"name": "xAccountCurrency",
+						"type": "UTF8"
+					},
+					{
+						"name": "Compliant",
+						"type": "UTF8"
+					},
+					{
+						"name": "AgencyOwnerMarket",
+						"type": "UTF8"
+					},
+					{
+						"name": "CampaignScale",
+						"type": "UTF8"
+					},
+					{
+						"name": "CampaignObjective",
+						"type": "UTF8"
+					},
+					{
+						"name": "MediaBriefName",
+						"type": "UTF8"
+					},
+					{
+						"name": "Impression",
+						"type": "UTF8"
+					},
+					{
+						"name": "Click",
+						"type": "UTF8"
+					},
+					{
+						"name": "View",
+						"type": "UTF8"
+					},
+					{
+						"name": "Swipe_rate",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_867')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "parentdatastream",
+						"fileSystem": "dlsg2markfilesystem"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "SOURCE",
+						"type": "String"
+					},
+					{
+						"name": "xMediaGroup",
+						"type": "String"
+					},
+					{
+						"name": "MEDIATYPE",
+						"type": "String"
+					},
+					{
+						"name": "xMediaChannel",
+						"type": "String"
+					},
+					{
+						"name": "AgencyChannel_Name",
+						"type": "String"
+					},
+					{
+						"name": "CampaignName",
+						"type": "String"
+					},
+					{
+						"name": "Account",
+						"type": "String"
+					},
+					{
+						"name": "LOB",
+						"type": "String"
+					},
+					{
+						"name": "BU",
+						"type": "String"
+					},
+					{
+						"name": "PARENTCAMPAIGN_NAME",
+						"type": "String"
+					},
+					{
+						"name": "SUBCAMPAIGNNAME",
+						"type": "String"
+					},
+					{
+						"name": "COUNTRYCODE",
+						"type": "String"
+					},
+					{
+						"name": "COUNTRYNAME",
+						"type": "String"
+					},
+					{
+						"name": "REGION",
+						"type": "String"
+					},
+					{
+						"name": "xCampaignQuarter",
+						"type": "String"
+					},
+					{
+						"name": "SearchKeywordType",
+						"type": "String"
+					},
+					{
+						"name": "SearchMatchType",
+						"type": "String"
+					},
+					{
+						"name": "EmeaRegion",
+						"type": "String"
+					},
+					{
+						"name": "EmeaSubRegion",
+						"type": "String"
+					},
+					{
+						"name": "xAccountCurrency",
+						"type": "String"
+					},
+					{
+						"name": "Compliant",
+						"type": "String"
+					},
+					{
+						"name": "AgencyOwnerMarket",
+						"type": "String"
+					},
+					{
+						"name": "CampaignScale",
+						"type": "String"
+					},
+					{
+						"name": "CampaignObjective",
+						"type": "String"
+					},
+					{
+						"name": "MediaBriefName",
+						"type": "String"
+					},
+					{
+						"name": "Impression ",
+						"type": "String"
+					},
+					{
+						"name": "Click",
+						"type": "String"
+					},
+					{
+						"name": "View",
+						"type": "String"
+					},
+					{
+						"name": "Swipe_rate",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureSqlDatabase1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDatabase1_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PowerBIWorkspace1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "PowerBIWorkspace",
+				"typeProperties": {
+					"workspaceID": "8db08195-1beb-47ae-a5d7-4467e96beb48",
+					"tenantID": "07cc872f-b6e3-487f-834e-25eb4f34ddad"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/marksynapseworkspace-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('marksynapseworkspace-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/marksynapseworkspace-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('marksynapseworkspace-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Dataflow')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "SourceDataset_867",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DigitalMarketingETL",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DerivedColumn1"
+						}
+					],
+					"script": "source(output(\n\t\tSOURCE as string,\n\t\txMediaGroup as string,\n\t\tMEDIATYPE as string,\n\t\txMediaChannel as string,\n\t\tAgencyChannel_Name as string,\n\t\tCampaignName as string,\n\t\tAccount as string,\n\t\tLOB as string,\n\t\tBU as string,\n\t\tPARENTCAMPAIGN_NAME as string,\n\t\tSUBCAMPAIGNNAME as string,\n\t\tCOUNTRYCODE as string,\n\t\tCOUNTRYNAME as string,\n\t\tREGION as string,\n\t\txCampaignQuarter as string,\n\t\tSearchKeywordType as string,\n\t\tSearchMatchType as string,\n\t\tEmeaRegion as string,\n\t\tEmeaSubRegion as string,\n\t\txAccountCurrency as string,\n\t\tCompliant as string,\n\t\tAgencyOwnerMarket as string,\n\t\tCampaignScale as string,\n\t\tCampaignObjective as string,\n\t\tMediaBriefName as string,\n\t\t{Impression } as string,\n\t\tClick as string,\n\t\tView as string,\n\t\tSwipe_rate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tpartitionBy('hash', 1)) ~> source1\nsource1 derive(Compliant = iif(Compliant == \"Compliant\", \"Compliance\", \"Non-Compliance\"),\n\tpartitionBy('hash', 1)) ~> DerivedColumn1\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tSOURCE as string,\n\t\txMediaGroup as string,\n\t\tMEDIATYPE as string,\n\t\txMediaChannel as string,\n\t\tAgencyChannel_Name as string,\n\t\tCampaignName as string,\n\t\tAccount as string,\n\t\tLOB as string,\n\t\tBU as string,\n\t\tPARENTCAMPAIGN_NAME as string,\n\t\tSUBCAMPAIGNNAME as string,\n\t\tCOUNTRYCODE as string,\n\t\tCOUNTRYNAME as string,\n\t\tREGION as string,\n\t\txCampaignQuarter as string,\n\t\tSearchKeywordType as string,\n\t\tSearchMatchType as string,\n\t\tEmeaRegion as string,\n\t\tEmeaSubRegion as string,\n\t\txAccountCurrency as string,\n\t\tCompliant as string,\n\t\tAgencyOwnerMarket as string,\n\t\tCampaignScale as string,\n\t\tCampaignObjective as string,\n\t\tMediaBriefName as string,\n\t\tImpression as string,\n\t\tClick as string,\n\t\tView as string,\n\t\tSwipe_rate as string\n\t),\n\tformat: 'parquet',\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tmapColumn(\n\t\tSOURCE,\n\t\txMediaGroup,\n\t\tMEDIATYPE,\n\t\txMediaChannel,\n\t\tAgencyChannel_Name,\n\t\tCampaignName,\n\t\tAccount,\n\t\tLOB,\n\t\tBU,\n\t\tPARENTCAMPAIGN_NAME,\n\t\tSUBCAMPAIGNNAME,\n\t\tCOUNTRYCODE,\n\t\tCOUNTRYNAME,\n\t\tREGION,\n\t\txCampaignQuarter,\n\t\tSearchKeywordType,\n\t\tSearchMatchType,\n\t\tEmeaRegion,\n\t\tEmeaSubRegion,\n\t\txAccountCurrency,\n\t\tCompliant,\n\t\tAgencyOwnerMarket,\n\t\tCampaignScale,\n\t\tCampaignObjective,\n\t\tMediaBriefName,\n\t\tImpression = {Impression },\n\t\tClick,\n\t\tView,\n\t\tSwipe_rate\n\t),\n\tpartitionBy('hash', 1)) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/SourceDataset_867')]",
+				"[concat(variables('workspaceId'), '/datasets/DigitalMarketingETL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 3')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE tblparentdatastream (\n\t[SOURCE] nvarchar(4000),\n\t[xMediaGroup] nvarchar(4000),\n\t[MEDIATYPE] nvarchar(4000),\n\t[xMediaChannel] nvarchar(4000),\n\t[AgencyChannelName] nvarchar(4000),\n\t[CampaignName] nvarchar(4000),\n\t[Account] nvarchar(4000),\n\t[LOB] nvarchar(4000),\n\t[BU] nvarchar(4000),\n\t[PARENTCAMPAIGNNAME] nvarchar(4000),\n\t[SUBCAMPAIGNNAME] nvarchar(4000),\n\t[COUNTRYCODE] nvarchar(4000),\n\t[COUNTRYNAME] nvarchar(4000),\n\t[REGION] nvarchar(4000),\n\t[xCampaignQuarter] nvarchar(4000),\n\t[SearchKeywordType] nvarchar(4000),\n\t[SearchMatchType] nvarchar(4000),\n\t[EmeaRegion] nvarchar(4000),\n\t[EmeaSubRegion] nvarchar(4000),\n\t[xAccountCurrency] nvarchar(4000),\n\t[Compliant] nvarchar(4000),\n\t[AgencyOwnerMarket] nvarchar(4000),\n\t[CampaignScale] nvarchar(4000),\n\t[CampaignObjective] nvarchar(4000),\n\t[MediaBriefName] nvarchar(4000),\n\t[Impression] nvarchar(4000),\n\t[Click] nvarchar(4000),\n\t[View] nvarchar(4000),\n\t[Swiperate] nvarchar(4000),\n\t[Year] nvarchar(4000),\n\t[Quarter] nvarchar(4000)\n\t)\n\tWITH (\n\tLOCATION = 'parentdatastream/part-00000-tid-2886452130161708956-505b6f93-044e-4c7f-827f-9afed77f318c-4-1-c000.snappy.parquet',\n\tDATA_SOURCE = [dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\n\nSELECT TOP 100 * FROM dbo.tblparentdatastream\nGO",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "DigitalMarketing",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 5')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE tbldigitalmarketing (\n\t[SOURCE] nvarchar(4000),\n\t[xMediaGroup] nvarchar(4000),\n\t[MEDIATYPE] nvarchar(4000),\n\t[xMediaChannel] nvarchar(4000),\n\t[AgencyChannelName] nvarchar(4000),\n\t[CampaignName] nvarchar(4000),\n\t[Account] nvarchar(4000),\n\t[LOB] nvarchar(4000),\n\t[BU] nvarchar(4000),\n\t[PARENTCAMPAIGNNAME] nvarchar(4000),\n\t[SUBCAMPAIGNNAME] nvarchar(4000),\n\t[COUNTRYCODE] nvarchar(4000),\n\t[COUNTRYNAME] nvarchar(4000),\n\t[REGION] nvarchar(4000),\n\t[xCampaignQuarter] nvarchar(4000),\n\t[SearchKeywordType] nvarchar(4000),\n\t[SearchMatchType] nvarchar(4000),\n\t[EmeaRegion] nvarchar(4000),\n\t[EmeaSubRegion] nvarchar(4000),\n\t[xAccountCurrency] nvarchar(4000),\n\t[Compliant] nvarchar(4000),\n\t[AgencyOwnerMarket] nvarchar(4000),\n\t[CampaignScale] nvarchar(4000),\n\t[CampaignObjective] nvarchar(4000),\n\t[MediaBriefName] nvarchar(4000),\n\t[Impression] nvarchar(4000),\n\t[Click] nvarchar(4000),\n\t[View] nvarchar(4000),\n\t[Swiperate] nvarchar(4000),\n\t[Year] nvarchar(4000),\n\t[Quarter] nvarchar(4000)\n\t)\n\tWITH (\n\tLOCATION = 'parentdatastream/part-00000-tid-2886452130161708956-505b6f93-044e-4c7f-827f-9afed77f318c-4-1-c000.snappy.parquet',\n\tDATA_SOURCE = [dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\n\nSELECT TOP 100 * FROM dbo.tbldigitalmarketing\nGO",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "DigitalMarketing",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 6')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE VIEW dbo.digitalmarketing\n\tAS SELECT * FROM dbo.tbldigitalmarketing\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "DigitalMarketing",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 7')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "\nDROP EXTERNAL TABLE dbo.csvparentdatastream",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "DigitalMarketing",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		}
+	]
+}

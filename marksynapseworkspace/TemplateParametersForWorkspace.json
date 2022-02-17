@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "marksynapseworkspace"
+		},
+		"AzureSqlDatabase1_connectionString": {
+			"value": ""
+		},
+		"marksynapseworkspace-WorkspaceDefaultSqlServer_connectionString": {
+			"value": ""
+		},
+		"marksynapseworkspace-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://synapsedlakestgen2mark.dfs.core.windows.net"
+		}
+	}
+}
