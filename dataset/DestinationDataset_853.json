@@ -1,0 +1,20 @@
+{
+	"name": "DestinationDataset_853",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "parentdatastream",
+				"fileSystem": "dlsg2markfilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
