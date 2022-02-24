@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "62c8a3e4-e2d0-4cfb-8e59-6ac126df1547"
+				"spark.autotune.trackingId": "1cdaabba-4593-46ae-8962-b3d21347caa9"
 			}
 		},
 		"metadata": {
@@ -59,9 +59,9 @@
 				"source": [
 					"%%pyspark\r\n",
 					"df = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/NYCTripSmall.parquet', format='parquet')\r\n",
-					"display(df.limit(1000))"
+					"display(df)"
 				],
-				"execution_count": 8
+				"execution_count": 44
 			},
 			{
 				"cell_type": "code",
@@ -83,7 +83,7 @@
 					"%%pyspark\r\n",
 					"df.printSchema()"
 				],
-				"execution_count": 9
+				"execution_count": 45
 			},
 			{
 				"cell_type": "code",
@@ -106,7 +106,7 @@
 					"%%sql\r\n",
 					"CREATE DATABASE nyctaxi"
 				],
-				"execution_count": 12
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -124,7 +124,7 @@
 				"source": [
 					"df.write.saveAsTable(\"nyctaxi.trip\")"
 				],
-				"execution_count": 13
+				"execution_count": 46
 			},
 			{
 				"cell_type": "code",
@@ -148,7 +148,7 @@
 					"df = spark.sql(\"SELECT * FROM nyctaxi.trip\")\r\n",
 					"display(df)"
 				],
-				"execution_count": 16
+				"execution_count": 47
 			},
 			{
 				"cell_type": "code",
@@ -164,58 +164,15 @@
 					},
 					"microsoft": {
 						"language": "python"
-					}
-				},
-				"source": [
-					"%%pyspark\r\n",
-					"df = spark.sql(\"\"\"\r\n",
-					"    Select MedallionID,\r\n",
-					"    Count(MedallionID) as CabTrip\r\n",
-					"\tCount(HackneyLicenseID) as DriverTrip\r\n",
-					"From nyctaxi.trip\r\n",
-					"Group by MedallionID\r\n",
-					"Order by CabTrip Desc\r\n",
-					"\"\"\")"
-				],
-				"execution_count": 26
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
 					},
 					"collapsed": false
 				},
 				"source": [
-					"display(df)\r\n",
-					""
+					"%%pyspark\r\n",
+					"df = spark.sql(\"Select MedallionID, HackneyLicenseID, Count(*) as Trips from nyctaxi.trip Where DateID Between '20131217' AND '201312231' Group By MedallionID, HackneyLicenseID Having Count (*) > 100\")\r\n",
+					"display(df)"
 				],
-				"execution_count": 27
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df.up.saveAsTable(\"nyctaxi.cabtipstats\")"
-				],
-				"execution_count": 28
+				"execution_count": 49
 			},
 			{
 				"cell_type": "code",
@@ -231,7 +188,57 @@
 					},
 					"microsoft": {
 						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"df = spark.sql(\"\"\"\r\n",
+					"Select MedallionID, \r\n",
+					"Count(MedallionID) as CabTrip \r\n",
+					"From nyctaxi.trip \r\n",
+					"Where DateID Between '20131217' AND '20131231'\r\n",
+					"Group By MedallionID \r\n",
+					"Order by CabTrip Desc \r\n",
+					"\"\"\")\r\n",
+					"display(df)"
+				],
+				"execution_count": 55
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
 					}
+				},
+				"source": [
+					"df.write.saveAsTable(\"nyctaxi.cabtripstats\")"
+				],
+				"execution_count": 35
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
 				},
 				"source": [
 					"%%pyspark\r\n",
@@ -239,11 +246,13 @@
 					"    Select HackneyLicenseID,\r\n",
 					"    Count(HackneyLicenseID) as DriverTrip\r\n",
 					"From nyctaxi.trip\r\n",
+					"Where DateID Between '20131217' AND '20131231'\r\n",
 					"Group by HackneyLicenseID\r\n",
 					"Order by DriverTrip Desc\r\n",
-					"\"\"\")"
+					"\"\"\")\r\n",
+					"display(df)"
 				],
-				"execution_count": 29
+				"execution_count": 53
 			},
 			{
 				"cell_type": "code",
@@ -259,10 +268,47 @@
 					}
 				},
 				"source": [
-					"display(df)\r\n",
-					"df.up.saveAsTable(\"nyctaxi.drivertripstats\")"
+					"df.write.saveAsTable(\"nyctaxi.drivertripstats\")"
 				],
-				"execution_count": 30
+				"execution_count": 31
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df = df.repartition(1)\r\n",
+					"df.write.mode(\"overwrite\").parquet(\"/nyctaxi_single/CabTripStats_ParquetFormat\")"
+				],
+				"execution_count": 56
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df = df.repartition(1)\r\n",
+					"df.write.mode(\"overwrite\").parquet(\"/nyctaxi_single/DriverTripStats_ParquetFormat\")"
+				],
+				"execution_count": 54
 			}
 		]
 	}
