@@ -1,67 +1,6 @@
 {
 	"name": "ETLcsvtoParquet",
 	"properties": {
-		"activities": [
-			{
-				"name": "Copy_vf5",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [
-					{
-						"name": "Source",
-						"value": "dlsg2markfilesystem/parentdatastream/dbo.ParentDataSream.txt"
-					},
-					{
-						"name": "Destination",
-						"value": "dlsg2markfilesystem/parentdatastream/"
-					}
-				],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobFSReadSettings",
-							"recursive": false,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings",
-							"skipLineCount": 0
-						}
-					},
-					"sink": {
-						"type": "ParquetSink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						},
-						"formatSettings": {
-							"type": "ParquetWriteSettings"
-						}
-					},
-					"enableStaging": false,
-					"validateDataConsistency": false
-				},
-				"inputs": [
-					{
-						"referenceName": "SourceDataset_vf5",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DestinationDataset_vf5",
-						"type": "DatasetReference"
-					}
-				]
-			}
-		],
 		"annotations": []
 	}
 }
