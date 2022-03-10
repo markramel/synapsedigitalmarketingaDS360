@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "073480e5-4266-40d9-ae33-e7afe1b89844"
+				"spark.autotune.trackingId": "0158cf88-26a3-4e8e-a6f9-815cbdab42be"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					")\r\n",
 					"display(df.limit(10))"
 				],
-				"execution_count": 10
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
@@ -86,7 +86,7 @@
 					"%%pyspark\r\n",
 					"df.printSchema()"
 				],
-				"execution_count": 8
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -151,7 +151,7 @@
 					"df = spark.sql(\"select * from capstone.applications\")\r\n",
 					"display(df.limit(5))"
 				],
-				"execution_count": 29
+				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
@@ -230,20 +230,17 @@
 					},
 					"microsoft": {
 						"language": "python"
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"%%pyspark\r\n",
 					"df = spark.sql(\"\"\"\r\n",
-					"declare @date datetime\r\n",
-					"set @date = dateadd(year,AppliedOrSourcedDate,0)\r\n",
-					"Begin\r\n",
-					"insert into capstone.applications(Year)\r\n",
-					"select @date\r\n",
-					"set @date = dateadd(year,1,@date)\r\n",
-					"\"\"\")"
+					"Select datepart(year, AppliedOrSourcedDate) as YEar from capstone.applications\r\n",
+					"\"\"\")\r\n",
+					"display(df.limit(5))"
 				],
-				"execution_count": 1
+				"execution_count": 31
 			},
 			{
 				"cell_type": "code",
