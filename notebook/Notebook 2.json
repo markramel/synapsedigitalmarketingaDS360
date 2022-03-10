@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "327c756b-f2fc-4301-bd57-22ab0c985dff"
+				"spark.autotune.trackingId": "f5b02272-749d-4ea3-a167-3b5637387ecd"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					")\r\n",
 					"display(df.limit(10))"
 				],
-				"execution_count": 1
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -151,7 +151,7 @@
 					"df = spark.sql(\"select * from capstone.applications\")\r\n",
 					"display(df.limit(5))"
 				],
-				"execution_count": 3
+				"execution_count": 29
 			},
 			{
 				"cell_type": "code",
@@ -183,9 +183,11 @@
 					".otherwise(\"\"))\r\n",
 					"\r\n",
 					"display(df.limit(5))\r\n",
+					"\r\n",
+					"##df.write.save(\"capstone.applications\")\r\n",
 					""
 				],
-				"execution_count": 5
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -198,13 +200,72 @@
 						"transient": {
 							"deleting": false
 						}
-					}
+					},
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
 				},
 				"source": [
+					"%%pyspark\r\n",
+					"df = spark.sql(\"ALTER TABLE capstone.applications ADD COLUMNS Year String\")\r\n",
+					"\r\n",
+					"display(df)\r\n",
+					"\r\n",
+					""
+				],
+				"execution_count": 36
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"import pyspark.sql.functions as R\r\n",
+					"df = df.withColumn(\"Reach\", R.when((R.col(\"TrackerType\") == \"Reach\"), \"1\").otherwise(\"0\"))\r\n",
+					"\r\n",
+					"import pyspark.sql.functions as T\r\n",
+					"df = df.withColumn(\"Test\", T.when((T.col(\"TrackerType\") == \"Test\"), \"1\").otherwise(\"0\"))\r\n",
+					"\r\n",
+					"import pyspark.sql.functions as I\r\n",
+					"df = df.withColumn(\"Interview\", I.when((I.col(\"TrackerType\") == \"Interview\"), \"1\").otherwise(\"0\"))\r\n",
+					"\r\n",
+					"import pyspark.sql.functions as O\r\n",
+					"df = df.withColumn(\"Offer\", O.when((O.col(\"TrackerType\") == \"Offer\"), \"1\").otherwise(\"0\"))\r\n",
+					"\r\n",
+					"import pyspark.sql.functions as H\r\n",
+					"df = df.withColumn(\"Conversion\", H.when((H.col(\"TrackerType\") == \"Conversion\"), \"1\").otherwise(\"0\"))\r\n",
+					"\r\n",
+					"import pyspark.sql.functions as Week\r\n",
+					"df = df.withColumn(\"WeekNumber\", Week.weekofyear(\"AppliedOrSourcedDate\"))\r\n",
+					"\r\n",
+					"##import pyspark.sql.functions as to_timestamp\r\n",
+					"##import pyspark.sql.functions as date_format\r\n",
+					"##import pyspark.sql.functions as Year\r\n",
+					"\r\n",
+					"##df = df.withColumn(\"YearApplied\", Year.year(\"AppliedOrSourcedDate\"))\r\n",
+					"\r\n",
+					"##df= df.withColumn(\"birthday\",to_timestamp(Year(\"AppliedOrSourcedDate\"))\r\n",
+					"##.withColumn(\"year\", date_format(Year(\"AppliedOrSourcedDate\"), \"Y\")))\r\n",
+					"\r\n",
 					"\r\n",
 					"display(df.limit(5))"
 				],
-				"execution_count": 9
+				"execution_count": 8
 			}
 		]
 	}
