@@ -1,0 +1,24 @@
+{
+	"name": "Retail_n1d",
+	"properties": {
+		"Description": "",
+		"Name": "Retail_n1d",
+		"EntityType": "DATABASE",
+		"Origin": {
+			"Type": "SPARK"
+		},
+		"Properties": {
+			"DerivedModelDBInfo": "{\"ModelDirectives\":{\"BaseModel\":{\"Name\":\"Retail\",\"Version\":\"0.1.0\"}}}",
+			"IsSyMSCDMDatabase": true
+		},
+		"Source": {
+			"Provider": "ADLS",
+			"Location": "abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/Retail_n1d",
+			"Properties": {
+				"FormatType": "csv",
+				"LinkedServiceName": "marksynapseworkspace-WorkspaceDefaultStorage"
+			}
+		}
+	},
+	"type": "DATABASE"
+}
