@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1cdaabba-4593-46ae-8962-b3d21347caa9"
+				"spark.autotune.trackingId": "5ec98071-f6e4-44b5-93c7-e4dabdb9e667"
 			}
 		},
 		"metadata": {
@@ -309,6 +309,25 @@
 					"df.write.mode(\"overwrite\").parquet(\"/nyctaxi_single/DriverTripStats_ParquetFormat\")"
 				],
 				"execution_count": 54
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df = df.repartition(1)\r\n",
+					"df.write.mode(\"overwrite\").saveAsTable(\"applications\")"
+				],
+				"execution_count": null
 			}
 		]
 	}
