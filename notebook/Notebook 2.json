@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a87e3151-321e-477d-a391-4e57306af36e"
+				"spark.autotune.trackingId": "41eade98-d54c-4272-8628-17228e72358d"
 			}
 		},
 		"metadata": {
@@ -192,12 +192,43 @@
 					".when((talent.col(\"Stage\") == \"Hired\"), \"Conversion\") \r\n",
 					".otherwise(\"\"))\r\n",
 					"\r\n",
-					"display(df.limit(5))\r\n",
+					"display(ds.limit(5))\r\n",
 					"\r\n",
 					"##df.write.save(\"capstone.applications\")\r\n",
 					""
 				],
 				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from pyspark.sql.functions import *\r\n",
+					"\r\n",
+					"ds = ds.withColumn(\"TrackerType\",  \r\n",
+					"talent.when((talent.col(\"Stage\") == \"Sourced\") | (talent.col(\"Stage\") == \"Applied\" ) , \"Reach\")\r\n",
+					".when((talent.col(\"Stage\") == \"Screen\") | (talent.col(\"Stage\") == \"OfferToClient\"  ), \"Test\") \r\n",
+					".when((talent.col(\"Stage\") == \"Interview\"  ), \"Interview\") \r\n",
+					".when((talent.col(\"Stage\") == \"Shortlisted\") | (talent.col(\"Stage\") == \"Offer\"  ), \"Offer\") \r\n",
+					".when((talent.col(\"Stage\") == \"Hired\"), \"Conversion\") \r\n",
+					".otherwise(\"\"))\r\n",
+					"\r\n",
+					"display(ds.limit(5))\r\n",
+					"\r\n",
+					"##df.write.save(\"capstone.applications\")\r\n",
+					""
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -235,7 +266,7 @@
 					"##.withColumn(\"year\", date_format(Year(\"AppliedOrSourcedDate\"), \"Y\")))\r\n",
 					"\r\n",
 					"\r\n",
-					"display(df.limit(5))"
+					"display(ds.limit(5))"
 				],
 				"execution_count": 8
 			},
