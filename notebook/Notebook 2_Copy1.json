@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "26d914e8-f052-4cdf-9a93-99d362c64518"
+				"spark.autotune.trackingId": "1d9c9f1a-62e6-446b-9195-513e5825a12a"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					")\r\n",
 					"##display(df.limit(10))"
 				],
-				"execution_count": 9
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -88,7 +88,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 147
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -108,11 +108,11 @@
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
 					"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
-					".withColumn(\"Week Number\", weekofyear(to_date(df.AppliedOrSourcedDate, \"M/d/y\")))\r\n",
+					".withColumn(\"Week\", weekofyear(to_date(df.AppliedOrSourcedDate, \"M/d/y\")))\r\n",
 					"\r\n",
 					"display(df.limit(5))"
 				],
-				"execution_count": 13
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -148,7 +148,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 152
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -165,10 +165,10 @@
 				},
 				"source": [
 					"##ds = ds.repartition(1)\r\n",
-					"ds.write.mode(\"overwrite\") \\\r\n",
+					"df.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.applications\")"
 				],
-				"execution_count": 2
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -188,7 +188,7 @@
 					"##%%sql\r\n",
 					"##DROP TABLE capstone.applications"
 				],
-				"execution_count": 156
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -206,10 +206,10 @@
 				},
 				"source": [
 					"##Drop  table in the default database\r\n",
-					"%%sql\r\n",
+					"##%%sql\r\n",
 					"##DROP TABLE applications"
 				],
-				"execution_count": 3
+				"execution_count": 14
 			}
 		]
 	}
