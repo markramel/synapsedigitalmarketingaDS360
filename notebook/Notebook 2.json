@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a4e70a94-a6af-4411-9784-192da2e12fce"
+				"spark.autotune.trackingId": "346f4cf4-be0f-4d5d-8c92-7126cf27c615"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					")\r\n",
 					"##display(df.limit(10))"
 				],
-				"execution_count": 145
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -159,10 +159,12 @@
 				"source": [
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
-					"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\")))\r\n",
-					"##display(df.limit(5))"
+					"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
+					".withColumn(\"Week Number\", weekofyear(to_date(df.AppliedOrSourcedDate, \"M/d/y\")))\r\n",
+					"\r\n",
+					"display(df.limit(5))"
 				],
-				"execution_count": 149
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
