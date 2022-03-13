@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3ab1c88c-73d4-4b94-8e1f-ad1b29c47f50"
+				"spark.autotune.trackingId": "a4e70a94-a6af-4411-9784-192da2e12fce"
 			}
 		},
 		"metadata": {
@@ -179,7 +179,7 @@
 					"collapsed": false
 				},
 				"source": [
-					"ds = df.join(dg,df.Job==dg.Job,\"outer\")\r\n",
+					"#ds = df.join(dg,df.Job==dg.Job,\"outer\")\r\n",
 					"##display(ds)"
 				],
 				"execution_count": 150
@@ -200,7 +200,7 @@
 				},
 				"source": [
 					"##drop column job after join tables\r\n",
-					"ds=df.join(dg,\"Job\")\r\n",
+					"ds=df.join(dg,on=\"Job\",how=\"outer\")\r\n",
 					"display(ds.limit(5))"
 				],
 				"execution_count": 151
