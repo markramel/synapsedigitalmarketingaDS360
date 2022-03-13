@@ -1,5 +1,5 @@
 {
-	"name": "Notebook 2",
+	"name": "Notebook 2_Copy1",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "9efe5c59-f5d5-4708-9c78-300db96f050e"
+				"spark.autotune.trackingId": "26d914e8-f052-4cdf-9a93-99d362c64518"
 			}
 		},
 		"metadata": {
@@ -78,33 +78,6 @@
 							"deleting": false
 						}
 					},
-					"microsoft": {
-						"language": "python"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%pyspark\r\n",
-					"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/CohortTable.csv', format='csv'\r\n",
-					"## If header exists uncomment line below\r\n",
-					", header=True\r\n",
-					")\r\n",
-					"##display(dg.limit(10))"
-				],
-				"execution_count": 146
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
 					"collapsed": false
 				},
 				"source": [
@@ -116,31 +89,6 @@
 					""
 				],
 				"execution_count": 147
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"from pyspark.sql.functions import *\r\n",
-					"\r\n",
-					"dg = dg.withColumn(\"Job\",translate(col(\"Job\"),\"/–!-() \",\"\")) \r\n",
-					"\r\n",
-					"##display(dg.limit(5))\r\n",
-					"\r\n",
-					""
-				],
-				"execution_count": 148
 			},
 			{
 				"cell_type": "code",
@@ -178,47 +126,6 @@
 							"deleting": false
 						}
 					},
-					"collapsed": false
-				},
-				"source": [
-					"#ds = df.join(dg,df.Job==dg.Job,\"outer\")\r\n",
-					"##display(ds)"
-				],
-				"execution_count": 150
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"##drop column job after join tables\r\n",
-					"ds=df.join(dg,on=\"Job\",how=\"outer\")\r\n",
-					"display(ds.limit(5))"
-				],
-				"execution_count": 151
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
 					"microsoft": {
 						"language": "python"
 					},
@@ -228,38 +135,6 @@
 					"%%pyspark\r\n",
 					"import pyspark.sql.functions as talent\r\n",
 					"\r\n",
-					"ds = ds.withColumn(\"TrackerType\",  \r\n",
-					"talent.when((talent.col(\"Stage\") == \"Sourced\") | (talent.col(\"Stage\") == \"Applied\" ) , \"Reach\")\r\n",
-					".when((talent.col(\"Stage\") == \"Screen\") | (talent.col(\"Stage\") == \"OfferToClient\"  ), \"Test\") \r\n",
-					".when((talent.col(\"Stage\") == \"Interview\"  ), \"Interview\") \r\n",
-					".when((talent.col(\"Stage\") == \"Shortlisted\") | (talent.col(\"Stage\") == \"Offer\"  ), \"Offer\") \r\n",
-					".when((talent.col(\"Stage\") == \"Hired\"), \"Conversion\") \r\n",
-					".otherwise(\"\"))\r\n",
-					"\r\n",
-					"display(ds.limit(5))\r\n",
-					"\r\n",
-					"##df.write.save(\"capstone.applications\")\r\n",
-					""
-				],
-				"execution_count": 152
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"from pyspark.sql.functions import *\r\n",
-					"\r\n",
 					"df = df.withColumn(\"TrackerType\",  \r\n",
 					"talent.when((talent.col(\"Stage\") == \"Sourced\") | (talent.col(\"Stage\") == \"Applied\" ) , \"Reach\")\r\n",
 					".when((talent.col(\"Stage\") == \"Screen\") | (talent.col(\"Stage\") == \"OfferToClient\"  ), \"Test\") \r\n",
@@ -268,39 +143,12 @@
 					".when((talent.col(\"Stage\") == \"Hired\"), \"Conversion\") \r\n",
 					".otherwise(\"\"))\r\n",
 					"\r\n",
-					"display(ds.limit(5))\r\n",
+					"display(df.limit(5))\r\n",
 					"\r\n",
-					"##df.write.save(\"capstone.applications\")\r\n",
+					"\r\n",
 					""
 				],
-				"execution_count": 153
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"from pyspark.sql.functions import *\r\n",
-					"\r\n",
-					"ds = ds.withColumn(\"Reach\", when((ds.TrackerType == \"Reach\") & (ds.CohortName.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Test\", when((ds.TrackerType == \"Test\") & (ds.CohortName.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Interview\", when((ds.TrackerType == \"Interview\") & (ds.CohortName.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Offer\", when((ds.TrackerType == \"Offer\") & (ds.CohortName.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.CohortName.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					"\r\n",
-					"display(ds.limit(5))"
-				],
-				"execution_count": 154
+				"execution_count": 152
 			},
 			{
 				"cell_type": "code",
@@ -359,7 +207,7 @@
 				"source": [
 					"##Drop  table in the default database\r\n",
 					"%%sql\r\n",
-					"DROP TABLE applications"
+					"##DROP TABLE applications"
 				],
 				"execution_count": 3
 			}
