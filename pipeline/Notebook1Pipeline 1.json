@@ -19,11 +19,7 @@
 						"referenceName": "Notebook 1",
 						"type": "NotebookReference"
 					},
-					"snapshot": true,
-					"sparkPool": {
-						"referenceName": "nyccabtrip",
-						"type": "BigDataPoolReference"
-					}
+					"snapshot": true
 				}
 			}
 		],
