@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f3994a1b-cde4-4d00-8a9d-0ff4e4a2c968"
+				"spark.autotune.trackingId": "8e79e5f4-4d99-43d5-9d9a-a66350e6ca28"
 			}
 		},
 		"metadata": {
@@ -318,6 +318,25 @@
 					".saveAsTable(\"applications\")"
 				],
 				"execution_count": 20
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df = df.repartition(1)\r\n",
+					"df.write.mode(\"overwrite\").parquet(\"/capstone/applications\")"
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
