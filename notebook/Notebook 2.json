@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8e79e5f4-4d99-43d5-9d9a-a66350e6ca28"
+				"spark.autotune.trackingId": "21581cce-a0e8-48ed-abda-37190617f7ae"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					")\r\n",
 					"##display(df.limit(10))"
 				],
-				"execution_count": 11
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -91,7 +91,7 @@
 					")\r\n",
 					"##display(dg.limit(10))"
 				],
-				"execution_count": 12
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
@@ -115,7 +115,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 13
+				"execution_count": 21
 			},
 			{
 				"cell_type": "code",
@@ -140,7 +140,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 14
+				"execution_count": 22
 			},
 			{
 				"cell_type": "code",
@@ -164,7 +164,7 @@
 					"\r\n",
 					"display(df.limit(5))"
 				],
-				"execution_count": 15
+				"execution_count": 23
 			},
 			{
 				"cell_type": "code",
@@ -181,10 +181,10 @@
 					"collapsed": false
 				},
 				"source": [
-					"#ds = df.join(dg,df.Job==dg.Job,\"outer\")\r\n",
-					"##display(ds)"
+					"##ds = df.join(dg,df.Job==dg.Job,\"outer\")\r\n",
+					"####display(ds)"
 				],
-				"execution_count": 16
+				"execution_count": 24
 			},
 			{
 				"cell_type": "code",
@@ -205,7 +205,7 @@
 					"ds=df.join(dg,on=\"Job\",how=\"outer\")\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": 17
+				"execution_count": 25
 			},
 			{
 				"cell_type": "code",
@@ -238,7 +238,7 @@
 					"##df.write.save(\"capstone.applications\")\r\n",
 					""
 				],
-				"execution_count": 18
+				"execution_count": 26
 			},
 			{
 				"cell_type": "code",
@@ -257,20 +257,18 @@
 				"source": [
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
-					"df = df.withColumn(\"TrackerType\",  \r\n",
-					"talent.when((talent.col(\"Stage\") == \"Sourced\") | (talent.col(\"Stage\") == \"Applied\" ) , \"Reach\")\r\n",
-					".when((talent.col(\"Stage\") == \"Screen\") | (talent.col(\"Stage\") == \"OfferToClient\"  ), \"Test\") \r\n",
-					".when((talent.col(\"Stage\") == \"Interview\"  ), \"Interview\") \r\n",
-					".when((talent.col(\"Stage\") == \"Shortlisted\") | (talent.col(\"Stage\") == \"Offer\"  ), \"Offer\") \r\n",
-					".when((talent.col(\"Stage\") == \"Hired\"), \"Conversion\") \r\n",
+					"ds = ds.withColumn(\"TrackerType\", when((ds.Stage == \"Sourced\") | (ds.Stage == \"Applied\") , \"Reach\")\r\n",
+					".when((ds.Stage == \"Screen\") | (ds.Stage == \"OfferToClient\"), \"Test\") \r\n",
+					".when((ds.Stage == \"Interview\"), \"Interview\") \r\n",
+					".when((ds.Stage == \"Shortlisted\") | (ds.Stage == \"Offer\"), \"Offer\") \r\n",
+					".when((ds.Stage == \"Hired\"), \"Conversion\") \r\n",
 					".otherwise(\"\"))\r\n",
 					"\r\n",
 					"display(ds.limit(5))\r\n",
 					"\r\n",
-					"##df.write.save(\"capstone.applications\")\r\n",
 					""
 				],
-				"execution_count": 19
+				"execution_count": 27
 			},
 			{
 				"cell_type": "code",
@@ -297,7 +295,7 @@
 					"\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": null
+				"execution_count": 28
 			},
 			{
 				"cell_type": "code",
@@ -315,9 +313,9 @@
 				"source": [
 					"##ds = ds.repartition(1)\r\n",
 					"ds.write.mode(\"overwrite\") \\\r\n",
-					".saveAsTable(\"applications\")"
+					".saveAsTable(\"capstone.applications\")"
 				],
-				"execution_count": 20
+				"execution_count": 29
 			},
 			{
 				"cell_type": "code",
@@ -333,10 +331,10 @@
 					}
 				},
 				"source": [
-					"df = df.repartition(1)\r\n",
-					"df.write.mode(\"overwrite\").parquet(\"/capstone/applications\")"
+					"ds = ds.repartition(1)\r\n",
+					"ds.write.mode(\"overwrite\").parquet(\"/capstone/output/tblapplications\")"
 				],
-				"execution_count": null
+				"execution_count": 30
 			},
 			{
 				"cell_type": "code",
@@ -350,13 +348,16 @@
 							"deleting": false
 						}
 					},
+					"microsoft": {
+						"language": "sparksql"
+					},
 					"collapsed": false
 				},
 				"source": [
-					"##%%sql\r\n",
-					"##DROP TABLE capstone.applications"
+					"%%sql\r\n",
+					"DROP TABLE capstone.applications"
 				],
-				"execution_count": null
+				"execution_count": 33
 			},
 			{
 				"cell_type": "code",
@@ -377,7 +378,7 @@
 					"##%%sql\r\n",
 					"##DROP TABLE applications"
 				],
-				"execution_count": null
+				"execution_count": 32
 			}
 		]
 	}

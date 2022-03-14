@@ -1,0 +1,17 @@
+{
+	"name": "create sql serverlesstblapplications from applications parquet",
+	"properties": {
+		"content": {
+			"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE tblapplications (\n\t[Job] nvarchar(4000),\n\t[ApplicationId] nvarchar(4000),\n\t[CandidateId] nvarchar(4000),\n\t[JobDepartment] nvarchar(4000),\n\t[JobLocation] nvarchar(4000),\n\t[Stage] nvarchar(4000),\n\t[AppliedOrSourcedDate] nvarchar(4000),\n\t[Disqualified] nvarchar(4000),\n\t[DisqualifiedAt] nvarchar(4000),\n\t[DisqualifiedReason] nvarchar(4000),\n\t[Source] nvarchar(4000),\n\t[SourceSubType] nvarchar(4000),\n\t[ResumeUrl] nvarchar(4000),\n\t[Year] int,\n\t[Week] int,\n\t[CohortName] nvarchar(4000),\n\t[TrackerType] nvarchar(4000),\n\t[Reach] nvarchar(4000),\n\t[Test] nvarchar(4000),\n\t[Interview] nvarchar(4000),\n\t[Offer] nvarchar(4000),\n\t[Conversion] nvarchar(4000)\n\t)\n\tWITH (\n\tLOCATION = 'capstone/output/tblapplications/part-00000-b6e425df-1e36-487f-af95-9c38db953d3c-c000.snappy.parquet',\n\tDATA_SOURCE = [dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\n\nSELECT TOP 100 * FROM dbo.tblapplications\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "talentlyft",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

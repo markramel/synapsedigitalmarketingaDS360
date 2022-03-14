@@ -1,0 +1,18 @@
+{
+	"name": "create view applications at talentlyft",
+	"properties": {
+		"description": "create view applications in talentlyft database",
+		"content": {
+			"query": "CREATE VIEW dbo.applications\n\tAS SELECT * FROM dbo.tblapplications",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "talentlyft",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
