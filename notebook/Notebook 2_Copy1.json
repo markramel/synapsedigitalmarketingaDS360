@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3232e70c-8304-4dbe-814c-b06fccaea8b4"
+				"spark.autotune.trackingId": "54322f18-c859-433a-8c68-0841a80081a0"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					")\r\n",
 					"##display(df.limit(10))"
 				],
-				"execution_count": 1
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -88,7 +88,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 2
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -112,7 +112,7 @@
 					"\r\n",
 					"display(df.limit(5))"
 				],
-				"execution_count": 3
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -148,7 +148,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 4
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -167,7 +167,7 @@
 					"df = df.repartition(1)\r\n",
 					"df.write.mode(\"overwrite\").parquet(\"/capstone/output/tblapplications\")"
 				],
-				"execution_count": 6
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -187,7 +187,7 @@
 					"df.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.applications\")"
 				],
-				"execution_count": 5
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -207,7 +207,7 @@
 					"##%%sql\r\n",
 					"##DROP TABLE capstone.applications"
 				],
-				"execution_count": null
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -228,7 +228,7 @@
 					"##%%sql\r\n",
 					"##DROP TABLE applications"
 				],
-				"execution_count": null
+				"execution_count": 14
 			}
 		]
 	}
