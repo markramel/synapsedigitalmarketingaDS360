@@ -3,7 +3,7 @@
 	"properties": {
 		"description": "create view applications in talentlyft database",
 		"content": {
-			"query": "CREATE VIEW dbo.applications\n\tAS SELECT * FROM dbo.tblapplications",
+			"query": "Drop VIEW dbo.applications\n\nCREATE VIEW dbo.applications\n\tAS SELECT * FROM dbo.tapplications",
 			"metadata": {
 				"language": "sql"
 			},
