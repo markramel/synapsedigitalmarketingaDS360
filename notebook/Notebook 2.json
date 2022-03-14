@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "9efe5c59-f5d5-4708-9c78-300db96f050e"
+				"spark.autotune.trackingId": "f3994a1b-cde4-4d00-8a9d-0ff4e4a2c968"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					")\r\n",
 					"##display(df.limit(10))"
 				],
-				"execution_count": 9
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -91,7 +91,7 @@
 					")\r\n",
 					"##display(dg.limit(10))"
 				],
-				"execution_count": 146
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -115,7 +115,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 147
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -140,7 +140,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 148
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
@@ -160,11 +160,11 @@
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
 					"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
-					".withColumn(\"Week Number\", weekofyear(to_date(df.AppliedOrSourcedDate, \"M/d/y\")))\r\n",
+					".withColumn(\"Week\", weekofyear(to_date(df.AppliedOrSourcedDate, \"M/d/y\")))\r\n",
 					"\r\n",
 					"display(df.limit(5))"
 				],
-				"execution_count": 13
+				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
@@ -184,7 +184,7 @@
 					"#ds = df.join(dg,df.Job==dg.Job,\"outer\")\r\n",
 					"##display(ds)"
 				],
-				"execution_count": 150
+				"execution_count": 16
 			},
 			{
 				"cell_type": "code",
@@ -205,7 +205,7 @@
 					"ds=df.join(dg,on=\"Job\",how=\"outer\")\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": 151
+				"execution_count": 17
 			},
 			{
 				"cell_type": "code",
@@ -219,29 +219,26 @@
 							"deleting": false
 						}
 					},
-					"microsoft": {
-						"language": "python"
-					},
 					"collapsed": false
 				},
 				"source": [
-					"%%pyspark\r\n",
-					"import pyspark.sql.functions as talent\r\n",
+					"##%%pyspark\r\n",
+					"##import pyspark.sql.functions as talent\r\n",
 					"\r\n",
-					"ds = ds.withColumn(\"TrackerType\",  \r\n",
-					"talent.when((talent.col(\"Stage\") == \"Sourced\") | (talent.col(\"Stage\") == \"Applied\" ) , \"Reach\")\r\n",
-					".when((talent.col(\"Stage\") == \"Screen\") | (talent.col(\"Stage\") == \"OfferToClient\"  ), \"Test\") \r\n",
-					".when((talent.col(\"Stage\") == \"Interview\"  ), \"Interview\") \r\n",
-					".when((talent.col(\"Stage\") == \"Shortlisted\") | (talent.col(\"Stage\") == \"Offer\"  ), \"Offer\") \r\n",
-					".when((talent.col(\"Stage\") == \"Hired\"), \"Conversion\") \r\n",
-					".otherwise(\"\"))\r\n",
+					"##ds = ds.withColumn(\"TrackerType\",  \r\n",
+					"##talent.when((talent.col(\"Stage\") == \"Sourced\") | (talent.col(\"Stage\") == \"Applied\" ) , \"Reach\")\r\n",
+					"##.when((talent.col(\"Stage\") == \"Screen\") | (talent.col(\"Stage\") == \"OfferToClient\"  ), \"Test\") \r\n",
+					"##.when((talent.col(\"Stage\") == \"Interview\"  ), \"Interview\") \r\n",
+					"##.when((talent.col(\"Stage\") == \"Shortlisted\") | (talent.col(\"Stage\") == \"Offer\"  ), \"Offer\") \r\n",
+					"##.when((talent.col(\"Stage\") == \"Hired\"), \"Conversion\") \r\n",
+					"##.otherwise(\"\"))\r\n",
 					"\r\n",
-					"display(ds.limit(5))\r\n",
+					"##display(ds.limit(5))\r\n",
 					"\r\n",
 					"##df.write.save(\"capstone.applications\")\r\n",
 					""
 				],
-				"execution_count": 152
+				"execution_count": 18
 			},
 			{
 				"cell_type": "code",
@@ -273,7 +270,7 @@
 					"##df.write.save(\"capstone.applications\")\r\n",
 					""
 				],
-				"execution_count": 153
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -300,7 +297,7 @@
 					"\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": 154
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -318,9 +315,9 @@
 				"source": [
 					"##ds = ds.repartition(1)\r\n",
 					"ds.write.mode(\"overwrite\") \\\r\n",
-					".saveAsTable(\"capstone.applications\")"
+					".saveAsTable(\"applications\")"
 				],
-				"execution_count": 2
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
@@ -340,7 +337,7 @@
 					"##%%sql\r\n",
 					"##DROP TABLE capstone.applications"
 				],
-				"execution_count": 156
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -358,10 +355,10 @@
 				},
 				"source": [
 					"##Drop  table in the default database\r\n",
-					"%%sql\r\n",
-					"DROP TABLE applications"
+					"##%%sql\r\n",
+					"##DROP TABLE applications"
 				],
-				"execution_count": 3
+				"execution_count": null
 			}
 		]
 	}
