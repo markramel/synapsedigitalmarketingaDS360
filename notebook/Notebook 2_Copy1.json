@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "cbfe6b88-e1ee-4ae9-aeb0-7da3d20719fa"
+				"spark.autotune.trackingId": "3232e70c-8304-4dbe-814c-b06fccaea8b4"
 			}
 		},
 		"metadata": {
@@ -185,7 +185,7 @@
 				"source": [
 					"##ds = ds.repartition(1)\r\n",
 					"df.write.mode(\"overwrite\") \\\r\n",
-					".saveAsTable(\"talentlyft.tapplications\")"
+					".saveAsTable(\"capstone.applications\")"
 				],
 				"execution_count": 5
 			},
