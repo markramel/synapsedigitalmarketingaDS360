@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "54322f18-c859-433a-8c68-0841a80081a0"
+				"spark.autotune.trackingId": "793d8b90-e523-4074-8500-70e312afda47"
 			}
 		},
 		"metadata": {
@@ -126,24 +126,20 @@
 							"deleting": false
 						}
 					},
-					"microsoft": {
-						"language": "python"
-					},
 					"collapsed": false
 				},
 				"source": [
-					"%%pyspark\r\n",
-					"import pyspark.sql.functions as talent\r\n",
+					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
-					"df = df.withColumn(\"TrackerType\",  \r\n",
-					"talent.when((talent.col(\"Stage\") == \"Sourced\") | (talent.col(\"Stage\") == \"Applied\" ) , \"Reach\")\r\n",
-					".when((talent.col(\"Stage\") == \"Screen\") | (talent.col(\"Stage\") == \"OfferToClient\"  ), \"Test\") \r\n",
-					".when((talent.col(\"Stage\") == \"Interview\"  ), \"Interview\") \r\n",
-					".when((talent.col(\"Stage\") == \"Shortlisted\") | (talent.col(\"Stage\") == \"Offer\"  ), \"Offer\") \r\n",
-					".when((talent.col(\"Stage\") == \"Hired\"), \"Conversion\") \r\n",
+					"ds = ds.withColumn(\"TrackerType\", when((ds.Stage == \"Sourced\") | (ds.Stage == \"Applied\") , \"Reach\")\r\n",
+					".when((ds.Stage == \"Screen\") | (ds.Stage == \"OfferToClient\"), \"Test\") \r\n",
+					".when((ds.Stage == \"Interview\"), \"Interview\") \r\n",
+					".when((ds.Stage == \"Shortlisted\") | (ds.Stage == \"Offer\"), \"Offer\") \r\n",
+					".when((ds.Stage == \"Hired\"), \"Conversion\") \r\n",
 					".otherwise(\"\"))\r\n",
 					"\r\n",
-					"display(df.limit(5))\r\n",
+					"display(ds.limit(5))\r\n",
+					"\r\n",
 					"\r\n",
 					"\r\n",
 					""
