@@ -86,7 +86,7 @@
 						"referenceName": "DelimitedText1",
 						"type": "DatasetReference",
 						"parameters": {
-							"RelativeURL": "@{activity('Web1').output.value.ServerRelativeUrl}"
+							"RelativeURL": "@{activity('Web1').output.value}"
 						}
 					}
 				],
