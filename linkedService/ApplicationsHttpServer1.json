@@ -1,6 +1,12 @@
 {
 	"name": "ApplicationsHttpServer1",
 	"properties": {
+		"parameters": {
+			"RelativeURL": {
+				"type": "string",
+				"defaultValue": "@{item().ServerRelativeUrl}"
+			}
+		},
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
