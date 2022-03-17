@@ -84,10 +84,7 @@
 				"inputs": [
 					{
 						"referenceName": "DelimitedText1",
-						"type": "DatasetReference",
-						"parameters": {
-							"RelativeURL": "@{activity('Web1').output.value}"
-						}
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
