@@ -12,7 +12,8 @@
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "HttpServerLocation"
+				"type": "HttpServerLocation",
+				"relativeUrl": "https://upskilltoday.sharepoint.com/:x:/s/GecoTeamAsia/"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
