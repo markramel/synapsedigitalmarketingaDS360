@@ -52,7 +52,10 @@
 						"storeSettings": {
 							"type": "HttpReadSettings",
 							"requestMethod": "GET",
-							"additionalHeaders": "“Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyIsImtpZCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvc2hhcnJlcG9pbnRvbmxpbmVsaXN0LnNoYXJlcG9pbnQuY29tQDA3Y2M4NzJmLWI2ZTMtNDg3Zi04MzRlLTI1ZWI0ZjM0ZGRhZCIsImlzcyI6IjAwMDAwMDAxLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMEAwN2NjODcyZi1iNmUzLTQ4N2YtODM0ZS0yNWViNGYzNGRkYWQiLCJpYXQiOjE2NDc1NDQ5MTcsIm5iZiI6MTY0NzU0NDkxNywiZXhwIjoxNjQ3NjMxNjE3LCJpZGVudGl0eXByb3ZpZGVyIjoiMDAwMDAwMDEtMDAwMC0wMDAwLWMwMDAtMDAwMDAwMDAwMDAwQDA3Y2M4NzJmLWI2ZTMtNDg3Zi04MzRlLTI1ZWI0ZjM0ZGRhZCIsIm5hbWVpZCI6IjQzOTE3MzZmLTFiNWQtNGVjZS04NTVhLTE5ZTU5Njg5ODRjOEAwN2NjODcyZi1iNmUzLTQ4N2YtODM0ZS0yNWViNGYzNGRkYWQiLCJvaWQiOiJkZjA3ZTI4ZS00YzNjLTRjODAtOWM1Ny03NzI0NjEwNDM2NDYiLCJzdWIiOiJkZjA3ZTI4ZS00YzNjLTRjODAtOWM1Ny03NzI0NjEwNDM2NDYiLCJ0cnVzdGVkZm9yZGVsZWdhdGlvbiI6ImZhbHNlIn0.TS4_STEipzWpQpeTThCR3pJ2HqY1NqfpEmZHTCK5Qsqu13jXGFkQwZV5CYsi2nVucW2BTTy9hNrA6V8UugvA-g73mH6IBO4A8ASoqOgHvr06uplsgqgN87XyC2shGh-2spaSX5w_DSfWwV6kYfr1hF5TdN0yHP4Lb7oyz3SCkCGb15stUHuA0JhseajQ-XFpkApyJ3Hj3l-EJd6I2XTSHfoLZphAftw7h1ozSjEifdgT-tSKZR9PHali6PJXTt--FfjMT173O7HJG898rF3y2V7uH84-Wy7nPqlYgdILyCo53oqEz0A8mV4pr7E9TGx8wuiRjVJshrwJSvI4Yya7dw”",
+							"additionalHeaders": {
+								"value": "@{concat('Authorization: Bearer ',activity('Web1').output.access_token)}",
+								"type": "Expression"
+							},
 							"requestTimeout": ""
 						},
 						"formatSettings": {
@@ -92,6 +95,12 @@
 				]
 			}
 		],
+		"parameters": {
+			"RelativeURL": {
+				"type": "string",
+				"defaultValue": "@{item().ServerRelativeUrl}"
+			}
+		},
 		"annotations": []
 	}
 }
