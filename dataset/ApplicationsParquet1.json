@@ -1,0 +1,101 @@
+{
+	"name": "ApplicationsParquet1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "capstone",
+				"fileSystem": "dlsg2markfilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "Id",
+				"type": "INT32"
+			},
+			{
+				"name": "ContentTypeID",
+				"type": "UTF8"
+			},
+			{
+				"name": "ContentType",
+				"type": "UTF8"
+			},
+			{
+				"name": "Title",
+				"type": "UTF8"
+			},
+			{
+				"name": "Modified",
+				"type": "INT96"
+			},
+			{
+				"name": "Created",
+				"type": "INT96"
+			},
+			{
+				"name": "CreatedById",
+				"type": "INT32"
+			},
+			{
+				"name": "ModifiedById",
+				"type": "INT32"
+			},
+			{
+				"name": "Owshiddenversion",
+				"type": "INT32"
+			},
+			{
+				"name": "Version",
+				"type": "UTF8"
+			},
+			{
+				"name": "Path",
+				"type": "UTF8"
+			},
+			{
+				"name": "ComplianceAssetId",
+				"type": "UTF8"
+			},
+			{
+				"name": "StartDate",
+				"type": "INT96"
+			},
+			{
+				"name": "EndDate",
+				"type": "INT96"
+			},
+			{
+				"name": "TraineeCount",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "StatusValue",
+				"type": "UTF8"
+			},
+			{
+				"name": "AccntManagerId",
+				"type": "INT32"
+			},
+			{
+				"name": "JobList",
+				"type": "UTF8"
+			},
+			{
+				"name": "InitialEndDate",
+				"type": "INT96"
+			},
+			{
+				"name": "CompanyValue",
+				"type": "UTF8"
+			}
+		]
+	}
+}

@@ -3,120 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "TalentList",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "CohortTableList",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SharePointOnlineListSource",
-						"httpRequestTimeout": "00:05:00"
-					},
-					"sink": {
-						"type": "ParquetSink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						},
-						"formatSettings": {
-							"type": "ParquetWriteSettings"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "TalentListSharePointOnlineListResource3",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "TalentList",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
-				"name": "CohortForm",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "TalentList",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SharePointOnlineListSource",
-						"httpRequestTimeout": "00:05:00"
-					},
-					"sink": {
-						"type": "ParquetSink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						},
-						"formatSettings": {
-							"type": "ParquetWriteSettings"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "CohortFormSharePointOnlineListResource2",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "CohortFormParquet1",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
-				"name": "CohortTableList",
-				"type": "Copy",
+				"name": "Web1",
+				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -127,60 +15,15 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "SharePointOnlineListSource",
-						"httpRequestTimeout": "00:05:00"
-					},
-					"sink": {
-						"type": "ParquetSink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						},
-						"formatSettings": {
-							"type": "ParquetWriteSettings"
-						}
-					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "CohortTableListSharePointOnlineListResource2",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "CohortTableList",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
-				"name": "Web1",
-				"type": "WebActivity",
-				"dependsOn": [
-					{
-						"activity": "CohortForm",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"url": "https://upskilltoday.sharepoint.com/sites/GecoTeamAsia/07cc872f-b6e3-487f-834e-25eb4f34ddad/token/OAuth/2",
+					"url": "https://accounts.accesscontrol.windows.net/07cc872f-b6e3-487f-834e-25eb4f34ddad/tokens/OAuth/2",
 					"connectVia": {
 						"referenceName": "AutoResolveIntegrationRuntime",
 						"type": "IntegrationRuntimeReference"
 					},
 					"method": "POST",
+					"headers": {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
 					"body": "grant_type=client_credentials&client_id=4391736f-1b5d-4ece-855a-19e5968984c8@07cc872f-b6e3-487f-834e-25eb4f34ddad&client_secret=znh7Q~ohJPxT0evaJWGiXs4a9HB0gVpVl9H1X&resource=00000003-0000-0ff1-ce00-000000000000/SharrepointOnlineList.sharepoint.com@07cc872f-b6e3-487f-834e-25eb4f34ddad"
 				}
 			},
@@ -208,7 +51,9 @@
 						"type": "DelimitedTextSource",
 						"storeSettings": {
 							"type": "HttpReadSettings",
-							"requestMethod": "GET"
+							"requestMethod": "GET",
+							"additionalHeaders": "@{concat('Authorization: Bearer ', activity('Web1').output.access_token)}",
+							"requestTimeout": ""
 						},
 						"formatSettings": {
 							"type": "DelimitedTextReadSettings"
@@ -235,13 +80,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DelimitedText2",
+						"referenceName": "DelimitedText1",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "Applications",
+						"referenceName": "ApplicationsParquet1",
 						"type": "DatasetReference"
 					}
 				]
