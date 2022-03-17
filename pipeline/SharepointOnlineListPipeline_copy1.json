@@ -51,7 +51,12 @@
 						"type": "DelimitedTextSource",
 						"storeSettings": {
 							"type": "HttpReadSettings",
-							"requestMethod": "GET"
+							"requestMethod": "GET",
+							"additionalHeaders": {
+								"value": "@{concat('Authorization: Bearer ',activity('Web1').output.access_token)}",
+								"type": "Expression"
+							},
+							"requestTimeout": ""
 						},
 						"formatSettings": {
 							"type": "DelimitedTextReadSettings"
@@ -79,7 +84,10 @@
 				"inputs": [
 					{
 						"referenceName": "DelimitedText1",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"RelativeURL": "@activity('Web1').output.value"
+						}
 					}
 				],
 				"outputs": [
