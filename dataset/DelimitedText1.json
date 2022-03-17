@@ -8,7 +8,7 @@
 		"parameters": {
 			"RelativeURL": {
 				"type": "string",
-				"defaultValue": "@{item().ServerRelativeUrl}"
+				"defaultValue": "@dataset().RelativeURL"
 			}
 		},
 		"annotations": [],
