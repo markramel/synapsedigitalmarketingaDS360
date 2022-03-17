@@ -5,12 +5,17 @@
 			"referenceName": "ApplicationsHttpServer1",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"RelativeURL": {
+				"type": "string",
+				"defaultValue": "@{item().ServerRelativeUrl}"
+			}
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "HttpServerLocation",
-				"relativeUrl": "@{item().ServerRelativeUrl}"
+				"type": "HttpServerLocation"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
