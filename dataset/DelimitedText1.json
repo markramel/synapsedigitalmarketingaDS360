@@ -1,0 +1,29 @@
+{
+	"name": "DelimitedText1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ApplicationsHttpServer1",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"FileName": "Applications.csv"
+			}
+		},
+		"parameters": {
+			"RelativeURL": {
+				"type": "string",
+				"defaultValue": "@activity('Web1').output.value"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
