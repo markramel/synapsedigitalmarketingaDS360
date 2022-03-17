@@ -1,0 +1,12 @@
+{
+	"name": "TalentListSharePointOnlineListResource3",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SharePointOnlineList1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SharePointOnlineListResource",
+		"schema": []
+	}
+}
