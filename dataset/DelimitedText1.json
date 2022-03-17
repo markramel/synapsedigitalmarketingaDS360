@@ -14,7 +14,7 @@
 			"location": {
 				"type": "HttpServerLocation",
 				"relativeUrl": {
-					"value": "sites/GecoTeamAsia/Sharepoint%20Storage/applications.csv?web=1",
+					"value": "sites/GecoTeamAsia/Sharepoint%20Storage/applications.csv?",
 					"type": "Expression"
 				}
 			},
