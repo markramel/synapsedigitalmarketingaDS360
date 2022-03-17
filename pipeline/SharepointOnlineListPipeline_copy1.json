@@ -52,6 +52,10 @@
 						"storeSettings": {
 							"type": "HttpReadSettings",
 							"requestMethod": "GET",
+							"additionalHeaders": {
+								"value": "@{activity('Web1').output.access_token}",
+								"type": "Expression"
+							},
 							"requestTimeout": ""
 						},
 						"formatSettings": {
