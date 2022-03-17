@@ -81,13 +81,7 @@
 				"inputs": [
 					{
 						"referenceName": "DelimitedText1",
-						"type": "DatasetReference",
-						"parameters": {
-							"RelativeURL": {
-								"value": "@{item().ServerRelativeUrl}",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [

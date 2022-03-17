@@ -5,12 +5,6 @@
 			"referenceName": "ApplicationsHttpServer1",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"RelativeURL": {
-				"type": "string",
-				"defaultValue": "@dataset().RelativeURL"
-			}
-		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
