@@ -9,7 +9,11 @@
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous",
 			"authHeaders": {
-				"FileName": {
+				"Authorization": {
+					"type": "SecureString",
+					"value": "**********"
+				},
+				"Accept": {
 					"type": "SecureString",
 					"value": "**********"
 				}
