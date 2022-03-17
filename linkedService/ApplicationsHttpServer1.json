@@ -4,7 +4,7 @@
 		"parameters": {
 			"FileName": {
 				"type": "string",
-				"defaultValue": "@dataset().RelativeURL"
+				"defaultValue": "Applications.csv"
 			}
 		},
 		"annotations": [],
