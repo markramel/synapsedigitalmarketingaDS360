@@ -1,0 +1,85 @@
+{
+	"name": "CohortFormParquet1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "capstone/output",
+				"fileSystem": "dlsg2markfilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "ApplicationId",
+				"type": "UTF8"
+			},
+			{
+				"name": "CandidateId",
+				"type": "UTF8"
+			},
+			{
+				"name": "Job",
+				"type": "UTF8"
+			},
+			{
+				"name": "JobDepartment",
+				"type": "UTF8"
+			},
+			{
+				"name": "JobLocation",
+				"type": "UTF8"
+			},
+			{
+				"name": "Stage",
+				"type": "UTF8"
+			},
+			{
+				"name": "AppliedOrSourcedDate",
+				"type": "UTF8"
+			},
+			{
+				"name": "Disqualified",
+				"type": "UTF8"
+			},
+			{
+				"name": "DisqualifiedAt",
+				"type": "UTF8"
+			},
+			{
+				"name": "DisqualifiedReason",
+				"type": "UTF8"
+			},
+			{
+				"name": "Source",
+				"type": "UTF8"
+			},
+			{
+				"name": "SourceSubType",
+				"type": "UTF8"
+			},
+			{
+				"name": "ResumeUrl",
+				"type": "UTF8"
+			},
+			{
+				"name": "Year",
+				"type": "INT32"
+			},
+			{
+				"name": "Week",
+				"type": "INT32"
+			},
+			{
+				"name": "TrackerType",
+				"type": "UTF8"
+			}
+		]
+	}
+}

@@ -1,9 +1,9 @@
 {
-	"name": "CohortFormPipeline",
+	"name": "SharepointOnlineListPipeline",
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "TalentList",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -40,16 +40,81 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "CohortFormSharePointOnlineListResource1",
+						"referenceName": "TalentListSharePointOnlineListResource3",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "CohortForm",
+						"referenceName": "TalentList",
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "CohortForm",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SharePointOnlineListSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "CohortFormSharePointOnlineListResource2",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CohortFormParquet1",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "CohortTableList",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"enableStaging": false
+				}
 			}
 		],
 		"annotations": []
