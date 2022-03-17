@@ -1,5 +1,6 @@
 {
 	"name": "ApplicationsHttpServer1",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
 	"properties": {
 		"parameters": {
 			"FileName": {
@@ -12,12 +13,21 @@
 		"typeProperties": {
 			"url": "https://upskilltoday.sharepoint.com/_api/web/GetFileByServerRelativeUrl('/sites/GecoTeamAsia/Sharepoint%20Storage/applications.csv')/$value",
 			"enableServerCertificateValidation": true,
-			"authenticationType": "Anonymous"
+			"authenticationType": "Anonymous",
+			"authHeaders": {
+				"Authorization": {
+					"type": "SecureString",
+					"value": "**********"
+				},
+				"Accept": {
+					"type": "SecureString",
+					"value": "**********"
+				}
+			}
 		},
 		"connectVia": {
 			"referenceName": "AutoResolveIntegrationRuntime",
 			"type": "IntegrationRuntimeReference"
 		}
-	},
-	"type": "Microsoft.Synapse/workspaces/linkedservices"
+	}
 }
