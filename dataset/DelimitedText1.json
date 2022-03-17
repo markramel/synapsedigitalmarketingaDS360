@@ -2,11 +2,8 @@
 	"name": "DelimitedText1",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ApplicationsHttpServer1",
-			"type": "LinkedServiceReference",
-			"parameters": {
-				"FileName": "Applications.csv"
-			}
+			"referenceName": "HttpServer1",
+			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
