@@ -51,19 +51,21 @@
 						"type": "BinarySource",
 						"storeSettings": {
 							"type": "HttpReadSettings",
-							"requestMethod": "GET"
+							"requestMethod": "GET",
+							"additionalHeaders": {
+								"value": "@{concat('Authorization: Bearer ', activity('Web1').output.access_token)}",
+								"type": "Expression"
+							},
+							"requestTimeout": ""
 						},
 						"formatSettings": {
 							"type": "BinaryReadSettings"
 						}
 					},
 					"sink": {
-						"type": "ParquetSink",
+						"type": "BinarySink",
 						"storeSettings": {
 							"type": "AzureBlobFSWriteSettings"
-						},
-						"formatSettings": {
-							"type": "ParquetWriteSettings"
 						}
 					},
 					"enableStaging": false
@@ -76,7 +78,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ApplicationsParquet1",
+						"referenceName": "Binary2",
 						"type": "DatasetReference"
 					}
 				]
