@@ -1,6 +1,12 @@
 {
 	"name": "ApplicationsHttpServer1",
 	"properties": {
+		"parameters": {
+			"FileName": {
+				"type": "string",
+				"defaultValue": "@dataset().RelativeURL"
+			}
+		},
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
