@@ -47,7 +47,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://upskilltoday.sharepoint.com/_api/web/GetFolderByServerRelativeUrl('/sites/GecoTeamAsia/Sharepoint%20Storage')/Application.csv",
+					"url": "https://upskilltoday.sharepoint.com/_api/web/GetFolderByServerRelativeUrl('/sites/GecoTeamAsia/Sharepoint%20Storage/')/$value",
 					"connectVia": {
 						"referenceName": "AutoResolveIntegrationRuntime",
 						"type": "IntegrationRuntimeReference"
