@@ -47,15 +47,18 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://upskilltoday.sharepoint.com/sites/GecoTeamAsia/_api/web/GetFolderByServerRelativeUrl('/Sharepoint%20Storage')/Files",
+					"url": "https://upskilltoday.sharepoint.com/_api/web/GetFolderByServerRelativeUrl('/sites/GecoTeamAsia/Sharepoint%20Storage')/Files",
 					"connectVia": {
 						"referenceName": "AutoResolveIntegrationRuntime",
 						"type": "IntegrationRuntimeReference"
 					},
 					"method": "GET",
 					"headers": {
-						"Authorization": "@{concat('Bearer ', activity('Web1').output.access_token)}",
-						"Accept": "application/json"
+						"Authorization:": {
+							"value": "@{concat('Bearer ', activity('Web1').output.access_token)}",
+							"type": "Expression"
+						},
+						"Accept:": "application/json"
 					}
 				}
 			},
@@ -106,6 +109,12 @@
 										"type": "BinaryReadSettings"
 									}
 								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									}
+								},
 								"enableStaging": false
 							},
 							"inputs": [
@@ -118,6 +127,12 @@
 											"type": "Expression"
 										}
 									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Binary2",
+									"type": "DatasetReference"
 								}
 							]
 						}
