@@ -95,7 +95,12 @@
 									"type": "BinarySource",
 									"storeSettings": {
 										"type": "HttpReadSettings",
-										"requestMethod": "GET"
+										"requestMethod": "GET",
+										"additionalHeaders": {
+											"value": "@{concat('Authorization: Bearer ',activity('Web2').output.access_token)}",
+											"type": "Expression"
+										},
+										"requestTimeout": ""
 									},
 									"formatSettings": {
 										"type": "BinaryReadSettings"
@@ -106,7 +111,13 @@
 							"inputs": [
 								{
 									"referenceName": "Binary1",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"RelativeURL": {
+											"value": "@{item().ServerRelativeUrl}",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
