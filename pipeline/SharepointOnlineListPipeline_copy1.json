@@ -54,11 +54,11 @@
 					},
 					"method": "GET",
 					"headers": {
-						"Authorization:": {
+						"Authorization": {
 							"value": "@{concat('Bearer ', activity('Web1').output.access_token)}",
 							"type": "Expression"
 						},
-						"Accept:": "application/json"
+						"Accept": "application/json"
 					}
 				}
 			},
