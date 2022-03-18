@@ -8,12 +8,6 @@
 				"FileName": "Applications.csv"
 			}
 		},
-		"parameters": {
-			"RelativeURL app": {
-				"type": "string",
-				"defaultValue": "@{item().ServerRelativeUrl}"
-			}
-		},
 		"annotations": [],
 		"type": "Binary",
 		"typeProperties": {

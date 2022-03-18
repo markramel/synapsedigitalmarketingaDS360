@@ -48,18 +48,13 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "DelimitedTextSource",
+						"type": "BinarySource",
 						"storeSettings": {
 							"type": "HttpReadSettings",
-							"requestMethod": "GET",
-							"additionalHeaders": {
-								"value": "@{concat('Authorization: Bearer ', activity('Web1').output.access_token)}",
-								"type": "Expression"
-							},
-							"requestTimeout": ""
+							"requestMethod": "GET"
 						},
 						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
+							"type": "BinaryReadSettings"
 						}
 					},
 					"sink": {
@@ -71,19 +66,11 @@
 							"type": "ParquetWriteSettings"
 						}
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
+					"enableStaging": false
 				},
 				"inputs": [
 					{
-						"referenceName": "DelimitedText1",
+						"referenceName": "Binary1",
 						"type": "DatasetReference"
 					}
 				],
@@ -95,12 +82,6 @@
 				]
 			}
 		],
-		"parameters": {
-			"RelativeURL": {
-				"type": "string",
-				"defaultValue": "@{item().ServerRelativeUrl}"
-			}
-		},
 		"annotations": []
 	}
 }
