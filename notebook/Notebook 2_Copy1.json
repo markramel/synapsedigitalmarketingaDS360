@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3d0e0ba3-a571-4964-bdbf-e456ffb3aced"
+				"spark.autotune.trackingId": "16ce8ca7-2f69-4c84-a092-7a3e295372fa"
 			}
 		},
 		"metadata": {
@@ -83,7 +83,7 @@
 				"source": [
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
-					"df = df.withColumn(\"Job\",translate(col(\"Job\"),\"/–!-() \",\"\")) \r\n",
+					"df = df.withColumn(\"Job\",translate(col(\"Job\"),\"./–!-() \",\"\")) \r\n",
 					"##display(df.limit(5))\r\n",
 					"\r\n",
 					""
@@ -144,7 +144,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 6
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -163,7 +163,7 @@
 					"df = df.repartition(1)\r\n",
 					"df.write.mode(\"overwrite\").parquet(\"/capstone/output/tblapplications\")"
 				],
-				"execution_count": 7
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -183,7 +183,7 @@
 					"df.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.applications\")"
 				],
-				"execution_count": 8
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -203,7 +203,7 @@
 					"##%%sql\r\n",
 					"##DROP TABLE capstone.applications"
 				],
-				"execution_count": null
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -224,7 +224,7 @@
 					"##%%sql\r\n",
 					"##DROP TABLE applications"
 				],
-				"execution_count": null
+				"execution_count": 8
 			}
 		]
 	}
