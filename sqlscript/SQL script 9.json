@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 9",
+	"properties": {
+		"content": {
+			"query": "SELECT COUNT ([ApplicationId])\n\n FROM [capstone].[dbo].[applications]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": -1
+		},
+		"type": "SqlQuery"
+	}
+}
