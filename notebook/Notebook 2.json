@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "96536e1a-f952-453d-aae0-b9f723c8d3c7"
+				"spark.autotune.trackingId": "e81f2352-8e31-4d83-a48b-30713d04f290"
 			}
 		},
 		"metadata": {
@@ -110,7 +110,7 @@
 				"source": [
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
-					"df = df.withColumn(\"Job\",translate(col(\"Job\"),\"/–!-() \",\"\")) \r\n",
+					"df = df.withColumn(\"Job\",translate(col(\"Job\"),\"./–!-() \",\"\")) \r\n",
 					"##display(df.limit(5))\r\n",
 					"\r\n",
 					""
@@ -134,7 +134,7 @@
 				"source": [
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
-					"dg = dg.withColumn(\"Job\",translate(col(\"Job\"),\"/–!-() \",\"\")) \r\n",
+					"dg = dg.withColumn(\"Job\",translate(col(\"Job\"),\"./–!-() \",\"\")) \r\n",
 					"\r\n",
 					"##display(dg.limit(5))\r\n",
 					"\r\n",
