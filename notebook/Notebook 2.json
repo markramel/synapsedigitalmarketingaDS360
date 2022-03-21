@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "73d5bfce-d8ca-4fae-956a-8af9e1b361a5"
+				"spark.autotune.trackingId": "ac91ebb9-2eec-4870-bc52-4605545cb8f9"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					")\r\n",
 					"##display(df.limit(10))"
 				],
-				"execution_count": 19
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -85,13 +85,14 @@
 				},
 				"source": [
 					"%%pyspark\r\n",
-					"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortForm.parquet', format='parquet')\r\n",
+					"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
+					"dg = dg.drop('Title')\r\n",
 					"## If header exists uncomment line below\r\n",
-					", header=True\r\n",
-					")\r\n",
-					"##display(dg.limit(10))"
+					"##, header=True\r\n",
+					"##)\r\n",
+					"##display(dg.limit(5))"
 				],
-				"execution_count": 20
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -111,13 +112,13 @@
 				},
 				"source": [
 					"%%pyspark\r\n",
-					"dh = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
+					"dh = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortForm.parquet', format='parquet')\r\n",
 					"## If header exists uncomment line below\r\n",
-					", header=True\r\n",
-					")\r\n",
+					"##, header=True\r\n",
+					"##)\r\n",
 					"##display(dg.limit(10))"
 				],
-				"execution_count": null
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -139,11 +140,11 @@
 					"%%pyspark\r\n",
 					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
 					"## If header exists uncomment line below\r\n",
-					", header=True\r\n",
-					")\r\n",
+					"##, header=True\r\n",
+					"##)\r\n",
 					"##display(dg.limit(10))"
 				],
-				"execution_count": null
+				"execution_count": 21
 			},
 			{
 				"cell_type": "code",
@@ -167,7 +168,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 21
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -186,13 +187,13 @@
 				"source": [
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
-					"dg = dg.withColumn(\"Job\",translate(col(\"Job\"),\"./–!-() \",\"\")) \r\n",
+					"dg = dg.withColumn(\"Job\",translate(col(\"JobDescription\"),\"./–!-() \",\"\")) \r\n",
 					"\r\n",
 					"##display(dg.limit(5))\r\n",
 					"\r\n",
 					""
 				],
-				"execution_count": 22
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -216,7 +217,7 @@
 					"\r\n",
 					"display(df.limit(5))"
 				],
-				"execution_count": 23
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -233,39 +234,44 @@
 					"collapsed": false
 				},
 				"source": [
-					"##ds = df.join(dg,df.Job==dg.Job,\"outer\")\r\n",
-					"####display(ds)"
-				],
-				"execution_count": 24
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"##outer join applications table and Cohort Form\r\n",
-					"ds=df.join(dg,on=\"Job\",how=\"outer\")\r\n",
+					"da = dg.join(dh,dg.CohortNameId== dh.Id,\"outer\")\r\n",
+					"ds = df.join(da,df.Job==da.JobDescription,\"outer\")\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": 25
+				"execution_count": 8
 			},
 			{
-				"cell_type": "code",
+				"cell_type": "markdown",
 				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"ds = df.join(dg,df.Job==dg.JobDescription,\"outer\")\r\n",
+					"display(ds.limit(5))"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##outer join applications table and Cohort Form for Job column\r\n",
+					"ds=df.join(dg,on=\"Job\",how=\"outer\")\r\n",
+					"display(ds.limit(5))"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
 					"nteract": {
 						"transient": {
 							"deleting": false
@@ -288,8 +294,7 @@
 					"\r\n",
 					"##df.write.save(\"capstone.applications\")\r\n",
 					""
-				],
-				"execution_count": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -319,7 +324,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 27
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -338,15 +343,15 @@
 				"source": [
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
-					"ds = ds.withColumn(\"Reach\", when((ds.TrackerType == \"Reach\") & (ds.CohortName.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Test\", when((ds.TrackerType == \"Test\") & (ds.CohortName.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Interview\", when((ds.TrackerType == \"Interview\") & (ds.CohortName.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Offer\", when((ds.TrackerType == \"Offer\") & (ds.CohortName.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.CohortName.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
+					"ds = ds.withColumn(\"Reach\", when((ds.TrackerType == \"Reach\") & (ds.Title.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
+					".withColumn(\"Test\", when((ds.TrackerType == \"Test\") & (ds.Title.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
+					".withColumn(\"Interview\", when((ds.TrackerType == \"Interview\") & (ds.Title.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
+					".withColumn(\"Offer\", when((ds.TrackerType == \"Offer\") & (ds.Title.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
+					".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.Title.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
 					"\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": 28
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -362,11 +367,70 @@
 					}
 				},
 				"source": [
+					"ds = ds.drop('complianceassetid','contenttype','contenttypeid','created', \\\r\n",
+					"'createdbyid','id', 'modified','modifiedbyid','owshiddenversion', 'path','version','job' )\r\n",
 					"ds = ds.repartition(1)\r\n",
 					"ds.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.applications\")"
 				],
-				"execution_count": 29
+				"execution_count": 13
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"dg.write.mode(\"overwrite\") \\\r\n",
+					".saveAsTable(\"capstone.CohortTableList\")"
+				],
+				"execution_count": 17
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"dh.write.mode(\"overwrite\") \\\r\n",
+					".saveAsTable(\"capstone.CohortForm\")"
+				],
+				"execution_count": 18
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"dj.write.mode(\"overwrite\") \\\r\n",
+					".saveAsTable(\"capstone.TalentList\")"
+				],
+				"execution_count": 22
 			},
 			{
 				"cell_type": "code",
