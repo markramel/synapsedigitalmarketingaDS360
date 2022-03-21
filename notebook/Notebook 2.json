@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e81f2352-8e31-4d83-a48b-30713d04f290"
+				"spark.autotune.trackingId": "73d5bfce-d8ca-4fae-956a-8af9e1b361a5"
 			}
 		},
 		"metadata": {
@@ -85,13 +85,65 @@
 				},
 				"source": [
 					"%%pyspark\r\n",
-					"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/CohortTable.csv', format='csv'\r\n",
+					"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortForm.parquet', format='parquet')\r\n",
 					"## If header exists uncomment line below\r\n",
 					", header=True\r\n",
 					")\r\n",
 					"##display(dg.limit(10))"
 				],
 				"execution_count": 20
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"dh = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
+					"## If header exists uncomment line below\r\n",
+					", header=True\r\n",
+					")\r\n",
+					"##display(dg.limit(10))"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+					"## If header exists uncomment line below\r\n",
+					", header=True\r\n",
+					")\r\n",
+					"##display(dg.limit(10))"
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -201,7 +253,7 @@
 					"collapsed": false
 				},
 				"source": [
-					"##drop column job after join tables\r\n",
+					"##outer join applications table and Cohort Form\r\n",
 					"ds=df.join(dg,on=\"Job\",how=\"outer\")\r\n",
 					"display(ds.limit(5))"
 				],
