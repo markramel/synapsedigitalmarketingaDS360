@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "bebaa783-d646-4637-b644-9c3950d14254"
+				"spark.autotune.trackingId": "71310226-0b17-4968-9f65-e645d98eb7ee"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					")\r\n",
 					"##display(df.limit(10))"
 				],
-				"execution_count": 110
+				"execution_count": 124
 			},
 			{
 				"cell_type": "code",
@@ -92,7 +92,7 @@
 					"##)\r\n",
 					"##display(dg.limit(5))"
 				],
-				"execution_count": 111
+				"execution_count": 125
 			},
 			{
 				"cell_type": "code",
@@ -118,7 +118,7 @@
 					"##)\r\n",
 					"##display(dg.limit(10))"
 				],
-				"execution_count": 112
+				"execution_count": 126
 			},
 			{
 				"cell_type": "code",
@@ -145,7 +145,7 @@
 					"##)\r\n",
 					"##display(dj.limit(5))"
 				],
-				"execution_count": 113
+				"execution_count": 127
 			},
 			{
 				"cell_type": "code",
@@ -169,7 +169,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 114
+				"execution_count": 128
 			},
 			{
 				"cell_type": "code",
@@ -194,7 +194,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 115
+				"execution_count": 129
 			},
 			{
 				"cell_type": "code",
@@ -218,7 +218,7 @@
 					"\r\n",
 					"##display(df.limit(5))"
 				],
-				"execution_count": 116
+				"execution_count": 130
 			},
 			{
 				"cell_type": "code",
@@ -240,14 +240,17 @@
 					"dj = dj.withColumnRenamed(\"Title\", \"AcctMngr\")\r\n",
 					"#join tables CohortTableList and TalentList\r\n",
 					"dq = dg.join(dj, dg.AcctMngrId==dj.Id,\"inner\").drop(dj.Id)\r\n",
+					"#select two columns in CohortForm\r\n",
+					"dh = dh.select('Id', 'Title')\r\n",
+					"dh = dh.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
 					"#join tables CohortTableList and CohortForm\r\n",
 					"da = dq.join(dh, dq.CohortNameId==dh.Id,\"inner\")\r\n",
 					"#join tables Applications and CohortTableList\r\n",
 					"ds = df.join(da,df.Job==da.Job,\"inner\")\r\n",
-					"ds = ds.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
+					"##ds = ds.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": 117
+				"execution_count": 131
 			},
 			{
 				"cell_type": "code",
@@ -271,7 +274,7 @@
 					"ds = ds.withColumn(\"FinalTA\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
 					"ds = ds.withColumnRenamed(\"PictureURL\",\"FinalTAPicUrl\")"
 				],
-				"execution_count": 118
+				"execution_count": 132
 			},
 			{
 				"cell_type": "code",
@@ -376,7 +379,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 119
+				"execution_count": 133
 			},
 			{
 				"cell_type": "code",
@@ -403,7 +406,7 @@
 					"\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": 120
+				"execution_count": 134
 			},
 			{
 				"cell_type": "code",
@@ -419,14 +422,13 @@
 					}
 				},
 				"source": [
-					"ds = ds.drop('complianceassetid','contenttype','contenttypeid','created', \\\r\n",
-					"'createdbyid','id', 'modified','modifiedbyid','owshiddenversion', 'path','version','job' )\r\n",
+					"ds = ds.drop('id','job' )\r\n",
 					"ds = ds.distinct()\r\n",
 					"ds = ds.repartition(1)\r\n",
 					"ds.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.applications\")"
 				],
-				"execution_count": 121
+				"execution_count": 136
 			},
 			{
 				"cell_type": "code",
