@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ac91ebb9-2eec-4870-bc52-4605545cb8f9"
+				"spark.autotune.trackingId": "f0e4714e-3c9b-43d9-86dc-f57d996ccd88"
 			}
 		},
 		"metadata": {
@@ -369,6 +369,7 @@
 				"source": [
 					"ds = ds.drop('complianceassetid','contenttype','contenttypeid','created', \\\r\n",
 					"'createdbyid','id', 'modified','modifiedbyid','owshiddenversion', 'path','version','job' )\r\n",
+					"ds = ds.distinct()\r\n",
 					"ds = ds.repartition(1)\r\n",
 					"ds.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.applications\")"
