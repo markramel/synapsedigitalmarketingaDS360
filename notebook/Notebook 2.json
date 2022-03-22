@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f0e4714e-3c9b-43d9-86dc-f57d996ccd88"
+				"spark.autotune.trackingId": "1adf6176-e915-457d-abc0-041441d72bd5"
 			}
 		},
 		"metadata": {
@@ -234,8 +234,8 @@
 					"collapsed": false
 				},
 				"source": [
-					"da = dg.join(dh,dg.CohortNameId== dh.Id,\"outer\")\r\n",
-					"ds = df.join(da,df.Job==da.JobDescription,\"outer\")\r\n",
+					"da = dg.join(dh,dg.CohortNameId== dh.Id,\"inner\")\r\n",
+					"ds = df.join(da,df.Job==da.JobDescription,\"inner\")\r\n",
 					"display(ds.limit(5))"
 				],
 				"execution_count": 8
