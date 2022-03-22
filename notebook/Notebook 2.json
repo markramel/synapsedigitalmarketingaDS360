@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1ad0e93f-fd1d-43dd-94b3-91d0ab9f787f"
+				"spark.autotune.trackingId": "bebaa783-d646-4637-b644-9c3950d14254"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					")\r\n",
 					"##display(df.limit(10))"
 				],
-				"execution_count": 1
+				"execution_count": 110
 			},
 			{
 				"cell_type": "code",
@@ -92,7 +92,7 @@
 					"##)\r\n",
 					"##display(dg.limit(5))"
 				],
-				"execution_count": 2
+				"execution_count": 111
 			},
 			{
 				"cell_type": "code",
@@ -118,7 +118,7 @@
 					"##)\r\n",
 					"##display(dg.limit(10))"
 				],
-				"execution_count": 3
+				"execution_count": 112
 			},
 			{
 				"cell_type": "code",
@@ -134,7 +134,8 @@
 					},
 					"microsoft": {
 						"language": "python"
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"%%pyspark\r\n",
@@ -142,9 +143,9 @@
 					"## If header exists uncomment line below\r\n",
 					"##, header=True\r\n",
 					"##)\r\n",
-					"##display(dg.limit(10))"
+					"##display(dj.limit(5))"
 				],
-				"execution_count": 21
+				"execution_count": 113
 			},
 			{
 				"cell_type": "code",
@@ -168,7 +169,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 4
+				"execution_count": 114
 			},
 			{
 				"cell_type": "code",
@@ -193,7 +194,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 5
+				"execution_count": 115
 			},
 			{
 				"cell_type": "code",
@@ -215,9 +216,9 @@
 					"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
 					".withColumn(\"Week\", weekofyear(to_date(df.AppliedOrSourcedDate, \"M/d/y\")))\r\n",
 					"\r\n",
-					"display(df.limit(5))"
+					"##display(df.limit(5))"
 				],
-				"execution_count": 6
+				"execution_count": 116
 			},
 			{
 				"cell_type": "code",
@@ -234,12 +235,62 @@
 					"collapsed": false
 				},
 				"source": [
-					"dq = dh.join(dj, dh.Id==dj.AcctMngrId,\"inner\")\r\n",
-					"da = dg.join(dq,dg.CohortNameId== dq.Id,\"inner\")\r\n",
-					"ds = df.join(da,df.Job==da.JobDescription,\"inner\")\r\n",
+					"#select two columns in TalentList\r\n",
+					"dj = dj.select('Id', 'Title')\r\n",
+					"dj = dj.withColumnRenamed(\"Title\", \"AcctMngr\")\r\n",
+					"#join tables CohortTableList and TalentList\r\n",
+					"dq = dg.join(dj, dg.AcctMngrId==dj.Id,\"inner\").drop(dj.Id)\r\n",
+					"#join tables CohortTableList and CohortForm\r\n",
+					"da = dq.join(dh, dq.CohortNameId==dh.Id,\"inner\")\r\n",
+					"#join tables Applications and CohortTableList\r\n",
+					"ds = df.join(da,df.Job==da.Job,\"inner\")\r\n",
+					"ds = ds.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": 8
+				"execution_count": 117
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+					"dj = dj.select('Title','PictureURL')\r\n",
+					"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
+					"ds = ds.join(dj,ds.SourceSubType==dj.TA,\"inner\")\r\n",
+					"\r\n",
+					"ds = ds.withColumn(\"FinalTA\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
+					"ds = ds.withColumnRenamed(\"PictureURL\",\"FinalTAPicUrl\")"
+				],
+				"execution_count": 118
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"display(ds.limit(5))"
+				],
+				"execution_count": 105
 			},
 			{
 				"cell_type": "markdown",
@@ -325,7 +376,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 9
+				"execution_count": 119
 			},
 			{
 				"cell_type": "code",
@@ -344,15 +395,15 @@
 				"source": [
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
-					"ds = ds.withColumn(\"Reach\", when((ds.TrackerType == \"Reach\") & (ds.Title.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Test\", when((ds.TrackerType == \"Test\") & (ds.Title.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Interview\", when((ds.TrackerType == \"Interview\") & (ds.Title.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Offer\", when((ds.TrackerType == \"Offer\") & (ds.Title.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.Title.isNotNull()) , \"1\").otherwise(\"0\")) \\\r\n",
+					"ds = ds.withColumn(\"Reach\", when((ds.TrackerType == \"Reach\") & (ds.CohortName.isNotNull()) & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
+					".withColumn(\"Test\", when((ds.TrackerType == \"Test\") & (ds.CohortName.isNotNull()) & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
+					".withColumn(\"Interview\", when((ds.TrackerType == \"Interview\") & (ds.CohortName.isNotNull()) & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
+					".withColumn(\"Offer\", when((ds.TrackerType == \"Offer\") & (ds.CohortName.isNotNull()) & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
+					".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.CohortName.isNotNull()) & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
 					"\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": 10
+				"execution_count": 120
 			},
 			{
 				"cell_type": "code",
@@ -375,7 +426,7 @@
 					"ds.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.applications\")"
 				],
-				"execution_count": 13
+				"execution_count": 121
 			},
 			{
 				"cell_type": "code",
