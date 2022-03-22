@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "71310226-0b17-4968-9f65-e645d98eb7ee"
+				"spark.autotune.trackingId": "b2dc923b-f757-444e-a153-64bd7a40d8cb"
 			}
 		},
 		"metadata": {
@@ -236,12 +236,12 @@
 				},
 				"source": [
 					"#select two columns in TalentList\r\n",
-					"dj = dj.select('Id', 'Title')\r\n",
+					"dj = dj.select(\"Id\", \"Title\")\r\n",
 					"dj = dj.withColumnRenamed(\"Title\", \"AcctMngr\")\r\n",
 					"#join tables CohortTableList and TalentList\r\n",
 					"dq = dg.join(dj, dg.AcctMngrId==dj.Id,\"inner\").drop(dj.Id)\r\n",
 					"#select two columns in CohortForm\r\n",
-					"dh = dh.select('Id', 'Title')\r\n",
+					"dh = dh.select(\"Id\", \"Title\")\r\n",
 					"dh = dh.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
 					"#join tables CohortTableList and CohortForm\r\n",
 					"da = dq.join(dh, dq.CohortNameId==dh.Id,\"inner\")\r\n",
@@ -267,7 +267,7 @@
 				},
 				"source": [
 					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
-					"dj = dj.select('Title','PictureURL')\r\n",
+					"dj = dj.select(\"Title\",\"PictureURL\")\r\n",
 					"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
 					"ds = ds.join(dj,ds.SourceSubType==dj.TA,\"inner\")\r\n",
 					"\r\n",
