@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "9f4d334e-91d5-4a04-8286-dd420aa4f87d"
+				"spark.autotune.trackingId": "a94f1e39-39f9-4c8f-a251-091e018de8cf"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					")\r\n",
 					"##display(df.limit(10))"
 				],
-				"execution_count": 274
+				"execution_count": 59
 			},
 			{
 				"cell_type": "code",
@@ -92,7 +92,7 @@
 					"##)\r\n",
 					"##display(dg.limit(5))"
 				],
-				"execution_count": 275
+				"execution_count": 60
 			},
 			{
 				"cell_type": "code",
@@ -118,7 +118,7 @@
 					"##)\r\n",
 					"##display(dg.limit(10))"
 				],
-				"execution_count": 276
+				"execution_count": 61
 			},
 			{
 				"cell_type": "code",
@@ -145,7 +145,7 @@
 					"##)\r\n",
 					"##display(dj.limit(5))"
 				],
-				"execution_count": 277
+				"execution_count": 62
 			},
 			{
 				"cell_type": "code",
@@ -170,7 +170,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 278
+				"execution_count": 63
 			},
 			{
 				"cell_type": "code",
@@ -196,7 +196,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 279
+				"execution_count": 64
 			},
 			{
 				"cell_type": "code",
@@ -220,7 +220,7 @@
 					"\r\n",
 					"##display(df.limit(5))"
 				],
-				"execution_count": 280
+				"execution_count": 65
 			},
 			{
 				"cell_type": "markdown",
@@ -271,7 +271,31 @@
 					"##ds = ds.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": 281
+				"execution_count": 66
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": true
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+					"dj = dj.select(\"Title\")\r\n",
+					"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
+					"ds = ds.join(dj,ds.SourceSubType==dj.TA,\"left\")\r\n",
+					"\r\n",
+					"ds = ds.withColumn(\"FinalTA\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
+					""
+				],
+				"execution_count": 67
 			},
 			{
 				"cell_type": "code",
@@ -290,12 +314,46 @@
 					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
 					"dj = dj.select(\"Title\",\"PictureURL\")\r\n",
 					"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
-					"ds = ds.join(dj,ds.SourceSubType==dj.TA,\"left\")\r\n",
-					"\r\n",
-					"ds = ds.withColumn(\"FinalTA\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
-					"ds = ds.withColumnRenamed(\"PictureURL\",\"FinalTAPicUrl\")"
+					"ds = ds.join(dj,ds.FinalTA==dj.TA,\"left\").drop(ds.TA)\r\n",
+					"ds = ds.withColumnRenamed(\"PictureURL\",\"FinalTAPicUrl\")\r\n",
+					"ds = ds.drop(\"ContentTypeID\", \"ContentType\",\"Modified\",\"Created\", \"CreatedById\", \"ModifiedById\", \\\r\n",
+					"\"Owshiddenversion\", \"Version\", \"Path\", \"ComplianceAssetId\")\r\n",
+					"#ds = ds.withColumn(\"FinalTAPicUrl\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
+					""
 				],
-				"execution_count": 282
+				"execution_count": 68
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"display(ds.limit(5))"
+				],
+				"execution_count": 69
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				]
 			},
 			{
 				"cell_type": "markdown",
@@ -381,7 +439,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 283
+				"execution_count": 70
 			},
 			{
 				"cell_type": "code",
@@ -408,7 +466,7 @@
 					"\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": 284
+				"execution_count": 71
 			},
 			{
 				"cell_type": "markdown",
@@ -494,7 +552,7 @@
 					"ds.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.applications\")"
 				],
-				"execution_count": 285
+				"execution_count": 72
 			},
 			{
 				"cell_type": "code",
@@ -514,7 +572,7 @@
 					"dg.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.CohortTableList\")"
 				],
-				"execution_count": 286
+				"execution_count": 73
 			},
 			{
 				"cell_type": "code",
@@ -534,7 +592,7 @@
 					"dh.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.CohortForm\")"
 				],
-				"execution_count": 287
+				"execution_count": 74
 			},
 			{
 				"cell_type": "code",
@@ -554,7 +612,7 @@
 					"dj.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.TalentList\")"
 				],
-				"execution_count": 288
+				"execution_count": 75
 			},
 			{
 				"cell_type": "code",
