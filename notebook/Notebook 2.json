@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a94f1e39-39f9-4c8f-a251-091e018de8cf"
+				"spark.autotune.trackingId": "75469bea-428a-45ba-a585-a59566c1535d"
 			}
 		},
 		"metadata": {
@@ -458,10 +458,10 @@
 				"source": [
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
-					"ds = ds.withColumn(\"Reach\", when((ds.TrackerType == \"Reach\") & (ds.CohortName.isNotNull()) & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Test\", when((ds.TrackerType == \"Test\") & (ds.CohortName.isNotNull()) & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Interview\", when((ds.TrackerType == \"Interview\") & (ds.CohortName.isNotNull()) & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Offer\", when((ds.TrackerType == \"Offer\") & (ds.CohortName.isNotNull()) & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
+					"ds = ds.withColumn(\"Reach\", when((ds.TrackerType == \"Reach\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+					".withColumn(\"Test\", when((ds.TrackerType == \"Test\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+					".withColumn(\"Interview\", when((ds.TrackerType == \"Interview\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+					".withColumn(\"Offer\", when((ds.TrackerType == \"Offer\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
 					".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.CohortName.isNotNull()) & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
 					"\r\n",
 					"display(ds.limit(5))"
