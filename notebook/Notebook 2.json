@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "75469bea-428a-45ba-a585-a59566c1535d"
+				"spark.autotune.trackingId": "e3440625-9b76-4d5c-b2fd-1e1bb4bffa42"
 			}
 		},
 		"metadata": {
@@ -462,7 +462,7 @@
 					".withColumn(\"Test\", when((ds.TrackerType == \"Test\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
 					".withColumn(\"Interview\", when((ds.TrackerType == \"Interview\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
 					".withColumn(\"Offer\", when((ds.TrackerType == \"Offer\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
-					".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.CohortName.isNotNull()) & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
+					".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
 					"\r\n",
 					"display(ds.limit(5))"
 				],
