@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "85bc7019-3dfa-4bd0-a5c3-c95acfbef5fb"
+				"spark.autotune.trackingId": "fdd7691b-b03e-43ae-87ff-9c38651d4364"
 			}
 		},
 		"metadata": {
@@ -217,7 +217,7 @@
 					"dh.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.CohortForm\")\r\n",
 					"\r\n",
-					"#re-initiat TalentList dataframe and save as a table in capstone lake database\r\n",
+					"#re-initiate TalentList dataframe and save as a table in capstone lake database\r\n",
 					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
 					"dj.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.TalentList\")"
