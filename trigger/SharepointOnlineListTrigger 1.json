@@ -2,11 +2,11 @@
 	"name": "SharepointOnlineListTrigger 1",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "SharepointOnlineListPipeline",
+					"referenceName": "TalentLyftPipeline",
 					"type": "PipelineReference"
 				}
 			}
