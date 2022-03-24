@@ -116,25 +116,7 @@
 									}
 								},
 								"enableStaging": false
-							},
-							"inputs": [
-								{
-									"referenceName": "Binary1",
-									"type": "DatasetReference",
-									"parameters": {
-										"RelativeURL": {
-											"value": "@{item().ServerRelativeUrl}",
-											"type": "Expression"
-										}
-									}
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "Binary2",
-									"type": "DatasetReference"
-								}
-							]
+							}
 						}
 					]
 				}
