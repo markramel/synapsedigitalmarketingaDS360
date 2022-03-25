@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "abc63f60-ad2f-4193-92b3-ce964b9f6455"
+				"spark.autotune.trackingId": "69b882f9-40de-4518-9380-ef004d75ed6b"
 			}
 		},
 		"metadata": {
@@ -65,7 +65,82 @@
 					"display(df.limit(10))\r\n",
 					"df.count()"
 				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"#loading CohortTableList.parquet to dataframe\r\n",
+					"ctl_tbl = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
+					"##dg = dg.drop('Title')\r\n",
+					"\r\n",
+					"display(ctl_tbl.limit(10))\r\n",
+					"ctl_tbl.count()"
+				],
 				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql.functions import *\r\n",
+					"\r\n",
+					"df = df.withColumn(\"Job\",lower(translate(col(\"Job\"),\"./–!-() \",\"\")))\r\n",
+					"ctl_tbl = ctl_tbl.withColumn(\"Job\",lower(translate(col(\"JobDescription\"),\"./–!-() \",\"\")))\r\n",
+					"display(ctl_tbl.limit(5))"
+				],
+				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql.functions import *\r\n",
+					"from pyspark.sql.types import *\r\n",
+					"\r\n",
+					"join_dfctl=df.join(ctl_tbl,df.Job == ctl_tbl.Job,\"left\")\r\n",
+					"display(jn_app_ctl.limit(100))\r\n",
+					""
+				],
+				"execution_count": 25
 			},
 			{
 				"cell_type": "code",
