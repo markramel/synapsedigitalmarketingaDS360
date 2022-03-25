@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6fef016d-20cd-4a4b-aa2d-96f4d3c3bc54"
+				"spark.autotune.trackingId": "abc63f60-ad2f-4193-92b3-ce964b9f6455"
 			}
 		},
 		"metadata": {
@@ -65,7 +65,7 @@
 					"display(df.limit(10))\r\n",
 					"df.count()"
 				],
-				"execution_count": 8
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -92,12 +92,11 @@
 					".when((df.Stage == \"Shortlisted\") | (df.Stage == \"Offer\"), \"Offer\") \r\n",
 					".when((df.Stage == \"Hired\"), \"Conversion\") \r\n",
 					".otherwise(\"\"))\r\n",
-					"\r\n",
 					"display(df.limit(5))\r\n",
 					"df.count()\r\n",
 					""
 				],
-				"execution_count": 24
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -131,9 +130,14 @@
 				},
 				"source": [
 					"%%pyspark\r\n",
-					"display(df.limit(10))"
+					"from pyspark.sql.functions import *\r\n",
+					"from pyspark.sql.types import *\r\n",
+					"\r\n",
+					"TrackTbl=df.select(\"TrackerType\")\r\n",
+					"TrackTbl=TrackTbl.groupBy(\"TrackerType\").agg(count(\"TrackerType\")).show()\r\n",
+					""
 				],
-				"execution_count": null
+				"execution_count": 8
 			}
 		]
 	}
