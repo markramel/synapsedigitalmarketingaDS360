@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "69b882f9-40de-4518-9380-ef004d75ed6b"
+				"spark.autotune.trackingId": "60e0c5f1-1f12-4d1e-bc30-0cfd3774efcd"
 			}
 		},
 		"metadata": {
@@ -65,7 +65,7 @@
 					"display(df.limit(10))\r\n",
 					"df.count()"
 				],
-				"execution_count": 5
+				"execution_count": 28
 			},
 			{
 				"cell_type": "code",
@@ -113,10 +113,11 @@
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
 					"df = df.withColumn(\"Job\",lower(translate(col(\"Job\"),\"./–!-() \",\"\")))\r\n",
-					"ctl_tbl = ctl_tbl.withColumn(\"Job\",lower(translate(col(\"JobDescription\"),\"./–!-() \",\"\")))\r\n",
+					"ctl_tbl = ctl_tbl.withColumn(\"JobDescription\",lower(translate(col(\"JobDescription\"),\"./–!-() \",\"\")))\r\n",
+					"display(df.limit(5))\r\n",
 					"display(ctl_tbl.limit(5))"
 				],
-				"execution_count": 12
+				"execution_count": 49
 			},
 			{
 				"cell_type": "code",
@@ -136,11 +137,13 @@
 					"from pyspark.sql.functions import *\r\n",
 					"from pyspark.sql.types import *\r\n",
 					"\r\n",
-					"join_dfctl=df.join(ctl_tbl,df.Job == ctl_tbl.Job,\"left\")\r\n",
-					"display(jn_app_ctl.limit(100))\r\n",
+					"ctl_tbl = ctl_tbl.select(\"AcctMngrID\", \"JobDescription\")\r\n",
+					"join_dfctl=df.join(ctl_tbl,df.Job == ctl_tbl.JobDescription,\"left\").drop_duplicates()\r\n",
+					"display(jn_app_ctl.limit(20))\r\n",
+					"join_dfctl.count()\r\n",
 					""
 				],
-				"execution_count": 25
+				"execution_count": 55
 			},
 			{
 				"cell_type": "code",
@@ -159,19 +162,19 @@
 				"source": [
 					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
-					"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
-					"       .withColumn(\"Week\", weekofyear(to_date(df.AppliedOrSourcedDate, \"M/d/y\"))) \\\r\n",
-					".withColumn(\"TrackerType\", when((df.Stage == \"Sourced\") | (df.Stage == \"Applied\") , \"Reach\")\r\n",
-					".when((df.Stage == \"Screen\") | (df.Stage == \"Assessment\"), \"Test\") \r\n",
-					".when((df.Stage == \"Interview\"), \"Interview\") \\\r\n",
-					".when((df.Stage == \"Shortlisted\") | (df.Stage == \"Offer\"), \"Offer\") \r\n",
-					".when((df.Stage == \"Hired\"), \"Conversion\") \r\n",
+					"join_dfctl= join_dfctl.withColumn(\"Year\", year(to_date(join_dfctl.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
+					"       .withColumn(\"Week\", weekofyear(to_date(join_dfctl.AppliedOrSourcedDate, \"M/d/y\"))) \\\r\n",
+					".withColumn(\"TrackerType\", when((join_dfctl.Stage == \"Sourced\") | (join_dfctl.Stage == \"Applied\") , \"Reach\")\r\n",
+					".when((join_dfctl.Stage == \"Screen\") | (join_dfctl.Stage == \"Assessment\"), \"Test\") \r\n",
+					".when((join_dfctl.Stage == \"Interview\"), \"Interview\") \\\r\n",
+					".when((join_dfctl.Stage == \"Shortlisted\") | (join_dfctl.Stage == \"Offer\"), \"Offer\") \r\n",
+					".when((join_dfctl.Stage == \"Hired\"), \"Conversion\") \r\n",
 					".otherwise(\"\"))\r\n",
-					"display(df.limit(5))\r\n",
-					"df.count()\r\n",
+					"display(join_dfctl.limit(5))\r\n",
+					"join_dfctl.count()\r\n",
 					""
 				],
-				"execution_count": 2
+				"execution_count": 56
 			},
 			{
 				"cell_type": "markdown",
@@ -208,11 +211,11 @@
 					"from pyspark.sql.functions import *\r\n",
 					"from pyspark.sql.types import *\r\n",
 					"\r\n",
-					"TrackTbl=df.select(\"TrackerType\")\r\n",
+					"TrackTbl=join_dfctl.select(\"TrackerType\")\r\n",
 					"TrackTbl=TrackTbl.groupBy(\"TrackerType\").agg(count(\"TrackerType\")).show()\r\n",
 					""
 				],
-				"execution_count": 8
+				"execution_count": 57
 			}
 		]
 	}
