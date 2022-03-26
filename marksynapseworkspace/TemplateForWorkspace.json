@@ -11,9 +11,29 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase1'"
 		},
+		"SharePointOnlineList1_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalKey' of 'SharePointOnlineList1'"
+		},
 		"marksynapseworkspace-WorkspaceDefaultSqlServer_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'marksynapseworkspace-WorkspaceDefaultSqlServer'"
+		},
+		"testAzureSqlDatabase2_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'testAzureSqlDatabase2'"
+		},
+		"ApplicationsHttpServer1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://upskilltoday.sharepoint.com/sites/GecoTeamAsia/_api/web/GetFileByServerRelativeUrl ('@{linkedService().FileName}')/$value"
+		},
+		"HttpServer1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://upskilltoday.sharepoint.com/_api/web/GetFileByServerRelativeUrl('/sites/GecoTeamAsia/Sharepoint%20Storage/')/$value"
+		},
+		"SharePointOnlineList1_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "4391736f-1b5d-4ece-855a-19e5968984c8"
 		},
 		"marksynapseworkspace-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"type": "string",
@@ -25,62 +45,22 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('workspaceName'), '/Pipeline 1')]",
+			"name": "[concat(parameters('workspaceName'), '/TalentLyftPipeline')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"activities": [
 					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "Dataflow",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/dataflows/Dataflow')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/csvtoparquet')]",
-			"type": "Microsoft.Synapse/workspaces/pipelines",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy_867",
+						"name": "TalentList",
 						"type": "Copy",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "CohortTableList",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -88,29 +68,11 @@
 							"secureOutput": false,
 							"secureInput": false
 						},
-						"userProperties": [
-							{
-								"name": "Source",
-								"value": "dlsg2markfilesystem/parentdatastream/"
-							},
-							{
-								"name": "Destination",
-								"value": "dlsg2markfilesystem/parentdatastream/"
-							}
-						],
+						"userProperties": [],
 						"typeProperties": {
 							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": false,
-									"wildcardFileName": "*",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings",
-									"skipLineCount": 0
-								}
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
 							},
 							"sink": {
 								"type": "ParquetSink",
@@ -122,34 +84,610 @@
 								}
 							},
 							"enableStaging": false,
-							"validateDataConsistency": false
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
 						},
 						"inputs": [
 							{
-								"referenceName": "SourceDataset_867",
+								"referenceName": "TalentListSharePointOnlineListResource3",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "DestinationDataset_867",
+								"referenceName": "TalentList",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "CohortForm",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "TalentList",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "CohortFormSharePointOnlineListResource2",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "CohortFormParquet1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "CohortTableList",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "CohortTableListSharePointOnlineListResource2",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "CohortTableList",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "TalentLyftNotebook1",
+						"type": "SynapseNotebook",
+						"dependsOn": [
+							{
+								"activity": "CohortForm",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "NotebookTalentLyft",
+								"type": "NotebookReference"
+							},
+							"snapshot": true,
+							"sparkPool": {
+								"referenceName": "Capstone",
+								"type": "BigDataPoolReference"
+							}
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
-				"annotations": [],
-				"lastPublishTime": "2022-02-17T08:48:17Z"
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/datasets/SourceDataset_867')]",
-				"[concat(variables('workspaceId'), '/datasets/DestinationDataset_867')]"
+				"[concat(variables('workspaceId'), '/datasets/TalentListSharePointOnlineListResource3')]",
+				"[concat(variables('workspaceId'), '/datasets/TalentList')]",
+				"[concat(variables('workspaceId'), '/datasets/CohortFormSharePointOnlineListResource2')]",
+				"[concat(variables('workspaceId'), '/datasets/CohortFormParquet1')]",
+				"[concat(variables('workspaceId'), '/datasets/CohortTableListSharePointOnlineListResource2')]",
+				"[concat(variables('workspaceId'), '/datasets/CohortTableList')]",
+				"[concat(variables('workspaceId'), '/notebooks/NotebookTalentLyft')]",
+				"[concat(variables('workspaceId'), '/bigDataPools/Capstone')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Applications')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "capstone/output",
+						"fileSystem": "dlsg2markfilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "Id",
+						"type": "INT32"
+					},
+					{
+						"name": "ContentTypeID",
+						"type": "UTF8"
+					},
+					{
+						"name": "ContentType",
+						"type": "UTF8"
+					},
+					{
+						"name": "Title",
+						"type": "UTF8"
+					},
+					{
+						"name": "Modified",
+						"type": "INT96"
+					},
+					{
+						"name": "Created",
+						"type": "INT96"
+					},
+					{
+						"name": "CreatedById",
+						"type": "INT32"
+					},
+					{
+						"name": "ModifiedById",
+						"type": "INT32"
+					},
+					{
+						"name": "Owshiddenversion",
+						"type": "INT32"
+					},
+					{
+						"name": "Version",
+						"type": "UTF8"
+					},
+					{
+						"name": "Path",
+						"type": "UTF8"
+					},
+					{
+						"name": "ComplianceAssetId",
+						"type": "UTF8"
+					},
+					{
+						"name": "StartDate",
+						"type": "INT96"
+					},
+					{
+						"name": "EndDate",
+						"type": "INT96"
+					},
+					{
+						"name": "TraineeCount",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "StatusValue",
+						"type": "UTF8"
+					},
+					{
+						"name": "AccntManagerId",
+						"type": "INT32"
+					},
+					{
+						"name": "JobList",
+						"type": "UTF8"
+					},
+					{
+						"name": "InitialEndDate",
+						"type": "INT96"
+					},
+					{
+						"name": "CompanyValue",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ApplicationsParquet1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "capstone",
+						"fileSystem": "dlsg2markfilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "Id",
+						"type": "INT32"
+					},
+					{
+						"name": "ContentTypeID",
+						"type": "UTF8"
+					},
+					{
+						"name": "ContentType",
+						"type": "UTF8"
+					},
+					{
+						"name": "Title",
+						"type": "UTF8"
+					},
+					{
+						"name": "Modified",
+						"type": "INT96"
+					},
+					{
+						"name": "Created",
+						"type": "INT96"
+					},
+					{
+						"name": "CreatedById",
+						"type": "INT32"
+					},
+					{
+						"name": "ModifiedById",
+						"type": "INT32"
+					},
+					{
+						"name": "Owshiddenversion",
+						"type": "INT32"
+					},
+					{
+						"name": "Version",
+						"type": "UTF8"
+					},
+					{
+						"name": "Path",
+						"type": "UTF8"
+					},
+					{
+						"name": "ComplianceAssetId",
+						"type": "UTF8"
+					},
+					{
+						"name": "StartDate",
+						"type": "INT96"
+					},
+					{
+						"name": "EndDate",
+						"type": "INT96"
+					},
+					{
+						"name": "TraineeCount",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "StatusValue",
+						"type": "UTF8"
+					},
+					{
+						"name": "AccntManagerId",
+						"type": "INT32"
+					},
+					{
+						"name": "JobList",
+						"type": "UTF8"
+					},
+					{
+						"name": "InitialEndDate",
+						"type": "INT96"
+					},
+					{
+						"name": "CompanyValue",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/CohortFormParquet1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "capstone/output",
+						"fileSystem": "dlsg2markfilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "ApplicationId",
+						"type": "UTF8"
+					},
+					{
+						"name": "CandidateId",
+						"type": "UTF8"
+					},
+					{
+						"name": "Job",
+						"type": "UTF8"
+					},
+					{
+						"name": "JobDepartment",
+						"type": "UTF8"
+					},
+					{
+						"name": "JobLocation",
+						"type": "UTF8"
+					},
+					{
+						"name": "Stage",
+						"type": "UTF8"
+					},
+					{
+						"name": "AppliedOrSourcedDate",
+						"type": "UTF8"
+					},
+					{
+						"name": "Disqualified",
+						"type": "UTF8"
+					},
+					{
+						"name": "DisqualifiedAt",
+						"type": "UTF8"
+					},
+					{
+						"name": "DisqualifiedReason",
+						"type": "UTF8"
+					},
+					{
+						"name": "Source",
+						"type": "UTF8"
+					},
+					{
+						"name": "SourceSubType",
+						"type": "UTF8"
+					},
+					{
+						"name": "ResumeUrl",
+						"type": "UTF8"
+					},
+					{
+						"name": "Year",
+						"type": "INT32"
+					},
+					{
+						"name": "Week",
+						"type": "INT32"
+					},
+					{
+						"name": "TrackerType",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/CohortFormSharePointOnlineListResource2')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePointOnlineList1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "CohortForm"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/SharePointOnlineList1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/CohortTableList')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "capstone/output",
+						"fileSystem": "dlsg2markfilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "ApplicationId",
+						"type": "UTF8"
+					},
+					{
+						"name": "CandidateId",
+						"type": "UTF8"
+					},
+					{
+						"name": "Job",
+						"type": "UTF8"
+					},
+					{
+						"name": "JobDepartment",
+						"type": "UTF8"
+					},
+					{
+						"name": "JobLocation",
+						"type": "UTF8"
+					},
+					{
+						"name": "Stage",
+						"type": "UTF8"
+					},
+					{
+						"name": "AppliedOrSourcedDate",
+						"type": "UTF8"
+					},
+					{
+						"name": "Disqualified",
+						"type": "UTF8"
+					},
+					{
+						"name": "DisqualifiedAt",
+						"type": "UTF8"
+					},
+					{
+						"name": "DisqualifiedReason",
+						"type": "UTF8"
+					},
+					{
+						"name": "Source",
+						"type": "UTF8"
+					},
+					{
+						"name": "SourceSubType",
+						"type": "UTF8"
+					},
+					{
+						"name": "ResumeUrl",
+						"type": "UTF8"
+					},
+					{
+						"name": "Year",
+						"type": "INT32"
+					},
+					{
+						"name": "Week",
+						"type": "INT32"
+					},
+					{
+						"name": "TrackerType",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/CohortTableListSharePointOnlineListResource2')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePointOnlineList1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "CohortTableList"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/SharePointOnlineList1')]"
 			]
 		},
 		{
@@ -167,56 +705,6 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "Parent Data Stream.csv",
-						"folderPath": "parentdatastream",
-						"fileSystem": "dlsg2markfilesystem"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/DestinationDataset_867')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "parentdatastream",
-						"fileSystem": "dlsg2markfilesystem"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/DestinationDataset_flb')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
 						"folderPath": "parentdatastream",
 						"fileSystem": "dlsg2markfilesystem"
 					},
@@ -522,7 +1010,27 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/SourceDataset_867')]",
+			"name": "[concat(parameters('workspaceName'), '/SharePointOnlineListResource1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePointOnlineList1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "CohortForm"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/SharePointOnlineList1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/TalentList')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -531,139 +1039,131 @@
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "DelimitedText",
+				"type": "Parquet",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"folderPath": "parentdatastream",
+						"folderPath": "capstone/output",
 						"fileSystem": "dlsg2markfilesystem"
 					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					"compressionCodec": "snappy"
 				},
 				"schema": [
 					{
-						"name": "SOURCE",
-						"type": "String"
+						"name": "ApplicationId",
+						"type": "UTF8"
 					},
 					{
-						"name": "xMediaGroup",
-						"type": "String"
+						"name": "CandidateId",
+						"type": "UTF8"
 					},
 					{
-						"name": "MEDIATYPE",
-						"type": "String"
+						"name": "Job",
+						"type": "UTF8"
 					},
 					{
-						"name": "xMediaChannel",
-						"type": "String"
+						"name": "JobDepartment",
+						"type": "UTF8"
 					},
 					{
-						"name": "AgencyChannel_Name",
-						"type": "String"
+						"name": "JobLocation",
+						"type": "UTF8"
 					},
 					{
-						"name": "CampaignName",
-						"type": "String"
+						"name": "Stage",
+						"type": "UTF8"
 					},
 					{
-						"name": "Account",
-						"type": "String"
+						"name": "AppliedOrSourcedDate",
+						"type": "UTF8"
 					},
 					{
-						"name": "LOB",
-						"type": "String"
+						"name": "Disqualified",
+						"type": "UTF8"
 					},
 					{
-						"name": "BU",
-						"type": "String"
+						"name": "DisqualifiedAt",
+						"type": "UTF8"
 					},
 					{
-						"name": "PARENTCAMPAIGN_NAME",
-						"type": "String"
+						"name": "DisqualifiedReason",
+						"type": "UTF8"
 					},
 					{
-						"name": "SUBCAMPAIGNNAME",
-						"type": "String"
+						"name": "Source",
+						"type": "UTF8"
 					},
 					{
-						"name": "COUNTRYCODE",
-						"type": "String"
+						"name": "SourceSubType",
+						"type": "UTF8"
 					},
 					{
-						"name": "COUNTRYNAME",
-						"type": "String"
+						"name": "ResumeUrl",
+						"type": "UTF8"
 					},
 					{
-						"name": "REGION",
-						"type": "String"
+						"name": "Year",
+						"type": "INT32"
 					},
 					{
-						"name": "xCampaignQuarter",
-						"type": "String"
+						"name": "Week",
+						"type": "INT32"
 					},
 					{
-						"name": "SearchKeywordType",
-						"type": "String"
-					},
-					{
-						"name": "SearchMatchType",
-						"type": "String"
-					},
-					{
-						"name": "EmeaRegion",
-						"type": "String"
-					},
-					{
-						"name": "EmeaSubRegion",
-						"type": "String"
-					},
-					{
-						"name": "xAccountCurrency",
-						"type": "String"
-					},
-					{
-						"name": "Compliant",
-						"type": "String"
-					},
-					{
-						"name": "AgencyOwnerMarket",
-						"type": "String"
-					},
-					{
-						"name": "CampaignScale",
-						"type": "String"
-					},
-					{
-						"name": "CampaignObjective",
-						"type": "String"
-					},
-					{
-						"name": "MediaBriefName",
-						"type": "String"
-					},
-					{
-						"name": "Impression ",
-						"type": "String"
-					},
-					{
-						"name": "Click",
-						"type": "String"
-					},
-					{
-						"name": "View",
-						"type": "String"
-					},
-					{
-						"name": "Swipe_rate",
-						"type": "String"
+						"name": "TrackerType",
+						"type": "UTF8"
 					}
 				]
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/TalentListSharePointOnlineListResource3')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePointOnlineList1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "TalentList"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/SharePointOnlineList1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ApplicationsHttpServer1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"FileName": {
+						"type": "string",
+						"defaultValue": "@dataset().RelativeURL"
+					}
+				},
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('ApplicationsHttpServer1_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
 		},
 		{
@@ -675,6 +1175,27 @@
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
 					"connectionString": "[parameters('AzureSqlDatabase1_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/HttpServer1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('HttpServer1_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
 				},
 				"connectVia": {
 					"referenceName": "AutoResolveIntegrationRuntime",
@@ -698,6 +1219,31 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SharePointOnlineList1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "SharePointOnlineList",
+				"typeProperties": {
+					"siteUrl": "https://upskilltoday.sharepoint.com/sites/GecoTeamAsia/",
+					"tenantId": "07cc872f-b6e3-487f-834e-25eb4f34ddad",
+					"servicePrincipalId": "[parameters('SharePointOnlineList1_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalKey": {
+						"type": "SecureString",
+						"value": "[parameters('SharePointOnlineList1_servicePrincipalKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/marksynapseworkspace-WorkspaceDefaultSqlServer')]",
@@ -743,6 +1289,71 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/testAzureSqlDatabase2')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('testAzureSqlDatabase2_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SharepointOnlineListTrigger 1')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "TalentLyftPipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Week",
+						"interval": 1,
+						"startTime": "2022-03-19T14:34:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								2
+							],
+							"weekDays": [
+								"Sunday",
+								"Monday",
+								"Tuesday",
+								"Wednesday",
+								"Thursday",
+								"Friday"
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/TalentLyftPipeline')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
 			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
 			"apiVersion": "2019-06-01-preview",
@@ -760,44 +1371,6 @@
 				}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/Dataflow')]",
-			"type": "Microsoft.Synapse/workspaces/dataflows",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "SourceDataset_867",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DigitalMarketingETL",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "DerivedColumn1"
-						}
-					],
-					"script": "source(output(\n\t\tSOURCE as string,\n\t\txMediaGroup as string,\n\t\tMEDIATYPE as string,\n\t\txMediaChannel as string,\n\t\tAgencyChannel_Name as string,\n\t\tCampaignName as string,\n\t\tAccount as string,\n\t\tLOB as string,\n\t\tBU as string,\n\t\tPARENTCAMPAIGN_NAME as string,\n\t\tSUBCAMPAIGNNAME as string,\n\t\tCOUNTRYCODE as string,\n\t\tCOUNTRYNAME as string,\n\t\tREGION as string,\n\t\txCampaignQuarter as string,\n\t\tSearchKeywordType as string,\n\t\tSearchMatchType as string,\n\t\tEmeaRegion as string,\n\t\tEmeaSubRegion as string,\n\t\txAccountCurrency as string,\n\t\tCompliant as string,\n\t\tAgencyOwnerMarket as string,\n\t\tCampaignScale as string,\n\t\tCampaignObjective as string,\n\t\tMediaBriefName as string,\n\t\t{Impression } as string,\n\t\tClick as string,\n\t\tView as string,\n\t\tSwipe_rate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tpartitionBy('hash', 1)) ~> source1\nsource1 derive(Compliant = iif(Compliant == \"Compliant\", \"Compliance\", \"Non-Compliance\"),\n\t\tEmeaRegion = iif(isNull(EmeaRegion), \"Unclassified\", toString(EmeaRegion)),\n\t\tSearchMatchType = iif(isNull(SearchMatchType), \"Unclassified\", toString(SearchMatchType)),\n\t\tEmeaSubRegion = iif(isNull(EmeaSubRegion), \"Unclassified\", toString(EmeaSubRegion)),\n\t\tCampaignScale = iif(isNull(CampaignScale), \"Unclassified\", toString(CampaignScale)),\n\t\tCampaignObjective = iif(isNull(CampaignObjective), \"Unclassified\", toString(CampaignObjective)),\n\t\tSearchKeywordType = iif(isNull(SearchKeywordType), \"Unclassified\", toString(SearchKeywordType)),\n\t\txCampaignQuarter = iif(isNull(xCampaignQuarter), \"Unclassified\", toString(xCampaignQuarter)),\n\t\tYear = iif(isNull(at(regexSplit(xCampaignQuarter, '-'),2)),\"2020\" , at(regexSplit(xCampaignQuarter, '-'),1)),\n\t\tQuarter = iif(isNull(at(regexSplit(xCampaignQuarter, '-'),2)),at(regexSplit(xCampaignQuarter, '-'),1) , at(regexSplit(xCampaignQuarter, '-'),2)),\n\tpartitionBy('hash', 1)) ~> DerivedColumn1\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tSOURCE as string,\n\t\txMediaGroup as string,\n\t\tMEDIATYPE as string,\n\t\txMediaChannel as string,\n\t\tAgencyChannel_Name as string,\n\t\tCampaignName as string,\n\t\tAccount as string,\n\t\tLOB as string,\n\t\tBU as string,\n\t\tPARENTCAMPAIGN_NAME as string,\n\t\tSUBCAMPAIGNNAME as string,\n\t\tCOUNTRYCODE as string,\n\t\tCOUNTRYNAME as string,\n\t\tREGION as string,\n\t\txCampaignQuarter as string,\n\t\tSearchKeywordType as string,\n\t\tSearchMatchType as string,\n\t\tEmeaRegion as string,\n\t\tEmeaSubRegion as string,\n\t\txAccountCurrency as string,\n\t\tCompliant as string,\n\t\tAgencyOwnerMarket as string,\n\t\tCampaignScale as string,\n\t\tCampaignObjective as string,\n\t\tMediaBriefName as string,\n\t\tImpression as string,\n\t\tClick as string,\n\t\tView as string,\n\t\tSwipe_rate as string\n\t),\n\tformat: 'parquet',\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tmapColumn(\n\t\tSOURCE,\n\t\txMediaGroup,\n\t\tMEDIATYPE,\n\t\txMediaChannel,\n\t\tAgencyChannel_Name,\n\t\tCampaignName,\n\t\tAccount,\n\t\tLOB,\n\t\tBU,\n\t\tPARENTCAMPAIGN_NAME,\n\t\tSUBCAMPAIGNNAME,\n\t\tCOUNTRYCODE,\n\t\tCOUNTRYNAME,\n\t\tREGION,\n\t\txCampaignQuarter,\n\t\tSearchKeywordType,\n\t\tSearchMatchType,\n\t\tEmeaRegion,\n\t\tEmeaSubRegion,\n\t\txAccountCurrency,\n\t\tCompliant,\n\t\tAgencyOwnerMarket,\n\t\tCampaignScale,\n\t\tCampaignObjective,\n\t\tMediaBriefName,\n\t\tImpression = {Impression },\n\t\tClick,\n\t\tView,\n\t\tSwipe_rate\n\t),\n\tpartitionBy('hash', 1)) ~> sink1"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/datasets/SourceDataset_867')]",
-				"[concat(variables('workspaceId'), '/datasets/DigitalMarketingETL')]"
-			]
 		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
@@ -888,6 +1461,2034 @@
 				"type": "SqlQuery"
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 8')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE tapplications (\n\t[ApplicationId] nvarchar(4000),\n\t[CandidateId] nvarchar(4000),\n\t[Job] nvarchar(4000),\n\t[JobDepartment] nvarchar(4000),\n\t[JobLocation] nvarchar(4000),\n\t[Stage] nvarchar(4000),\n\t[AppliedOrSourcedDate] nvarchar(4000),\n\t[Disqualified] nvarchar(4000),\n\t[DisqualifiedAt] nvarchar(4000),\n\t[DisqualifiedReason] nvarchar(4000),\n\t[Source] nvarchar(4000),\n\t[SourceSubType] nvarchar(4000),\n\t[ResumeUrl] nvarchar(4000),\n\t[Year] int,\n\t[Week] int,\n\t[TrackerType] nvarchar(4000)\n\t)\n\tWITH (\n\tLOCATION = 'capstone/output/tblapplications/part-00000-6e05a74f-13d0-4f3e-a9ff-30ceccd4bb1e-c000.snappy.parquet',\n\tDATA_SOURCE = [dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\n\nSELECT TOP 100 * FROM dbo.tapplications\nGO",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "talentlyft",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 9')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT COUNT ([ApplicationId])\n\n FROM [capstone].[dbo].[applications]",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": -1
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/create sql serverlesstblapplications from applications parquet')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE tblapplications (\n\t[Job] nvarchar(4000),\n\t[ApplicationId] nvarchar(4000),\n\t[CandidateId] nvarchar(4000),\n\t[JobDepartment] nvarchar(4000),\n\t[JobLocation] nvarchar(4000),\n\t[Stage] nvarchar(4000),\n\t[AppliedOrSourcedDate] nvarchar(4000),\n\t[Disqualified] nvarchar(4000),\n\t[DisqualifiedAt] nvarchar(4000),\n\t[DisqualifiedReason] nvarchar(4000),\n\t[Source] nvarchar(4000),\n\t[SourceSubType] nvarchar(4000),\n\t[ResumeUrl] nvarchar(4000),\n\t[Year] int,\n\t[Week] int,\n\t[CohortName] nvarchar(4000),\n\t[TrackerType] nvarchar(4000),\n\t[Reach] nvarchar(4000),\n\t[Test] nvarchar(4000),\n\t[Interview] nvarchar(4000),\n\t[Offer] nvarchar(4000),\n\t[Conversion] nvarchar(4000)\n\t)\n\tWITH (\n\tLOCATION = 'capstone/output/tblapplications/part-00000-b6e425df-1e36-487f-af95-9c38db953d3c-c000.snappy.parquet',\n\tDATA_SOURCE = [dlsg2markfilesystem_synapsedlakestgen2mark_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\n\nSELECT TOP 100 * FROM dbo.tblapplications\nGO",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "talentlyft",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/create view applications at talentlyft')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "create view applications in talentlyft database",
+				"content": {
+					"query": "Drop VIEW dbo.testapplications\n\nCREATE VIEW dbo.applications\n\tAS SELECT * FROM dbo.tapplications",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "talentlyft",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 1')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "Capstone",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "2cc1a4f6-10ad-4fa9-94c5-114d1918fe61"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/6a4ac82e-930e-4e4d-b385-3cc2c61db5c6/resourceGroups/digitalmarketingmark/providers/Microsoft.Synapse/workspaces/marksynapseworkspace/bigDataPools/Capstone",
+						"name": "Capstone",
+						"type": "Spark",
+						"endpoint": "https://marksynapseworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Capstone",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/NYCTripSmall.parquet', format='parquet')\r\n",
+							"display(df)"
+						],
+						"outputs": [],
+						"execution_count": 44
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							}
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": 45
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"CREATE DATABASE nyctaxi"
+						],
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df.write.saveAsTable(\"nyctaxi.trip\")"
+						],
+						"outputs": [],
+						"execution_count": 46
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.sql(\"SELECT * FROM nyctaxi.trip\")\r\n",
+							"display(df)"
+						],
+						"outputs": [],
+						"execution_count": 47
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.sql(\"Select MedallionID, HackneyLicenseID, Count(*) as Trips from nyctaxi.trip Where DateID Between '20131217' AND '201312231' Group By MedallionID, HackneyLicenseID Having Count (*) > 100\")\r\n",
+							"display(df)"
+						],
+						"outputs": [],
+						"execution_count": 49
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.sql(\"\"\"\r\n",
+							"Select MedallionID, \r\n",
+							"Count(MedallionID) as CabTrip \r\n",
+							"From nyctaxi.trip \r\n",
+							"Where DateID Between '20131217' AND '20131231'\r\n",
+							"Group By MedallionID \r\n",
+							"Order by CabTrip Desc \r\n",
+							"\"\"\")\r\n",
+							"display(df)"
+						],
+						"outputs": [],
+						"execution_count": 55
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df.write.saveAsTable(\"nyctaxi.cabtripstats\")"
+						],
+						"outputs": [],
+						"execution_count": 35
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.sql(\"\"\"\r\n",
+							"    Select HackneyLicenseID,\r\n",
+							"    Count(HackneyLicenseID) as DriverTrip\r\n",
+							"From nyctaxi.trip\r\n",
+							"Where DateID Between '20131217' AND '20131231'\r\n",
+							"Group by HackneyLicenseID\r\n",
+							"Order by DriverTrip Desc\r\n",
+							"\"\"\")\r\n",
+							"display(df)"
+						],
+						"outputs": [],
+						"execution_count": 53
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df.write.saveAsTable(\"nyctaxi.drivertripstats\")"
+						],
+						"outputs": [],
+						"execution_count": 31
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df = df.repartition(1)\r\n",
+							"df.write.mode(\"overwrite\").parquet(\"/nyctaxi_single/CabTripStats_ParquetFormat\")"
+						],
+						"outputs": [],
+						"execution_count": 56
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df = df.repartition(1)\r\n",
+							"df.write.mode(\"overwrite\").parquet(\"/nyctaxi_single/DriverTripStats_ParquetFormat\")"
+						],
+						"outputs": [],
+						"execution_count": 54
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df = df.repartition(1)\r\n",
+							"df.write.mode(\"overwrite\").saveAsTable(\"applications\")"
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 2')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "Capstone",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "bb246ef2-02ec-4751-ae9f-f78af35689e9"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/6a4ac82e-930e-4e4d-b385-3cc2c61db5c6/resourceGroups/digitalmarketingmark/providers/Microsoft.Synapse/workspaces/marksynapseworkspace/bigDataPools/Capstone",
+						"name": "Capstone",
+						"type": "Spark",
+						"endpoint": "https://marksynapseworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Capstone",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 5
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/applications.csv', format='csv'\r\n",
+							"## If header exists uncomment line below\r\n",
+							", header=True\r\n",
+							")\r\n",
+							"##display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 59
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
+							"dg = dg.drop('Title')\r\n",
+							"## If header exists uncomment line below\r\n",
+							"##, header=True\r\n",
+							"##)\r\n",
+							"##display(dg.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 60
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							}
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"dh = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortForm.parquet', format='parquet')\r\n",
+							"## If header exists uncomment line below\r\n",
+							"##, header=True\r\n",
+							"##)\r\n",
+							"##display(dg.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 61
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+							"## If header exists uncomment line below\r\n",
+							"##, header=True\r\n",
+							"##)\r\n",
+							"##display(dj.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 62
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"df = df.withColumn(\"Job\",lower(translate(col(\"Job\"),\"./–!-() \",\"\")))\r\n",
+							"\r\n",
+							"##display(df.limit(5))\r\n",
+							"\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 63
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"dg = dg.withColumn(\"Job\",lower(translate(col(\"JobDescription\"),\"./–!-() \",\"\")) )\r\n",
+							"\r\n",
+							"\r\n",
+							"##display(dg.limit(5))\r\n",
+							"\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 64
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
+							".withColumn(\"Week\", weekofyear(to_date(df.AppliedOrSourcedDate, \"M/d/y\")))\r\n",
+							"\r\n",
+							"##display(df.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 65
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#select two columns in TalentList\r\n",
+							"dj = dj.select(\"Id\", \"Title\")\r\n",
+							"dj = dj.withColumnRenamed(\"Title\", \"AcctMngr\")\r\n",
+							"#join tables CohortTableList and TalentList\r\n",
+							"dq = dg.join(dj, dg.AcctMngrId==dj.Id,\"left\").drop(dj.Id)\r\n",
+							"display(dq)"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"#select two columns in TalentList\r\n",
+							"dj = dj.select(\"Id\", \"Title\")\r\n",
+							"dj = dj.withColumnRenamed(\"Title\", \"AcctMngr\")\r\n",
+							"#join tables CohortTableList and TalentList\r\n",
+							"dq = dg.join(dj, dg.AcctMngrId==dj.Id,\"left\").drop(dj.Id)\r\n",
+							"#select two columns in CohortForm\r\n",
+							"dh = dh.select(\"Id\", \"Title\")\r\n",
+							"dh = dh.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
+							"#join tables CohortTableList and CohortForm\r\n",
+							"da = dq.join(dh, dq.CohortNameId==dh.Id,\"left\")\r\n",
+							"da = da.distinct()\r\n",
+							"#join tables Applications and CohortTableList\r\n",
+							"ds = df.join(da,df.Job==da.Job,\"left\")\r\n",
+							"##ds = ds.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
+							"display(ds.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 66
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": true
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+							"dj = dj.select(\"Title\")\r\n",
+							"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
+							"ds = ds.join(dj,ds.SourceSubType==dj.TA,\"left\")\r\n",
+							"\r\n",
+							"ds = ds.withColumn(\"FinalTA\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 67
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+							"dj = dj.select(\"Title\",\"PictureURL\")\r\n",
+							"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
+							"ds = ds.join(dj,ds.FinalTA==dj.TA,\"left\").drop(ds.TA)\r\n",
+							"ds = ds.withColumnRenamed(\"PictureURL\",\"FinalTAPicUrl\")\r\n",
+							"ds = ds.drop(\"ContentTypeID\", \"ContentType\",\"Modified\",\"Created\", \"CreatedById\", \"ModifiedById\", \\\r\n",
+							"\"Owshiddenversion\", \"Version\", \"Path\", \"ComplianceAssetId\")\r\n",
+							"#ds = ds.withColumn(\"FinalTAPicUrl\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 68
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"display(ds.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 69
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"ds = df.join(dg,df.Job==dg.Job,\"inner\")\r\n",
+							"display(ds.limit(5))"
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"##outer join applications table and Cohort Form for Job column\r\n",
+							"ds=df.join(dg,on=\"Job\",how=\"outer\")\r\n",
+							"display(ds.limit(5))"
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"##%%pyspark\r\n",
+							"##import pyspark.sql.functions as talent\r\n",
+							"\r\n",
+							"##ds = ds.withColumn(\"TrackerType\",  \r\n",
+							"##talent.when((talent.col(\"Stage\") == \"Sourced\") | (talent.col(\"Stage\") == \"Applied\" ) , \"Reach\")\r\n",
+							"##.when((talent.col(\"Stage\") == \"Screen\") | (talent.col(\"Stage\") == \"Assessment\"  ), \"Test\") \r\n",
+							"##.when((talent.col(\"Stage\") == \"Interview\"  ), \"Interview\") \r\n",
+							"##.when((talent.col(\"Stage\") == \"Shortlisted\") | (talent.col(\"Stage\") == \"Offer\"  ), \"Offer\") \r\n",
+							"##.when((talent.col(\"Stage\") == \"Hired\"), \"Conversion\") \r\n",
+							"##.otherwise(\"\"))\r\n",
+							"\r\n",
+							"##display(ds.limit(5))\r\n",
+							"\r\n",
+							"##df.write.save(\"capstone.applications\")\r\n",
+							""
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"ds = ds.withColumn(\"TrackerType\", when((ds.Stage == \"Sourced\") | (ds.Stage == \"Applied\") , \"Reach\")\r\n",
+							".when((ds.Stage == \"Screen\") | (ds.Stage == \"Assessment\"), \"Test\") \r\n",
+							".when((ds.Stage == \"Interview\"), \"Interview\") \r\n",
+							".when((ds.Stage == \"Shortlisted\") | (ds.Stage == \"Offer\"), \"Offer\") \r\n",
+							".when((ds.Stage == \"Hired\"), \"Conversion\") \r\n",
+							".otherwise(\"\"))\r\n",
+							"\r\n",
+							"display(ds.limit(5))\r\n",
+							"\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 70
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"ds = ds.withColumn(\"Reach\", when((ds.TrackerType == \"Reach\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+							".withColumn(\"Test\", when((ds.TrackerType == \"Test\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+							".withColumn(\"Interview\", when((ds.TrackerType == \"Interview\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+							".withColumn(\"Offer\", when((ds.TrackerType == \"Offer\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+							".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+							"\r\n",
+							"display(ds.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 71
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"ds = ds.withColumn(\"Reach\", when((ds.TrackerType == \"Reach\") & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
+							".withColumn(\"Test\", when((ds.TrackerType == \"Test\") & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
+							".withColumn(\"Interview\", when((ds.TrackerType == \"Interview\") & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
+							".withColumn(\"Offer\", when((ds.TrackerType == \"Offer\") & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
+							".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.Disqualified == \"No\") , \"1\").otherwise(\"0\")) \\\r\n",
+							"\r\n",
+							"display(ds.limit(5))"
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from pyspark.sql.types import *\r\n",
+							"ds = ds.withColumn(\"Conversion\",ds.Conversion.cast(FloatType()))\r\n",
+							"ds.groupBy(\"Conversion\").sum(\"Conversion\").show(truncate=False)"
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"display(ds.limit(5))"
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"%%sql\r\n",
+							"DROP TABLE capstone.applications"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"ds = ds.drop(\"id\",\"job\" )\r\n",
+							"ds = ds.distinct()\r\n",
+							"\r\n",
+							"ds = ds.repartition(1)\r\n",
+							"ds.write.mode(\"overwrite\") \\\r\n",
+							".saveAsTable(\"capstone.applications\")"
+						],
+						"outputs": [],
+						"execution_count": 72
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
+							"dg.write.mode(\"overwrite\") \\\r\n",
+							".saveAsTable(\"capstone.CohortTableList\")"
+						],
+						"outputs": [],
+						"execution_count": 73
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"dh = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortForm.parquet', format='parquet')\r\n",
+							"dh.write.mode(\"overwrite\") \\\r\n",
+							".saveAsTable(\"capstone.CohortForm\")"
+						],
+						"outputs": [],
+						"execution_count": 74
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+							"dj.write.mode(\"overwrite\") \\\r\n",
+							".saveAsTable(\"capstone.TalentList\")"
+						],
+						"outputs": [],
+						"execution_count": 75
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"##ds = ds.repartition(1)\r\n",
+							"##ds.write.mode(\"overwrite\").parquet(\"/capstone/output/tblapplications\")"
+						],
+						"outputs": [],
+						"execution_count": 30
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"##%%sql\r\n",
+							"##DROP TABLE capstone.applications"
+						],
+						"outputs": [],
+						"execution_count": 33
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"##Drop  table in the default database\r\n",
+							"##%%sql\r\n",
+							"##DROP TABLE applications"
+						],
+						"outputs": [],
+						"execution_count": 32
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 2_Copy1')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "Capstone",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "48056e37-7af5-4256-82fc-13a3132f24d0"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/6a4ac82e-930e-4e4d-b385-3cc2c61db5c6/resourceGroups/digitalmarketingmark/providers/Microsoft.Synapse/workspaces/marksynapseworkspace/bigDataPools/Capstone",
+						"name": "Capstone",
+						"type": "Spark",
+						"endpoint": "https://marksynapseworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Capstone",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 5
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/applications.csv', format='csv'\r\n",
+							"## If header exists uncomment line below\r\n",
+							", header=True\r\n",
+							")\r\n",
+							"##display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"df = df.withColumn(\"Job\",translate(col(\"Job\"),\"./–!-() \",\"\")) \r\n",
+							"##display(df.limit(5))\r\n",
+							"\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
+							".withColumn(\"Week\", weekofyear(to_date(df.AppliedOrSourcedDate, \"M/d/y\")))\r\n",
+							"\r\n",
+							"display(df.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"df = df.withColumn(\"TrackerType\", when((df.Stage == \"Sourced\") | (df.Stage == \"Applied\") , \"Reach\")\r\n",
+							".when((df.Stage == \"Screen\") | (df.Stage == \"Assessment\"), \"Test\") \r\n",
+							".when((df.Stage == \"Interview\"), \"Interview\") \r\n",
+							".when((df.Stage == \"Shortlisted\") | (df.Stage == \"Offer\"), \"Offer\") \r\n",
+							".when((df.Stage == \"Hired\"), \"Conversion\") \r\n",
+							".otherwise(\"\"))\r\n",
+							"\r\n",
+							"display(df.limit(5))\r\n",
+							"\r\n",
+							"\r\n",
+							"\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df = df.repartition(1)\r\n",
+							"df.write.mode(\"overwrite\").parquet(\"/capstone/output/tblapplications\")"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"##ds = ds.repartition(1)\r\n",
+							"df.write.mode(\"overwrite\") \\\r\n",
+							".saveAsTable(\"capstone.applications\")"
+						],
+						"outputs": [],
+						"execution_count": 6
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"##%%sql\r\n",
+							"##DROP TABLE capstone.applications"
+						],
+						"outputs": [],
+						"execution_count": 16
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"##Drop  table in the default database\r\n",
+							"##%%sql\r\n",
+							"##DROP TABLE applications"
+						],
+						"outputs": [],
+						"execution_count": 17
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 3')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "Capstone",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "8b588ce3-e821-4c20-ab1b-b512e5bbd173"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/6a4ac82e-930e-4e4d-b385-3cc2c61db5c6/resourceGroups/digitalmarketingmark/providers/Microsoft.Synapse/workspaces/marksynapseworkspace/bigDataPools/Capstone",
+						"name": "Capstone",
+						"type": "Spark",
+						"endpoint": "https://marksynapseworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Capstone",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"%%pyspark\n",
+							"spark.sql(\"DROP DATABASE IF EXISTS default CASCADE\")"
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"Drop TABLE talenlyfttracking"
+						],
+						"outputs": [],
+						"execution_count": 2
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/NotebookTalentLyft')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "Capstone",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "4c607c37-0e0e-455a-9ffa-ab57610927cc"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/6a4ac82e-930e-4e4d-b385-3cc2c61db5c6/resourceGroups/digitalmarketingmark/providers/Microsoft.Synapse/workspaces/marksynapseworkspace/bigDataPools/Capstone",
+						"name": "Capstone",
+						"type": "Spark",
+						"endpoint": "https://marksynapseworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Capstone",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 5
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"#loading applications.csv to dataframe\r\n",
+							"df = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/applications.csv', format='csv'\r\n",
+							"## If header exists uncomment line below\r\n",
+							", header=True\r\n",
+							")\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"#loading CohortTableList.parquet to dataframe\r\n",
+							"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
+							"dg = dg.drop('Title')\r\n",
+							"\r\n",
+							"#loading CohortForm.parquet to dataframe\r\n",
+							"dh = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortForm.parquet', format='parquet')\r\n",
+							"\r\n",
+							"#loading Talentlist.parquet to dataframe\r\n",
+							"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+							"\r\n",
+							"\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"# removing delimiters, change the case to lower, and directly apply to column Job in dataframe \r\n",
+							"df = df.withColumn(\"Job\",lower(translate(col(\"Job\"),\"./–!-() \",\"\")))\r\n",
+							"\r\n",
+							"# removing delimiters, change the case to lower, rename JobDescription to Job, and directly apply now \r\n",
+							"dg = dg.withColumn(\"Job\",lower(translate(col(\"JobDescription\"),\"./–!-() \",\"\")) )\r\n",
+							"\r\n",
+							"# extract Year and Week in AppliedOrSourcedDate from applications dataframe\r\n",
+							"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
+							".withColumn(\"Week\", weekofyear(to_date(df.AppliedOrSourcedDate, \"M/d/y\")))\r\n",
+							"\r\n",
+							"#<-- join tables to create a flat file applications dataframe-->\r\n",
+							"\r\n",
+							"#select two columns in TalentList\r\n",
+							"dj = dj.select(\"Id\", \"Title\")\r\n",
+							"dj = dj.withColumnRenamed(\"Title\", \"AcctMngr\")\r\n",
+							"#join tables CohortTableList and TalentList\r\n",
+							"dq = dg.join(dj, dg.AcctMngrId==dj.Id,\"left\").drop(dj.Id)\r\n",
+							"#select two columns in CohortForm\r\n",
+							"dh = dh.select(\"Id\", \"Title\")\r\n",
+							"dh = dh.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
+							"#join tables CohortTableList and CohortForm\r\n",
+							"da = dq.join(dh, dq.CohortNameId==dh.Id,\"left\")\r\n",
+							"da = da.distinct()\r\n",
+							"#join tables Applications and CohortTableList\r\n",
+							"ds = df.join(da,df.Job==da.Job,\"left\")\r\n",
+							"##ds = ds.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
+							"display(ds.limit(5))\r\n",
+							"\r\n",
+							"# re-initiate TalentList to dataframe\r\n",
+							"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+							"dj = dj.select(\"Title\")\r\n",
+							"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
+							"\r\n",
+							"#join tables Applications and TalentList\r\n",
+							"ds = ds.join(dj,ds.SourceSubType==dj.TA,\"left\")\r\n",
+							"\r\n",
+							"#choose between fields to impose if sourcesubtype is equal to TA field in TalentList\r\n",
+							"ds = ds.withColumn(\"FinalTA\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
+							"\r\n",
+							"\r\n",
+							"#re-intitiate an instance of TalentList to dataframe\r\n",
+							"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+							"dj = dj.select(\"Title\",\"PictureURL\")\r\n",
+							"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
+							"\r\n",
+							"#join Applications and TalentList dataframes\r\n",
+							"ds = ds.join(dj,ds.FinalTA==dj.TA,\"left\").drop(ds.TA)\r\n",
+							"ds = ds.withColumnRenamed(\"PictureURL\",\"FinalTAPicUrl\")\r\n",
+							"#<-----\r\n",
+							"#drop unwanted fields that occured during the join\r\n",
+							"ds = ds.drop(\"ContentTypeID\", \"ContentType\",\"Modified\",\"Created\", \"CreatedById\", \"ModifiedById\", \\\r\n",
+							"\"Owshiddenversion\", \"Version\", \"Path\", \"ComplianceAssetId\")\r\n",
+							"#<-- end of join tables to create a flat file applications dataframe-->\r\n",
+							"\r\n",
+							"#define HTD terms from Stage column in Applications dataframe\r\n",
+							"ds = ds.withColumn(\"TrackerType\", when((ds.Stage == \"Sourced\") | (ds.Stage == \"Applied\") , \"Reach\")\r\n",
+							".when((ds.Stage == \"Screen\") | (ds.Stage == \"Assessment\"), \"Test\") \r\n",
+							".when((ds.Stage == \"Interview\"), \"Interview\") \r\n",
+							".when((ds.Stage == \"Shortlisted\") | (ds.Stage == \"Offer\"), \"Offer\") \r\n",
+							".when((ds.Stage == \"Hired\"), \"Conversion\") \r\n",
+							".otherwise(\"\"))\r\n",
+							"\r\n",
+							"#create HTD (Reach, Test, Interview, Offer, Conversion) columns and assign values 1 on parameters TrackerType \r\n",
+							"# and CohortName\r\n",
+							"ds = ds.withColumn(\"Reach\", when((ds.TrackerType == \"Reach\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+							".withColumn(\"Test\", when((ds.TrackerType == \"Test\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+							".withColumn(\"Interview\", when((ds.TrackerType == \"Interview\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+							".withColumn(\"Offer\", when((ds.TrackerType == \"Offer\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+							".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
+							"\r\n",
+							"#drop columns\r\n",
+							"ds = ds.drop(\"id\",\"job\" )\r\n",
+							"ds = ds.distinct()\r\n",
+							"\r\n",
+							"#save Applications flat file dataframe as a table in capstone lake database\r\n",
+							"ds = ds.repartition(1)\r\n",
+							"ds.write.mode(\"overwrite\") \\\r\n",
+							".saveAsTable(\"capstone.applications\")\r\n",
+							"\r\n",
+							"#re-initiate CohortTableList dataframe and save as a table in capstone lake database\r\n",
+							"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
+							"dg.write.mode(\"overwrite\") \\\r\n",
+							".saveAsTable(\"capstone.CohortTableList\")\r\n",
+							"\r\n",
+							"#re-initiate CohortForm dataframe and save as a table in capstone lake database\r\n",
+							"dh = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortForm.parquet', format='parquet')\r\n",
+							"dh.write.mode(\"overwrite\") \\\r\n",
+							".saveAsTable(\"capstone.CohortForm\")\r\n",
+							"\r\n",
+							"#re-initiate TalentList dataframe and save as a table in capstone lake database\r\n",
+							"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+							"dj.write.mode(\"overwrite\") \\\r\n",
+							".saveAsTable(\"capstone.TalentList\")"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"##ds = ds.repartition(1)\r\n",
+							"##ds.write.mode(\"overwrite\").parquet(\"/capstone/output/tblapplications\")"
+						],
+						"outputs": [],
+						"execution_count": 30
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"##%%sql\r\n",
+							"##DROP TABLE capstone.applications"
+						],
+						"outputs": [],
+						"execution_count": 33
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"##Drop  table in the default database\r\n",
+							"##%%sql\r\n",
+							"##DROP TABLE applications"
+						],
+						"outputs": [],
+						"execution_count": 32
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/RomanNotebook')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "Capstone",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "c620e8f2-3efe-445d-9f24-58d6d1eea88f"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/6a4ac82e-930e-4e4d-b385-3cc2c61db5c6/resourceGroups/digitalmarketingmark/providers/Microsoft.Synapse/workspaces/marksynapseworkspace/bigDataPools/Capstone",
+						"name": "Capstone",
+						"type": "Spark",
+						"endpoint": "https://marksynapseworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Capstone",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/applications.csv', format='csv'\r\n",
+							"## If header exists uncomment line below\r\n",
+							", header=True\r\n",
+							")\r\n",
+							"display(df.limit(10))\r\n",
+							"df.count()"
+						],
+						"outputs": [],
+						"execution_count": 28
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"#loading CohortTableList.parquet to dataframe\r\n",
+							"ctl_tbl = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
+							"##dg = dg.drop('Title')\r\n",
+							"\r\n",
+							"display(ctl_tbl.limit(10))\r\n",
+							"ctl_tbl.count()"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"df = df.withColumn(\"Job\",lower(translate(col(\"Job\"),\"./–!-() \",\"\")))\r\n",
+							"ctl_tbl = ctl_tbl.withColumn(\"JobDescription\",lower(translate(col(\"JobDescription\"),\"./–!-() \",\"\")))\r\n",
+							"display(df.limit(5))\r\n",
+							"display(ctl_tbl.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 49
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"from pyspark.sql.types import *\r\n",
+							"\r\n",
+							"ctl_tbl = ctl_tbl.select(\"AcctMngrID\", \"JobDescription\")\r\n",
+							"join_dfctl=df.join(ctl_tbl,df.Job == ctl_tbl.JobDescription,\"left\").drop_duplicates()\r\n",
+							"display(jn_app_ctl.limit(20))\r\n",
+							"join_dfctl.count()\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 55
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"join_dfctl= join_dfctl.withColumn(\"Year\", year(to_date(join_dfctl.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
+							"       .withColumn(\"Week\", weekofyear(to_date(join_dfctl.AppliedOrSourcedDate, \"M/d/y\"))) \\\r\n",
+							".withColumn(\"TrackerType\", when((join_dfctl.Stage == \"Sourced\") | (join_dfctl.Stage == \"Applied\") , \"Reach\")\r\n",
+							".when((join_dfctl.Stage == \"Screen\") | (join_dfctl.Stage == \"Assessment\"), \"Test\") \r\n",
+							".when((join_dfctl.Stage == \"Interview\"), \"Interview\") \\\r\n",
+							".when((join_dfctl.Stage == \"Shortlisted\") | (join_dfctl.Stage == \"Offer\"), \"Offer\") \r\n",
+							".when((join_dfctl.Stage == \"Hired\"), \"Conversion\") \r\n",
+							".otherwise(\"\"))\r\n",
+							"display(join_dfctl.limit(5))\r\n",
+							"join_dfctl.count()\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 56
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"from pyspark.sql.types import *\r\n",
+							"\r\n",
+							"TrackTbl=join_dfctl.select(\"TrackerType\")\r\n",
+							"TrackTbl=TrackTbl.groupBy(\"TrackerType\").agg(count(\"TrackerType\")).show()\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 57
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Capstone')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 10
+				},
+				"autoScale": {
+					"enabled": true,
+					"maxNodeCount": 3,
+					"minNodeCount": 3
+				},
+				"nodeCount": 10,
+				"nodeSize": "Small",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.1",
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "southeastasia"
 		}
 	]
 }

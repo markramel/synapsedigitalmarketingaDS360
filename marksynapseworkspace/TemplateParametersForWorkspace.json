@@ -8,8 +8,23 @@
 		"AzureSqlDatabase1_connectionString": {
 			"value": ""
 		},
+		"SharePointOnlineList1_servicePrincipalKey": {
+			"value": ""
+		},
 		"marksynapseworkspace-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
+		},
+		"testAzureSqlDatabase2_connectionString": {
+			"value": ""
+		},
+		"ApplicationsHttpServer1_properties_typeProperties_url": {
+			"value": "https://upskilltoday.sharepoint.com/sites/GecoTeamAsia/_api/web/GetFileByServerRelativeUrl ('@{linkedService().FileName}')/$value"
+		},
+		"HttpServer1_properties_typeProperties_url": {
+			"value": "https://upskilltoday.sharepoint.com/_api/web/GetFileByServerRelativeUrl('/sites/GecoTeamAsia/Sharepoint%20Storage/')/$value"
+		},
+		"SharePointOnlineList1_properties_typeProperties_servicePrincipalId": {
+			"value": "4391736f-1b5d-4ece-855a-19e5968984c8"
 		},
 		"marksynapseworkspace-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://synapsedlakestgen2mark.dfs.core.windows.net"
