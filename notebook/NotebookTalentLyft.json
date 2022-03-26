@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ecbd7006-acaf-4389-bc06-aab36fdbd0f2"
+				"spark.autotune.trackingId": "bc19ce57-1580-4914-a1d7-d6a02c7b468a"
 			}
 		},
 		"metadata": {
@@ -157,16 +157,6 @@
 					"#choose between fields to impose if sourcesubtype is equal to TA field in TalentList\r\n",
 					"ds = ds.withColumn(\"FinalTA\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
 					"\r\n",
-					"# re-initiate an instance of TalentList to dataframe\r\n",
-					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
-					"dj = dj.select(\"Title\")\r\n",
-					"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
-					"\r\n",
-					"#join Applications and TalentList dataframes\r\n",
-					"ds = ds.join(dj,ds.SourceSubType==dj.TA,\"left\")\r\n",
-					"\r\n",
-					"#choose between fields to impose if sourcesubtype is equal to TA field in TalentList\r\n",
-					"ds = ds.withColumn(\"FinalTA\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
 					"\r\n",
 					"#re-intitiate an instance of TalentList to dataframe\r\n",
 					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
