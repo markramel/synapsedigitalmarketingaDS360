@@ -4,7 +4,7 @@
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
-			"referenceName": "nyccabtrip",
+			"referenceName": "Capstone",
 			"type": "BigDataPoolReference"
 		},
 		"sessionProperties": {
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "5ec98071-f6e4-44b5-93c7-e4dabdb9e667"
+				"spark.autotune.trackingId": "70ff8631-faf6-4728-9d61-4a13ba4a06ef"
 			}
 		},
 		"metadata": {
@@ -31,10 +31,10 @@
 				"name": "python"
 			},
 			"a365ComputeOptions": {
-				"id": "/subscriptions/6a4ac82e-930e-4e4d-b385-3cc2c61db5c6/resourceGroups/digitalmarketingmark/providers/Microsoft.Synapse/workspaces/marksynapseworkspace/bigDataPools/nyccabtrip",
-				"name": "nyccabtrip",
+				"id": "/subscriptions/6a4ac82e-930e-4e4d-b385-3cc2c61db5c6/resourceGroups/digitalmarketingmark/providers/Microsoft.Synapse/workspaces/marksynapseworkspace/bigDataPools/Capstone",
+				"name": "Capstone",
 				"type": "Spark",
-				"endpoint": "https://marksynapseworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/nyccabtrip",
+				"endpoint": "https://marksynapseworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Capstone",
 				"auth": {
 					"type": "AAD",
 					"authResource": "https://dev.azuresynapse.net"
