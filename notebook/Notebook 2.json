@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e3440625-9b76-4d5c-b2fd-1e1bb4bffa42"
+				"spark.autotune.trackingId": "cd925e07-23af-48db-968c-0cd6c05d2ea7"
 			}
 		},
 		"metadata": {
@@ -197,6 +197,44 @@
 					""
 				],
 				"execution_count": 64
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from datetime import date\r\n",
+					"\r\n",
+					"def week1_start_ordinal(year): \\\r\n",
+					"jan1 = date(year, 1, 1)\r\n",
+					"jan1_ordinal = jan1.toordinal()\r\n",
+					"jan1_weekday = jan1.weekday()\r\n",
+					"week1_start_ordinal = jan1_ordinal - ((jan1_weekday + 1) % 7)\r\n",
+					"return week1_start_ordinal\r\n",
+					"\r\n",
+					"def week_from_date(date_object): \\\r\n",
+					"date_ordinal = date_object.toordinal()\r\n",
+					"year = date_object.year\r\n",
+					"week = ((date_ordinal - week1_start_ordinal(year)) // 7) + 1\r\n",
+					"\r\n",
+					"if week >= 52: \r\n",
+					"    if date_ordinal >= week1_start_ordinal(year + 1): \\\r\n",
+					"year += 1\r\n",
+					"week = 1\r\n",
+					"return year, week\r\n",
+					"\r\n",
+					"week_from_date(date(2022, 1, 2))"
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
