@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "cd925e07-23af-48db-968c-0cd6c05d2ea7"
+				"spark.autotune.trackingId": "44c2e113-caee-46d4-9167-be8fc348caca"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					")\r\n",
 					"##display(df.limit(10))"
 				],
-				"execution_count": 59
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -209,32 +209,19 @@
 						"transient": {
 							"deleting": false
 						}
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
-					"from datetime import date\r\n",
+					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
-					"def week1_start_ordinal(year): \\\r\n",
-					"jan1 = date(year, 1, 1)\r\n",
-					"jan1_ordinal = jan1.toordinal()\r\n",
-					"jan1_weekday = jan1.weekday()\r\n",
-					"week1_start_ordinal = jan1_ordinal - ((jan1_weekday + 1) % 7)\r\n",
-					"return week1_start_ordinal\r\n",
+					"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
+					".withColumn(\"Week\", weekofyear(to_utc_timestamp(to_date(df.AppliedOrSourcedDate, \"M/d/y\"),'+08:00')))\r\n",
 					"\r\n",
-					"def week_from_date(date_object): \\\r\n",
-					"date_ordinal = date_object.toordinal()\r\n",
-					"year = date_object.year\r\n",
-					"week = ((date_ordinal - week1_start_ordinal(year)) // 7) + 1\r\n",
-					"\r\n",
-					"if week >= 52: \r\n",
-					"    if date_ordinal >= week1_start_ordinal(year + 1): \\\r\n",
-					"year += 1\r\n",
-					"week = 1\r\n",
-					"return year, week\r\n",
-					"\r\n",
-					"week_from_date(date(2022, 1, 2))"
+					"display(df.limit(5))\r\n",
+					"display(df.filter(df.AppliedOrSourcedDate == \"01/01/2022\").limit(5))"
 				],
-				"execution_count": null
+				"execution_count": 16
 			},
 			{
 				"cell_type": "code",
@@ -247,18 +234,13 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"collapsed": false
+					}
 				},
 				"source": [
-					"from pyspark.sql.functions import *\r\n",
-					"\r\n",
-					"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
-					".withColumn(\"Week\", weekofyear(to_date(df.AppliedOrSourcedDate, \"M/d/y\")))\r\n",
-					"\r\n",
-					"##display(df.limit(5))"
+					"df= df.withColumn(\"Week\", weekofyear(to_utc_timestamp(to_date(\"01-01-2022\", \"M/d/y\"),\"PST\")))\r\n",
+					"display(df.limit(1))"
 				],
-				"execution_count": 65
+				"execution_count": 10
 			},
 			{
 				"cell_type": "markdown",
