@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 10",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [Id]\n,[ContentTypeID]\n,[ContentType]\n,[Title]\n,[Modified]\n,[Created]\n,[CreatedById]\n,[ModifiedById]\n,[Owshiddenversion]\n,[Version]\n,[Path]\n,[ComplianceAssetId]\n,[StartDate]\n,[EndDate]\n,[TraineeCount]\n,[StatusValue]\n,[AccntManagerId]\n,[JobList]\n,[InitialEndDate]\n,[CompanyValue]\n FROM [capstone].[dbo].[cohortform]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "capstone",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
