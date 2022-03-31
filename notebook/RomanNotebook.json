@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7478f987-2203-40b8-b0db-d832adbe82d4"
+				"spark.autotune.trackingId": "527266d4-6a7f-420c-ae4f-ed6b1ee4af53"
 			}
 		},
 		"metadata": {
@@ -165,15 +165,17 @@
 					"from pyspark.sql.functions import *\r\n",
 					"from pyspark.sql.types import *\r\n",
 					"\r\n",
+					"cfrm_tbl = cfrm_tbl.select(\"Id\",\"Title\")\r\n",
+					"join_cfctl=ctl_tbl.join(cfrm_tbl,ctl_tbl.CohortNameId == cfrm_tbl.Id,\"left\").drop_duplicates()\r\n",
+					"\r\n",
 					"ctl_tbl = ctl_tbl.select(\"AcctMngrID\", \"JobDescription\")\r\n",
 					"join_dfctl=df.join(ctl_tbl,df.Job == ctl_tbl.JobDescription,\"left\").drop_duplicates()\r\n",
-					"ctl_tbl = ctl_tbl.select(\"AcctMngrID\", \"JobDescription\")\r\n",
-					"join_dfctl=df.join(ctl_tbl,df.Job == ctl_tbl.JobDescription,\"left\").drop_duplicates()\r\n",
+					"\r\n",
 					"display(join_dfctl.limit(5))\r\n",
 					"join_dfctl.count()\r\n",
 					""
 				],
-				"execution_count": 6
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
