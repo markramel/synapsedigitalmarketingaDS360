@@ -11,6 +11,9 @@
 		"SharePointOnlineList1_servicePrincipalKey": {
 			"value": ""
 		},
+		"SharePointOnlineList2_servicePrincipalKey": {
+			"value": ""
+		},
 		"marksynapseworkspace-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
 		},
@@ -25,6 +28,9 @@
 		},
 		"SharePointOnlineList1_properties_typeProperties_servicePrincipalId": {
 			"value": "4391736f-1b5d-4ece-855a-19e5968984c8"
+		},
+		"SharePointOnlineList2_properties_typeProperties_servicePrincipalId": {
+			"value": "4017Q~DnRoDbYpdd7mxtY5Se6xsXr96-Dk_dj"
 		},
 		"marksynapseworkspace-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://synapsedlakestgen2mark.dfs.core.windows.net"
