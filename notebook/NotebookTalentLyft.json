@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "38dbaafb-eab8-4056-b4c3-b17ed0471e9d"
+				"spark.autotune.trackingId": "81570a7f-e226-4464-b03f-47d069d89355"
 			}
 		},
 		"metadata": {
@@ -65,7 +65,7 @@
 					")\r\n",
 					""
 				],
-				"execution_count": 5
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
@@ -99,7 +99,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 6
+				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
@@ -122,7 +122,7 @@
 					"df = df.withColumn(\"Job\",lower(translate(col(\"Job\"),\"./–!-() \",\"\")))\r\n",
 					"\r\n",
 					"# removing delimiters, change the case to lower, rename JobDescription to Job, and directly apply now \r\n",
-					"dg = dg.withColumn(\"Job\",lower(translate(col(\"JobDescription\"),\"./–!-() \",\"\")) )\r\n",
+					"dg = dg.withColumn(\"JobDesc\",lower(translate(col(\"JobDescription\"),\"./–!-() \",\"\")) )\r\n",
 					"\r\n",
 					"# extract Year and Week in AppliedOrSourcedDate from applications dataframe\r\n",
 					"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
@@ -142,7 +142,7 @@
 					"da = dq.join(dh, dq.CohortNameId==dh.Id,\"left\")\r\n",
 					"da = da.distinct()\r\n",
 					"#join tables Applications and CohortTableList\r\n",
-					"ds = df.join(da,[\"Job\"])\r\n",
+					"ds = df.join(da,df.Job==da.JobDesc,\"left\")\r\n",
 					"##ds = ds.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
 					"##display(ds.limit(5))\r\n",
 					"\r\n",
@@ -189,7 +189,7 @@
 					".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
 					"\r\n",
 					"#drop columns\r\n",
-					"ds = ds.drop(\"id\" )\r\n",
+					"ds = ds.drop(\"id\", \"JobDesc\" )\r\n",
 					"ds = ds.distinct()\r\n",
 					"\r\n",
 					"#save Applications flat file dataframe as a table in capstone lake database\r\n",
@@ -212,7 +212,7 @@
 					"dj.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.TalentList\")"
 				],
-				"execution_count": 7
+				"execution_count": 16
 			},
 			{
 				"cell_type": "code",
