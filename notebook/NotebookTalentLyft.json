@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "bc19ce57-1580-4914-a1d7-d6a02c7b468a"
+				"spark.autotune.trackingId": "38dbaafb-eab8-4056-b4c3-b17ed0471e9d"
 			}
 		},
 		"metadata": {
@@ -65,7 +65,7 @@
 					")\r\n",
 					""
 				],
-				"execution_count": 1
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -99,7 +99,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 2
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -142,9 +142,9 @@
 					"da = dq.join(dh, dq.CohortNameId==dh.Id,\"left\")\r\n",
 					"da = da.distinct()\r\n",
 					"#join tables Applications and CohortTableList\r\n",
-					"ds = df.join(da,df.Job==da.Job,\"left\")\r\n",
+					"ds = df.join(da,[\"Job\"])\r\n",
 					"##ds = ds.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
-					"display(ds.limit(5))\r\n",
+					"##display(ds.limit(5))\r\n",
 					"\r\n",
 					"# re-initiate TalentList to dataframe\r\n",
 					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
@@ -189,7 +189,7 @@
 					".withColumn(\"Conversion\", when((ds.TrackerType == \"Conversion\") & (ds.CohortName.isNotNull()), \"1\").otherwise(\"0\")) \\\r\n",
 					"\r\n",
 					"#drop columns\r\n",
-					"ds = ds.drop(\"id\",\"job\" )\r\n",
+					"ds = ds.drop(\"id\" )\r\n",
 					"ds = ds.distinct()\r\n",
 					"\r\n",
 					"#save Applications flat file dataframe as a table in capstone lake database\r\n",
@@ -212,7 +212,7 @@
 					"dj.write.mode(\"overwrite\") \\\r\n",
 					".saveAsTable(\"capstone.TalentList\")"
 				],
-				"execution_count": 5
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
