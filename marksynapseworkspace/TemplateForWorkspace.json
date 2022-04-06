@@ -119,14 +119,7 @@
 					{
 						"name": "CohortForm",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "TalentList",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -177,7 +170,14 @@
 					{
 						"name": "CohortTableList",
 						"type": "Copy",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "CohortForm",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -222,7 +222,7 @@
 						"type": "SynapseNotebook",
 						"dependsOn": [
 							{
-								"activity": "CohortForm",
+								"activity": "TalentList",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1422,26 +1422,6 @@
 			"properties": {
 				"content": {
 					"query": "SELECT TOP (100) [Id]\n,[ContentTypeID]\n,[ContentType]\n,[Title]\n,[Modified]\n,[Created]\n,[CreatedById]\n,[ModifiedById]\n,[Owshiddenversion]\n,[Version]\n,[Path]\n,[ComplianceAssetId]\n,[StartDate]\n,[EndDate]\n,[TraineeCount]\n,[StatusValue]\n,[AccntManagerId]\n,[JobList]\n,[InitialEndDate]\n,[CompanyValue]\n FROM [capstone].[dbo].[cohortform]",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"databaseName": "capstone",
-						"poolName": "Built-in"
-					},
-					"resultLimit": 5000
-				},
-				"type": "SqlQuery"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/SQL script 11')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://synapsedlakestgen2mark.dfs.core.windows.net/dlsg2markfilesystem/capstone/applications.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0'\n    ) AS [result]\n",
 					"metadata": {
 						"language": "sql"
 					},
@@ -3103,7 +3083,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "7cc02cca-b3c9-484e-8a2c-a8d8bb6abf3b"
+						"spark.autotune.trackingId": "81570a7f-e226-4464-b03f-47d069d89355"
 					}
 				},
 				"metadata": {
@@ -3128,8 +3108,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 5
 				},
