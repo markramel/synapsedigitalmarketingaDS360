@@ -61,14 +61,7 @@
 			{
 				"name": "CohortForm",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "TalentList",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -117,7 +110,14 @@
 			{
 				"name": "CohortTableList",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "CohortForm",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -160,7 +160,7 @@
 				"type": "SynapseNotebook",
 				"dependsOn": [
 					{
-						"activity": "CohortForm",
+						"activity": "TalentList",
 						"dependencyConditions": [
 							"Succeeded"
 						]
