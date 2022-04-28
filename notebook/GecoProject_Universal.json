@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3ef10819-ebe5-4026-b614-5056dbbaae8c"
+				"spark.autotune.trackingId": "d38f8e6f-e758-4da8-9581-25edcfe35cd5"
 			}
 		},
 		"metadata": {
@@ -81,7 +81,7 @@
 					"#display(df_joblist.limit(5))\r\n",
 					"#display(df_stage.limit(5))"
 				],
-				"execution_count": 42
+				"execution_count": 58
 			},
 			{
 				"cell_type": "code",
@@ -112,7 +112,7 @@
 					"#display(df_joblist.limit(5))\r\n",
 					""
 				],
-				"execution_count": 43
+				"execution_count": 59
 			},
 			{
 				"cell_type": "code",
@@ -141,7 +141,7 @@
 					"\r\n",
 					"#display(df_appstJob.limit(5))"
 				],
-				"execution_count": 44
+				"execution_count": 60
 			},
 			{
 				"cell_type": "code",
@@ -186,7 +186,7 @@
 					"#display(df_appstJob.limit(5))\r\n",
 					"#display(df_department.limit(5))"
 				],
-				"execution_count": 45
+				"execution_count": 61
 			},
 			{
 				"cell_type": "code",
@@ -218,7 +218,7 @@
 					"#display(df_appstjobDept.limit(5))\r\n",
 					"#display(df_candidate.limit(5))"
 				],
-				"execution_count": 46
+				"execution_count": 62
 			},
 			{
 				"cell_type": "code",
@@ -258,7 +258,7 @@
 					"\r\n",
 					"#display(df_appCandidate.limit(5))"
 				],
-				"execution_count": 47
+				"execution_count": 63
 			},
 			{
 				"cell_type": "code",
@@ -274,52 +274,13 @@
 					}
 				},
 				"source": [
-					"df_appCandidate = df_appCandidate.repartition(1)\r\n",
-					"df_appCandidate.write.mode('overwrite').option(\"header\", True).csv(\"/capstone/GecoAPI/Output\")\r\n",
+					"#df_appCandidate = df_appCandidate.repartition(1)\r\n",
+					"#df_appCandidate.write.mode('overwrite').option(\"header\", True).csv(\"/capstone/GecoAPI/Output\")\r\n",
+					"\r\n",
+					"df_appCandidate.write.mode(\"overwrite\").saveAsTable(\"gecoproject.applications\")\r\n",
 					""
 				],
-				"execution_count": 55
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"##%%sql\r\n",
-					"##DROP TABLE capstone.applications"
-				],
-				"execution_count": 49
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"##Drop  table in the default database\r\n",
-					"##%%sql\r\n",
-					"##DROP TABLE applications"
-				],
-				"execution_count": 50
+				"execution_count": 66
 			}
 		]
 	}
