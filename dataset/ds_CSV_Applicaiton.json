@@ -1,0 +1,81 @@
+{
+	"name": "ds_CSV_Applicaiton",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Application.csv",
+				"folderPath": "capstone/GecoAPI",
+				"fileSystem": "dlsg2markfilesystem"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "id",
+				"type": "String"
+			},
+			{
+				"name": "candidateId",
+				"type": "String"
+			},
+			{
+				"name": "profileUrl",
+				"type": "String"
+			},
+			{
+				"name": "created",
+				"type": "String"
+			},
+			{
+				"name": "disqualified",
+				"type": "String"
+			},
+			{
+				"name": "disqualifiedAt",
+				"type": "String"
+			},
+			{
+				"name": "disqualificationReason",
+				"type": "String"
+			},
+			{
+				"name": "stageId",
+				"type": "String"
+			},
+			{
+				"name": "jobId",
+				"type": "String"
+			},
+			{
+				"name": "sourceType",
+				"type": "String"
+			},
+			{
+				"name": "sourceBy",
+				"type": "String"
+			},
+			{
+				"name": "sourceFrom",
+				"type": "String"
+			},
+			{
+				"name": "sourceChanel",
+				"type": "String"
+			},
+			{
+				"name": "sourceFormatted",
+				"type": "String"
+			}
+		]
+	}
+}

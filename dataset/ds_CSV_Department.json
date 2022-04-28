@@ -1,0 +1,49 @@
+{
+	"name": "ds_CSV_Department",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "marksynapseworkspace-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Department.csv",
+				"folderPath": "capstone/GecoAPI",
+				"fileSystem": "dlsg2markfilesystem"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "id",
+				"type": "String"
+			},
+			{
+				"name": "name",
+				"type": "String"
+			},
+			{
+				"name": "externalId",
+				"type": "String"
+			},
+			{
+				"name": "parentId",
+				"type": "String"
+			},
+			{
+				"name": "isTranslated",
+				"type": "String"
+			},
+			{
+				"name": "translation",
+				"type": "String"
+			}
+		]
+	}
+}
