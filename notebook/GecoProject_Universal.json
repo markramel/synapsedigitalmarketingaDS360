@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "99b7df80-eca4-4a38-a4b7-88612a5e6ed1"
+				"spark.autotune.trackingId": "a0ef3cfb-1326-4e60-a720-6d7f7916b540"
 			}
 		},
 		"metadata": {
@@ -74,14 +74,14 @@
 					"df_joblist = df_joblist.fillna(value = \"\")\r\n",
 					"df_stage = df_stage.fillna(value = \"\")\r\n",
 					"\r\n",
-					"display(df_app.limit(5))\r\n",
+					"#display(df_app.limit(5))\r\n",
 					"#display(df_candidate.limit(5))\r\n",
 					"#display(df_department.limit(5))\r\n",
 					"#display(df_job.limit(5))\r\n",
-					"display(df_joblist.limit(5))\r\n",
+					"#display(df_joblist.limit(5))\r\n",
 					"#display(df_stage.limit(5))"
 				],
-				"execution_count": 17
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -104,13 +104,15 @@
 					"#Applications + Stage\r\n",
 					"\r\n",
 					"df_appStage = df_app.join(df_stage, [df_stage['Id'] == df_app ['stageId'], df_stage['applicationId'] == df_app ['id']], 'left') \\\r\n",
-					"    .select(df_app['Id'], df_app['candidateId'], 'profileUrl', 'created', 'disqualified', 'disqualifiedAt', 'disqualificationReason', col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+					"    .select(df_app['Id'], df_app['candidateId'], 'profileUrl', col('created').alias('appCreated'), col('disqualified').alias('appDisqualified')\r\n",
+					"        , col('disqualifiedAt').alias('appDisqualifiedAt'), col('disqualificationReason').alias('appDisqualificationReason')\r\n",
+					"        , col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 					"\r\n",
 					"display(df_appStage.limit(5))\r\n",
 					"display(df_joblist.limit(5))\r\n",
 					""
 				],
-				"execution_count": 18
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -133,13 +135,13 @@
 					"#AppStage + Job\r\n",
 					"\r\n",
 					"df_appstJob = df_appStage.join(df_joblist, [df_joblist['Id'] == df_appStage['jobId']], 'left') \\\r\n",
-					"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'created', 'disqualified', 'disqualifiedAt', 'disqualificationReason', 'stage', 'type'\r\n",
+					"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason', 'stage', 'type'\r\n",
 					"        , col('title').alias('job'), df_joblist['departmentId'], df_joblist['locationCountry'], df_joblist['locationCountryCode'], df_joblist['region'], df_joblist['city'], df_joblist['zipCode'], df_joblist['status']\r\n",
 					"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 					"\r\n",
 					"display(df_appstJob.limit(5))"
 				],
-				"execution_count": 21
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
@@ -181,7 +183,78 @@
 					"#Create new column with removed special characters\r\n",
 					"df_appstJob = df_appstJob.withColumn(\"JobDescNoChar\", f.lower(f.translate(f.col(\"Job\"),\"./–!-() \",\"\")))\r\n",
 					"\r\n",
-					"display(df_appstJob.limit(5))"
+					"display(df_appstJob.limit(5))\r\n",
+					"display(df_department.limit(5))"
+				],
+				"execution_count": 15
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql import functions as f\r\n",
+					"from pyspark.sql.functions import *\r\n",
+					"\r\n",
+					"#AppStageJob + Department\r\n",
+					"\r\n",
+					"df_appstjobDept = df_appstJob.join(df_department, [df_department['Id'] == df_appstJob['departmentId']], 'left') \\\r\n",
+					"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason', 'stage', 'type'\r\n",
+					"        , 'job', col('name').alias('department')\r\n",
+					"        , 'locationCountry', 'locationCountryCode', 'region', 'city', 'zipCode', 'status'\r\n",
+					"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+					"\r\n",
+					"display(df_appstjobDept.limit(5))\r\n",
+					"display(df_candidate.limit(5))"
+				],
+				"execution_count": 16
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql import functions as f\r\n",
+					"from pyspark.sql.functions import *\r\n",
+					"\r\n",
+					"#AppStageJobDepartment + Candidate\r\n",
+					"\r\n",
+					"df_appCandidate = df_appstjobDept.join(df_candidate, [df_candidate['Id'] == df_appstjobDept['candidateId']], 'left') \\\r\n",
+					"    .select(df_appStage['Id'], df_appStage['candidateId']\r\n",
+					"        , df_candidate['firstName'], df_candidate['lastName'], col('created').alias('candidateCreated'), col('lastModified').alias('candidateLastModified')\r\n",
+					"        , 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason', 'stage', 'type'\r\n",
+					"        , 'job', 'department'\r\n",
+					"        , 'locationCountry', 'locationCountryCode', 'region', 'city', 'zipCode', 'status'\r\n",
+					"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+					"\r\n",
+					"\r\n",
+					"#Create FullName column\r\n",
+					"df_appCandidate = df_appCandidate.withColumn('fullName', f.concat(f.col('firstName'),f.lit(' '),f.col('lastName')))\r\n",
+					"\r\n",
+					"#Remove undefined\r\n",
+					"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
+					"\r\n",
+					"display(df_appCandidate.limit(5))"
 				],
 				"execution_count": 22
 			},
