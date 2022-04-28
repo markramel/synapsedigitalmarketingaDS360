@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ac8d10e9-36a7-4a21-8b88-f3cd68fd0951"
+				"spark.autotune.trackingId": "3ffa78fc-f828-4634-baed-495ba6236b35"
 			}
 		},
 		"metadata": {
@@ -276,8 +276,6 @@
 				"source": [
 					"df_appCandidate = df_appCandidate.repartition(1)\r\n",
 					"df_appCandidate.write.mode('overwrite').option(\"header\", True).csv(\"/capstone/GecoAPI/Output\")\r\n",
-					"\r\n",
-					"\r\n",
 					""
 				],
 				"execution_count": 55
