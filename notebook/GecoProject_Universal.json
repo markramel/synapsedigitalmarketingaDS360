@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3c1e472f-d287-41b4-b0c8-1c16caae9977"
+				"spark.autotune.trackingId": "d08d6002-311c-43e8-922c-48c63ed5b56a"
 			}
 		},
 		"metadata": {
@@ -137,7 +137,7 @@
 					"df_appstJob = df_appStage.join(df_joblist, [df_joblist['Id'] == df_appStage['jobId']], 'left') \\\r\n",
 					"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason', 'stage', 'type'\r\n",
 					"        , col('title').alias('job'), df_joblist['departmentId'], df_joblist['locationCountry'], df_joblist['locationCountryCode'], df_joblist['region'], df_joblist['city'], df_joblist['zipCode'], df_joblist['status']\r\n",
-					"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+					"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 					"\r\n",
 					"#display(df_appstJob.limit(5))"
 				],
@@ -244,9 +244,9 @@
 					"        , col('firstName').alias('FirstName'), col('lastName').alias('LastName'), col('created').alias('CandidateCreated'), col('lastModified').alias('CandidateLastModified')\r\n",
 					"        , col('profileUrl').alias('ProfileUrl'), col('appCreated').alias('AppliedOrSourcedDate'), col('appDisqualified').alias('Disqualified'), col('appDisqualifiedAt').alias('DisqualifiedAt'), col('appDisqualificationReason').alias('DisqualificationsReason')\r\n",
 					"        , col('conversion').alias('TrackerType'), col('isReach').alias('Reach'), col('isTest').alias('Test'), col('isInterview').alias('Interview'), col('isOffer').alias('Offer'), col('isConversion').alias('Conversion'), col('type').alias('Stage')\r\n",
-					"        , 'job', 'department'\r\n",
-					"        , 'locationCountry', 'locationCountryCode', 'region', 'city', 'zipCode', 'status'\r\n",
-					"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+					"        , col('JobDescNoChar').alias('Job'), col('department').alias('JobDepartment')\r\n",
+					"        , col('locationCountry').alias('LocationCountry'), col('locationCountryCode').alias('LocationCountryCode'), col('region').alias('Region'), col('city').alias('City'), col('zipCode').alias('ZipCode'), col('status').alias('Status')\r\n",
+					"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 					"\r\n",
 					"\r\n",
 					"#Create FullName column\r\n",
