@@ -2045,7 +2045,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f80aa46b-4c7d-4766-8370-6f2716a7e186"
+						"spark.autotune.trackingId": "dccb1e10-1284-433b-9823-5a837f6495af"
 					}
 				},
 				"metadata": {
@@ -2264,8 +2264,43 @@
 								"transient": {
 									"deleting": false
 								}
-							},
-							"collapsed": false
+							}
+						},
+						"source": [
+							"from pyspark.sql import functions as f\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"#AppStageJobDepartment + Candidate\r\n",
+							"\r\n",
+							"df_appCandidate = df_appstjobDept.join(df_candidate, [df_candidate['Id'] == df_appstjobDept['candidateId']], 'left') \\\r\n",
+							"    .select(col('Id').alias('ApplicationId'), col('candidateId').alias('CandidateId')\r\n",
+							"        , col('firstName').alias('FirstName'), col('lastName').alias('LastName'), col('created').alias('CandidateCreated'), col('lastModified').alias('CandidateLastModified')\r\n",
+							"        , col('profileUrl').alias('ProfileUrl'), col('appCreated').alias('AppliedOrSourcedDate'), col('appDisqualified').alias('Disqualified'), col('appDisqualifiedAt').alias('DisqualifiedAt'), col('appDisqualificationReason').alias('DisqualificationsReason')\r\n",
+							"        , 'stage', 'conversion', 'isReach', 'isTest', 'isInterview', 'isOffer', 'isConversion', 'type'\r\n",
+							"        , 'job', 'department'\r\n",
+							"        , 'locationCountry', 'locationCountryCode', 'region', 'city', 'zipCode', 'status'\r\n",
+							"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+							"\r\n",
+							"\r\n",
+							"#Create FullName column\r\n",
+							"df_appCandidate = df_appCandidate.withColumn('fullName', f.concat(f.col('firstName'),f.lit(' '),f.col('lastName')))\r\n",
+							"\r\n",
+							"#Remove undefined\r\n",
+							"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
+							"\r\n",
+							"#display(df_appCandidate.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
 						},
 						"source": [
 							"from pyspark.sql import functions as f\r\n",
@@ -2290,9 +2325,7 @@
 							"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
 							"\r\n",
 							"#display(df_appCandidate.limit(5))"
-						],
-						"outputs": [],
-						"execution_count": 63
+						]
 					},
 					{
 						"cell_type": "code",
