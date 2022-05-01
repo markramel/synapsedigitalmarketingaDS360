@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "21f75da4-41b2-44a5-86b8-f877ff45e7c0"
+				"spark.autotune.trackingId": "9c3d03a1-aee6-404f-bdbd-b5fa9ab0ae55"
 			}
 		},
 		"metadata": {
@@ -92,7 +92,7 @@
 					"#display(df_joblist.limit(5))\r\n",
 					"#display(df_stage.limit(5))"
 				],
-				"execution_count": 33
+				"execution_count": 50
 			},
 			{
 				"cell_type": "code",
@@ -123,7 +123,7 @@
 					"#display(df_joblist.limit(5))\r\n",
 					""
 				],
-				"execution_count": 34
+				"execution_count": 51
 			},
 			{
 				"cell_type": "code",
@@ -152,7 +152,7 @@
 					"\r\n",
 					"#display(df_appstJob.limit(5))"
 				],
-				"execution_count": 35
+				"execution_count": 52
 			},
 			{
 				"cell_type": "code",
@@ -197,7 +197,7 @@
 					"#display(df_appstJob.limit(5))\r\n",
 					"#display(df_department.limit(5))"
 				],
-				"execution_count": 36
+				"execution_count": 53
 			},
 			{
 				"cell_type": "code",
@@ -229,7 +229,7 @@
 					"#display(df_appstjobDept.limit(5))\r\n",
 					"#display(df_candidate.limit(5))"
 				],
-				"execution_count": 37
+				"execution_count": 54
 			},
 			{
 				"cell_type": "code",
@@ -257,7 +257,7 @@
 					"        , col('conversion').alias('TrackerType'), col('isReach').alias('Reach'), col('isTest').alias('Test'), col('isInterview').alias('Interview'), col('isOffer').alias('Offer'), col('isConversion').alias('Conversion'), col('type').alias('Stage')\r\n",
 					"        , col('JobDescNoChar').alias('Job'), col('department').alias('JobDepartment')\r\n",
 					"        , 'Country', col('locationCountryCode').alias('LocationCountryCode'), col('region').alias('Region'), col('city').alias('City'), col('zipCode').alias('ZipCode'), col('status').alias('Status')\r\n",
-					"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+					"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', col('sourceFormatted').alias('SourceSubStype'))\r\n",
 					"\r\n",
 					"\r\n",
 					"#Create FullName column\r\n",
@@ -268,7 +268,7 @@
 					"\r\n",
 					"#display(df_appCandidate.limit(5))"
 				],
-				"execution_count": 38
+				"execution_count": 55
 			},
 			{
 				"cell_type": "code",
@@ -337,7 +337,7 @@
 					"#<-- end of join tables to create a flat file applications dataframe-->\r\n",
 					""
 				],
-				"execution_count": 41
+				"execution_count": 56
 			},
 			{
 				"cell_type": "code",
