@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "9c3d03a1-aee6-404f-bdbd-b5fa9ab0ae55"
+				"spark.autotune.trackingId": "b4c4f703-331e-4401-acab-fdd3c5961307"
 			}
 		},
 		"metadata": {
@@ -85,6 +85,10 @@
 					"df_joblist = df_joblist.fillna(value = \"\")\r\n",
 					"df_stage = df_stage.fillna(value = \"\")\r\n",
 					"\r\n",
+					"dg = dg.fillna(value = \"\")\r\n",
+					"dh = dh.fillna(value = \"\")\r\n",
+					"dj = dj.fillna(value = \"\")\r\n",
+					"\r\n",
 					"#display(df_app.limit(5))\r\n",
 					"#display(df_candidate.limit(5))\r\n",
 					"#display(df_department.limit(5))\r\n",
@@ -92,7 +96,7 @@
 					"#display(df_joblist.limit(5))\r\n",
 					"#display(df_stage.limit(5))"
 				],
-				"execution_count": 50
+				"execution_count": 115
 			},
 			{
 				"cell_type": "code",
@@ -123,7 +127,7 @@
 					"#display(df_joblist.limit(5))\r\n",
 					""
 				],
-				"execution_count": 51
+				"execution_count": 116
 			},
 			{
 				"cell_type": "code",
@@ -152,7 +156,7 @@
 					"\r\n",
 					"#display(df_appstJob.limit(5))"
 				],
-				"execution_count": 52
+				"execution_count": 117
 			},
 			{
 				"cell_type": "code",
@@ -197,7 +201,7 @@
 					"#display(df_appstJob.limit(5))\r\n",
 					"#display(df_department.limit(5))"
 				],
-				"execution_count": 53
+				"execution_count": 118
 			},
 			{
 				"cell_type": "code",
@@ -229,7 +233,7 @@
 					"#display(df_appstjobDept.limit(5))\r\n",
 					"#display(df_candidate.limit(5))"
 				],
-				"execution_count": 54
+				"execution_count": 119
 			},
 			{
 				"cell_type": "code",
@@ -242,7 +246,8 @@
 						"transient": {
 							"deleting": false
 						}
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"from pyspark.sql import functions as f\r\n",
@@ -257,7 +262,7 @@
 					"        , col('conversion').alias('TrackerType'), col('isReach').alias('Reach'), col('isTest').alias('Test'), col('isInterview').alias('Interview'), col('isOffer').alias('Offer'), col('isConversion').alias('Conversion'), col('type').alias('Stage')\r\n",
 					"        , col('JobDescNoChar').alias('Job'), col('department').alias('JobDepartment')\r\n",
 					"        , 'Country', col('locationCountryCode').alias('LocationCountryCode'), col('region').alias('Region'), col('city').alias('City'), col('zipCode').alias('ZipCode'), col('status').alias('Status')\r\n",
-					"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', col('sourceFormatted').alias('SourceSubStype'))\r\n",
+					"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', col('sourceFormatted').alias('SourceSubType'))\r\n",
 					"\r\n",
 					"\r\n",
 					"#Create FullName column\r\n",
@@ -268,7 +273,7 @@
 					"\r\n",
 					"#display(df_appCandidate.limit(5))"
 				],
-				"execution_count": 55
+				"execution_count": 120
 			},
 			{
 				"cell_type": "code",
@@ -281,9 +286,12 @@
 						"transient": {
 							"deleting": false
 						}
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
+					"from pyspark.sql import functions as f\r\n",
+					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
 					"# removing delimiters, change the case to lower, rename JobDescription to Job, and directly apply now \r\n",
 					"dg = dg.withColumn(\"JobDesc\",lower(translate(col(\"JobDescription\"),\"./–!-() \",\"\")) )\r\n",
@@ -308,7 +316,27 @@
 					"#join tables Applications and CohortTableList\r\n",
 					"ds = df_appCandidate.join(da,df_appCandidate.Job==da.JobDesc,\"left\")\r\n",
 					"##ds = ds.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
-					"##display(ds.limit(5))\r\n",
+					"#display(ds.limit(5))"
+				],
+				"execution_count": 121
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql import functions as f\r\n",
+					"from pyspark.sql.functions import *\r\n",
 					"\r\n",
 					"# re-initiate TalentList to dataframe\r\n",
 					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
@@ -317,6 +345,26 @@
 					"\r\n",
 					"#join tables Applications and TalentList\r\n",
 					"ds = ds.join(dj,ds.SourceSubType==dj.TA,\"left\")\r\n",
+					"display(ds.limit(5))"
+				],
+				"execution_count": 122
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\r\n",
+					"\r\n",
 					"\r\n",
 					"#choose between fields to impose if sourcesubtype is equal to TA field in TalentList\r\n",
 					"ds = ds.withColumn(\"FinalTA\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
@@ -337,27 +385,7 @@
 					"#<-- end of join tables to create a flat file applications dataframe-->\r\n",
 					""
 				],
-				"execution_count": 56
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"#drop columns\r\n",
-					"ds = ds.drop(\"id\", \"JobDesc\" )\r\n",
-					"ds = ds.distinct()"
-				],
-				"execution_count": 31
+				"execution_count": 123
 			},
 			{
 				"cell_type": "markdown",
@@ -410,7 +438,7 @@
 					"#df_appCandidate = df_appCandidate.repartition(1)\r\n",
 					"#df_appCandidate.write.mode('overwrite').option(\"header\", True).csv(\"/capstone/GecoAPI/Output\")\r\n",
 					"\r\n",
-					"df_appCandidate.write.mode(\"overwrite\").saveAsTable(\"gecoproject.applications\")\r\n",
+					"ds.write.mode(\"overwrite\").saveAsTable(\"gecoproject.applications\")\r\n",
 					"\r\n",
 					"#re-initiate CohortTableList dataframe and save as a table in capstone lake database\r\n",
 					"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
@@ -428,7 +456,7 @@
 					".saveAsTable(\"gecoproject.TalentList\")\r\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 124
 			}
 		]
 	}
