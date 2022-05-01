@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7bc6e40e-4e8c-4f67-97ba-a96935d141dd"
+				"spark.autotune.trackingId": "911b4fda-65b8-4c6e-9ce1-e6ee1aeea37b"
 			}
 		},
 		"metadata": {
@@ -65,6 +65,17 @@
 					"df_job = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Job.csv', format='csv', header=True)\r\n",
 					"df_joblist = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/JobList.csv', format='csv', header=True)\r\n",
 					"df_stage = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Stage.csv', format='csv', header=True)\r\n",
+					"\r\n",
+					"#loading CohortTableList.parquet to dataframe\r\n",
+					"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
+					"dg = dg.drop('Title')\r\n",
+					"\r\n",
+					"#loading CohortForm.parquet to dataframe\r\n",
+					"dh = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortForm.parquet', format='parquet')\r\n",
+					"\r\n",
+					"#loading Talentlist.parquet to dataframe\r\n",
+					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+					"\r\n",
 					"\r\n",
 					"#Change 'undefined' to empty space\r\n",
 					"df_app = df_app.fillna(value = \"\")\r\n",
@@ -260,6 +271,95 @@
 				"execution_count": null
 			},
 			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\r\n",
+					"# removing delimiters, change the case to lower, rename JobDescription to Job, and directly apply now \r\n",
+					"dg = dg.withColumn(\"JobDesc\",lower(translate(col(\"JobDescription\"),\"./–!-() \",\"\")) )\r\n",
+					"\r\n",
+					"# extract Year and Week in AppliedOrSourcedDate from applications dataframe\r\n",
+					"df = df.withColumn(\"Year\", year(to_date(df.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
+					".withColumn(\"Week\", weekofyear(to_date(df.AppliedOrSourcedDate, \"M/d/y\")))\r\n",
+					"\r\n",
+					"#<-- join tables to create a flat file applications dataframe-->\r\n",
+					"\r\n",
+					"#select two columns in TalentList\r\n",
+					"dj = dj.select(\"Id\", \"Title\")\r\n",
+					"dj = dj.withColumnRenamed(\"Title\", \"AcctMngr\")\r\n",
+					"#join tables CohortTableList and TalentList\r\n",
+					"dq = dg.join(dj, dg.AcctMngrId==dj.Id,\"left\").drop(dj.Id)\r\n",
+					"#select two columns in CohortForm\r\n",
+					"dh = dh.select(\"Id\", \"Title\")\r\n",
+					"dh = dh.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
+					"#join tables CohortTableList and CohortForm\r\n",
+					"da = dq.join(dh, dq.CohortNameId==dh.Id,\"left\")\r\n",
+					"da = da.distinct()\r\n",
+					"#join tables Applications and CohortTableList\r\n",
+					"ds = df_appCandidate.join(da,df_appCandidate.Job==da.JobDesc,\"left\")\r\n",
+					"##ds = ds.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
+					"##display(ds.limit(5))\r\n",
+					"\r\n",
+					"# re-initiate TalentList to dataframe\r\n",
+					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+					"dj = dj.select(\"Title\")\r\n",
+					"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
+					"\r\n",
+					"#join tables Applications and TalentList\r\n",
+					"ds = ds.join(dj,ds.SourceSubType==dj.TA,\"left\")\r\n",
+					"\r\n",
+					"#choose between fields to impose if sourcesubtype is equal to TA field in TalentList\r\n",
+					"ds = ds.withColumn(\"FinalTA\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
+					"\r\n",
+					"\r\n",
+					"#re-intitiate an instance of TalentList to dataframe\r\n",
+					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+					"dj = dj.select(\"Title\",\"PictureURL\")\r\n",
+					"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
+					"\r\n",
+					"#join Applications and TalentList dataframes\r\n",
+					"ds = ds.join(dj,ds.FinalTA==dj.TA,\"left\").drop(ds.TA)\r\n",
+					"ds = ds.withColumnRenamed(\"PictureURL\",\"FinalTAPicUrl\")\r\n",
+					"#<-----\r\n",
+					"#drop unwanted fields that occured during the join\r\n",
+					"ds = ds.drop(\"ContentTypeID\", \"ContentType\",\"Modified\",\"Created\", \"CreatedById\", \"ModifiedById\", \\\r\n",
+					"\"Owshiddenversion\", \"Version\", \"Path\", \"ComplianceAssetId\")\r\n",
+					"#<-- end of join tables to create a flat file applications dataframe-->\r\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#drop columns\r\n",
+					"ds = ds.drop(\"id\", \"JobDesc\" )\r\n",
+					"ds = ds.distinct()"
+				],
+				"execution_count": null
+			},
+			{
 				"cell_type": "markdown",
 				"metadata": {
 					"nteract": {
@@ -311,6 +411,21 @@
 					"#df_appCandidate.write.mode('overwrite').option(\"header\", True).csv(\"/capstone/GecoAPI/Output\")\r\n",
 					"\r\n",
 					"df_appCandidate.write.mode(\"overwrite\").saveAsTable(\"gecoproject.applications\")\r\n",
+					"\r\n",
+					"#re-initiate CohortTableList dataframe and save as a table in capstone lake database\r\n",
+					"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
+					"dg.write.mode(\"overwrite\") \\\r\n",
+					".saveAsTable(\"gecoproject.CohortTableList\")\r\n",
+					"\r\n",
+					"#re-initiate CohortForm dataframe and save as a table in capstone lake database\r\n",
+					"dh = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortForm.parquet', format='parquet')\r\n",
+					"dh.write.mode(\"overwrite\") \\\r\n",
+					".saveAsTable(\"gecoproject.CohortForm\")\r\n",
+					"\r\n",
+					"#re-initiate TalentList dataframe and save as a table in capstone lake database\r\n",
+					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
+					"dj.write.mode(\"overwrite\") \\\r\n",
+					".saveAsTable(\"gecoproject.TalentList\")\r\n",
 					""
 				],
 				"execution_count": 66
