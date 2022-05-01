@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d08d6002-311c-43e8-922c-48c63ed5b56a"
+				"spark.autotune.trackingId": "7bc6e40e-4e8c-4f67-97ba-a96935d141dd"
 			}
 		},
 		"metadata": {
@@ -137,7 +137,7 @@
 					"df_appstJob = df_appStage.join(df_joblist, [df_joblist['Id'] == df_appStage['jobId']], 'left') \\\r\n",
 					"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason', 'stage', 'type'\r\n",
 					"        , col('title').alias('job'), df_joblist['departmentId'], df_joblist['locationCountry'], df_joblist['locationCountryCode'], df_joblist['region'], df_joblist['city'], df_joblist['zipCode'], df_joblist['status']\r\n",
-					"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+					"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 					"\r\n",
 					"#display(df_appstJob.limit(5))"
 				],
