@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b4c4f703-331e-4401-acab-fdd3c5961307"
+				"spark.autotune.trackingId": "827d021e-af80-45bd-8c84-87885d5c34a3"
 			}
 		},
 		"metadata": {
@@ -96,7 +96,7 @@
 					"#display(df_joblist.limit(5))\r\n",
 					"#display(df_stage.limit(5))"
 				],
-				"execution_count": 115
+				"execution_count": 23
 			},
 			{
 				"cell_type": "code",
@@ -127,7 +127,7 @@
 					"#display(df_joblist.limit(5))\r\n",
 					""
 				],
-				"execution_count": 116
+				"execution_count": 24
 			},
 			{
 				"cell_type": "code",
@@ -156,7 +156,7 @@
 					"\r\n",
 					"#display(df_appstJob.limit(5))"
 				],
-				"execution_count": 117
+				"execution_count": 25
 			},
 			{
 				"cell_type": "code",
@@ -201,7 +201,7 @@
 					"#display(df_appstJob.limit(5))\r\n",
 					"#display(df_department.limit(5))"
 				],
-				"execution_count": 118
+				"execution_count": 26
 			},
 			{
 				"cell_type": "code",
@@ -228,12 +228,12 @@
 					"        , 'stage', 'conversion', 'isReach', 'isTest', 'isInterview', 'isOffer', 'isConversion', 'type'\r\n",
 					"        , 'JobDescNoChar', col('name').alias('department')\r\n",
 					"        , 'Country', 'locationCountryCode', 'region', 'city', 'zipCode', 'status'\r\n",
-					"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+					"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted','Job')\r\n",
 					"\r\n",
 					"#display(df_appstjobDept.limit(5))\r\n",
 					"#display(df_candidate.limit(5))"
 				],
-				"execution_count": 119
+				"execution_count": 27
 			},
 			{
 				"cell_type": "code",
@@ -260,9 +260,9 @@
 					"        , col('firstName').alias('FirstName'), col('lastName').alias('LastName'), col('created').alias('CandidateCreated'), col('lastModified').alias('CandidateLastModified')\r\n",
 					"        , col('profileUrl').alias('ProfileUrl'), col('appCreated').alias('AppliedOrSourcedDate'), col('appDisqualified').alias('Disqualified'), col('appDisqualifiedAt').alias('DisqualifiedAt'), col('appDisqualificationReason').alias('DisqualificationsReason')\r\n",
 					"        , col('conversion').alias('TrackerType'), col('isReach').alias('Reach'), col('isTest').alias('Test'), col('isInterview').alias('Interview'), col('isOffer').alias('Offer'), col('isConversion').alias('Conversion'), col('type').alias('Stage')\r\n",
-					"        , col('JobDescNoChar').alias('Job'), col('department').alias('JobDepartment')\r\n",
+					"        , col('JobDescNoChar').alias('Jobs'), col('department').alias('JobDepartment')\r\n",
 					"        , 'Country', col('locationCountryCode').alias('LocationCountryCode'), col('region').alias('Region'), col('city').alias('City'), col('zipCode').alias('ZipCode'), col('status').alias('Status')\r\n",
-					"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', col('sourceFormatted').alias('SourceSubType'))\r\n",
+					"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', col('sourceFormatted').alias('SourceSubType'),'Job')\r\n",
 					"\r\n",
 					"\r\n",
 					"#Create FullName column\r\n",
@@ -271,9 +271,9 @@
 					"#Remove undefined\r\n",
 					"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
 					"\r\n",
-					"#display(df_appCandidate.limit(5))"
+					"display(df_appCandidate.limit(5))"
 				],
-				"execution_count": 120
+				"execution_count": 28
 			},
 			{
 				"cell_type": "code",
@@ -314,11 +314,11 @@
 					"da = dq.join(dh, dq.CohortNameId==dh.Id,\"left\")\r\n",
 					"da = da.distinct()\r\n",
 					"#join tables Applications and CohortTableList\r\n",
-					"ds = df_appCandidate.join(da,df_appCandidate.Job==da.JobDesc,\"left\")\r\n",
+					"ds = df_appCandidate.join(da,df_appCandidate.Jobs==da.JobDesc,\"left\")\r\n",
 					"##ds = ds.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
 					"#display(ds.limit(5))"
 				],
-				"execution_count": 121
+				"execution_count": 29
 			},
 			{
 				"cell_type": "code",
@@ -347,7 +347,7 @@
 					"ds = ds.join(dj,ds.SourceSubType==dj.TA,\"left\")\r\n",
 					"display(ds.limit(5))"
 				],
-				"execution_count": 122
+				"execution_count": 30
 			},
 			{
 				"cell_type": "code",
@@ -385,7 +385,7 @@
 					"#<-- end of join tables to create a flat file applications dataframe-->\r\n",
 					""
 				],
-				"execution_count": 123
+				"execution_count": 31
 			},
 			{
 				"cell_type": "markdown",
@@ -456,7 +456,7 @@
 					".saveAsTable(\"gecoproject.TalentList\")\r\n",
 					""
 				],
-				"execution_count": 124
+				"execution_count": 32
 			}
 		]
 	}
