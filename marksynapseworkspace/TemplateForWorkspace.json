@@ -2045,7 +2045,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "620d14ec-288b-4bbc-825f-0d0bc3981cc5"
+						"spark.autotune.trackingId": "e31bfc52-906b-49c6-9992-cbe7cb8e44f5"
 					}
 				},
 				"metadata": {
@@ -2125,7 +2125,7 @@
 							"#display(df_stage.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 23
+						"execution_count": 29
 					},
 					{
 						"cell_type": "code",
@@ -2157,7 +2157,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 24
+						"execution_count": 30
 					},
 					{
 						"cell_type": "code",
@@ -2187,7 +2187,7 @@
 							"#display(df_appstJob.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 25
+						"execution_count": 31
 					},
 					{
 						"cell_type": "code",
@@ -2233,7 +2233,7 @@
 							"#display(df_department.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 26
+						"execution_count": 33
 					},
 					{
 						"cell_type": "code",
@@ -2266,7 +2266,7 @@
 							"#display(df_candidate.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 27
+						"execution_count": 34
 					},
 					{
 						"cell_type": "code",
@@ -2304,10 +2304,17 @@
 							"#Remove undefined\r\n",
 							"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
 							"\r\n",
-							"display(df_appCandidate.limit(5))"
+							"df_appCandidate = df_appCandidate.withColumn(\"FirstName\", f.initcap(\"FirstName\"))\r\n",
+							"\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"LastName\", f.initcap(\"LastName\"))\r\n",
+							"\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"fullName\", f.initcap(\"fullName\"))\r\n",
+							"\r\n",
+							"\r\n",
+							"#display(df_appCandidate.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 28
+						"execution_count": 35
 					},
 					{
 						"cell_type": "code",
@@ -2353,7 +2360,7 @@
 							"#display(ds.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 29
+						"execution_count": 36
 					},
 					{
 						"cell_type": "code",
@@ -2380,10 +2387,10 @@
 							"\r\n",
 							"#join tables Applications and TalentList\r\n",
 							"ds = ds.join(dj,ds.SourceSubType==dj.TA,\"left\")\r\n",
-							"display(ds.limit(5))"
+							"#display(ds.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 30
+						"execution_count": 37
 					},
 					{
 						"cell_type": "code",
@@ -2396,9 +2403,12 @@
 								"transient": {
 									"deleting": false
 								}
-							}
+							},
+							"collapsed": false
 						},
 						"source": [
+							"from pyspark.sql import functions as f\r\n",
+							"from pyspark.sql.functions import *\r\n",
 							"\r\n",
 							"\r\n",
 							"\r\n",
@@ -2419,10 +2429,12 @@
 							"ds = ds.drop(\"ContentTypeID\", \"ContentType\",\"Modified\",\"Created\", \"CreatedById\", \"ModifiedById\", \\\r\n",
 							"\"Owshiddenversion\", \"Version\", \"Path\", \"ComplianceAssetId\",\"id\", \"JobDesc\").distinct()\r\n",
 							"#<-- end of join tables to create a flat file applications dataframe-->\r\n",
-							""
+							"\r\n",
+							"\r\n",
+							"display(ds.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 31
+						"execution_count": 38
 					},
 					{
 						"cell_type": "markdown",
@@ -2494,7 +2506,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 32
+						"execution_count": 39
 					}
 				]
 			},
