@@ -2045,7 +2045,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "5db0edfc-35a1-455c-84d1-55a0b9378f2a"
+						"spark.autotune.trackingId": "f9d40ed6-d275-48d2-b509-62f6eb319bca"
 					}
 				},
 				"metadata": {
@@ -2070,7 +2070,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 5
 				},
@@ -2124,7 +2125,7 @@
 							"#display(df_stage.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 29
+						"execution_count": 1
 					},
 					{
 						"cell_type": "code",
@@ -2156,7 +2157,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 30
+						"execution_count": 2
 					},
 					{
 						"cell_type": "code",
@@ -2186,7 +2187,7 @@
 							"#display(df_appstJob.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 31
+						"execution_count": 3
 					},
 					{
 						"cell_type": "code",
@@ -2232,7 +2233,7 @@
 							"#display(df_department.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 33
+						"execution_count": 4
 					},
 					{
 						"cell_type": "code",
@@ -2265,7 +2266,7 @@
 							"#display(df_candidate.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 34
+						"execution_count": 5
 					},
 					{
 						"cell_type": "code",
@@ -2309,7 +2310,7 @@
 							"#display(df_appCandidate.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 35
+						"execution_count": 6
 					},
 					{
 						"cell_type": "code",
@@ -2332,7 +2333,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 39
+						"execution_count": 7
 					}
 				]
 			},
@@ -2359,7 +2360,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "940a998b-be5c-4313-9e83-5cad71d3d84a"
+						"spark.autotune.trackingId": "c8a4cca1-ccb8-41af-bfd7-046b74c854f4"
 					}
 				},
 				"metadata": {
