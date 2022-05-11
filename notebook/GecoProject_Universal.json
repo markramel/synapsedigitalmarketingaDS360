@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7e40e12c-87e2-471c-bb1d-2c0b9ea984be"
+				"spark.autotune.trackingId": "5db0edfc-35a1-455c-84d1-55a0b9378f2a"
 			}
 		},
 		"metadata": {
@@ -270,168 +270,13 @@
 					"\r\n",
 					"#Remove undefined\r\n",
 					"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
-					"\r\n",
 					"df_appCandidate = df_appCandidate.withColumn(\"FirstName\", f.initcap(\"FirstName\"))\r\n",
-					"\r\n",
 					"df_appCandidate = df_appCandidate.withColumn(\"LastName\", f.initcap(\"LastName\"))\r\n",
-					"\r\n",
 					"df_appCandidate = df_appCandidate.withColumn(\"fullName\", f.initcap(\"fullName\"))\r\n",
-					"\r\n",
 					"\r\n",
 					"#display(df_appCandidate.limit(5))"
 				],
 				"execution_count": 35
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"from pyspark.sql import functions as f\r\n",
-					"from pyspark.sql.functions import *\r\n",
-					"\r\n",
-					"# removing delimiters, change the case to lower, rename JobDescription to Job, and directly apply now \r\n",
-					"dg = dg.withColumn(\"JobDesc\",lower(translate(col(\"JobDescription\"),\"./–!-() \",\"\")) )\r\n",
-					"\r\n",
-					"# extract Year and Week in AppliedOrSourcedDate from applications dataframe\r\n",
-					"df_appCandidate = df_appCandidate.withColumn(\"Year\", year(to_date(df_appCandidate.AppliedOrSourcedDate,\"M/d/y\"))) \\\r\n",
-					".withColumn(\"Week\", weekofyear(to_date(df_appCandidate.AppliedOrSourcedDate, \"M/d/y\")))\r\n",
-					"\r\n",
-					"#<-- join tables to create a flat file applications dataframe-->\r\n",
-					"\r\n",
-					"#select two columns in TalentList\r\n",
-					"dj = dj.select(\"Id\", \"Title\")\r\n",
-					"dj = dj.withColumnRenamed(\"Title\", \"AcctMngr\")\r\n",
-					"#join tables CohortTableList and TalentList\r\n",
-					"dq = dg.join(dj, dg.AcctMngrId==dj.Id,\"left\").drop(dj.Id)\r\n",
-					"#select two columns in CohortForm\r\n",
-					"dh = dh.select(\"Id\", \"Title\")\r\n",
-					"dh = dh.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
-					"#join tables CohortTableList and CohortForm\r\n",
-					"da = dq.join(dh, dq.CohortNameId==dh.Id,\"left\")\r\n",
-					"da = da.distinct()\r\n",
-					"#join tables Applications and CohortTableList\r\n",
-					"ds = df_appCandidate.join(da,df_appCandidate.Jobs==da.JobDesc,\"left\")\r\n",
-					"##ds = ds.withColumnRenamed(\"Title\",\"CohortName\")\r\n",
-					"#display(ds.limit(5))"
-				],
-				"execution_count": 36
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"from pyspark.sql import functions as f\r\n",
-					"from pyspark.sql.functions import *\r\n",
-					"\r\n",
-					"# re-initiate TalentList to dataframe\r\n",
-					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
-					"dj = dj.select(\"Title\")\r\n",
-					"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
-					"\r\n",
-					"#join tables Applications and TalentList\r\n",
-					"ds = ds.join(dj,ds.SourceSubType==dj.TA,\"left\")\r\n",
-					"#display(ds.limit(5))"
-				],
-				"execution_count": 37
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"from pyspark.sql import functions as f\r\n",
-					"from pyspark.sql.functions import *\r\n",
-					"\r\n",
-					"\r\n",
-					"\r\n",
-					"#choose between fields to impose if sourcesubtype is equal to TA field in TalentList\r\n",
-					"ds = ds.withColumn(\"FinalTA\", when(ds.SourceSubType == ds.TA,ds.SourceSubType).otherwise(ds.AcctMngr))\r\n",
-					"\r\n",
-					"\r\n",
-					"#re-intitiate an instance of TalentList to dataframe\r\n",
-					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
-					"dj = dj.select(\"Title\",\"PictureURL\")\r\n",
-					"dj = dj.withColumnRenamed(\"Title\",\"TA\")\r\n",
-					"\r\n",
-					"#join Applications and TalentList dataframes\r\n",
-					"ds = ds.join(dj,ds.FinalTA==dj.TA,\"left\").drop(ds.TA)\r\n",
-					"ds = ds.withColumnRenamed(\"PictureURL\",\"FinalTAPicUrl\")\r\n",
-					"#<-----\r\n",
-					"#drop unwanted fields that occured during the join\r\n",
-					"ds = ds.drop(\"ContentTypeID\", \"ContentType\",\"Modified\",\"Created\", \"CreatedById\", \"ModifiedById\", \\\r\n",
-					"\"Owshiddenversion\", \"Version\", \"Path\", \"ComplianceAssetId\",\"id\", \"JobDesc\").distinct()\r\n",
-					"#<-- end of join tables to create a flat file applications dataframe-->\r\n",
-					"\r\n",
-					"\r\n",
-					"display(ds.limit(5))"
-				],
-				"execution_count": 38
-			},
-			{
-				"cell_type": "markdown",
-				"metadata": {
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"from pyspark.sql import functions as f\r\n",
-					"from pyspark.sql.functions import *\r\n",
-					"\r\n",
-					"#AppStageJobDepartment + Candidate\r\n",
-					"\r\n",
-					"df_appCandidate = df_appstjobDept.join(df_candidate, [df_candidate['Id'] == df_appstjobDept['candidateId']], 'left') \\\r\n",
-					"    .select(df_appStage['Id'], df_appStage['candidateId']\r\n",
-					"        , df_candidate['firstName'], df_candidate['lastName'], col('created').alias('candidateCreated'), col('lastModified').alias('candidateLastModified')\r\n",
-					"        , 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason'\r\n",
-					"        , 'stage', 'conversion', 'isReach', 'isTest', 'isInterview', 'isOffer', 'isConversion', 'type'\r\n",
-					"        , 'job', 'department'\r\n",
-					"        , 'locationCountry', 'locationCountryCode', 'region', 'city', 'zipCode', 'status'\r\n",
-					"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
-					"\r\n",
-					"\r\n",
-					"#Create FullName column\r\n",
-					"df_appCandidate = df_appCandidate.withColumn('fullName', f.concat(f.col('firstName'),f.lit(' '),f.col('lastName')))\r\n",
-					"\r\n",
-					"#Remove undefined\r\n",
-					"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
-					"\r\n",
-					"#display(df_appCandidate.limit(5))"
-				]
 			},
 			{
 				"cell_type": "code",
@@ -450,22 +295,7 @@
 					"#df_appCandidate = df_appCandidate.repartition(1)\r\n",
 					"#df_appCandidate.write.mode('overwrite').option(\"header\", True).csv(\"/capstone/GecoAPI/Output\")\r\n",
 					"\r\n",
-					"ds.write.mode(\"overwrite\").saveAsTable(\"gecoproject.applications\")\r\n",
-					"\r\n",
-					"#re-initiate CohortTableList dataframe and save as a table in capstone lake database\r\n",
-					"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
-					"dg.write.mode(\"overwrite\") \\\r\n",
-					".saveAsTable(\"gecoproject.CohortTableList\")\r\n",
-					"\r\n",
-					"#re-initiate CohortForm dataframe and save as a table in capstone lake database\r\n",
-					"dh = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortForm.parquet', format='parquet')\r\n",
-					"dh.write.mode(\"overwrite\") \\\r\n",
-					".saveAsTable(\"gecoproject.CohortForm\")\r\n",
-					"\r\n",
-					"#re-initiate TalentList dataframe and save as a table in capstone lake database\r\n",
-					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
-					"dj.write.mode(\"overwrite\") \\\r\n",
-					".saveAsTable(\"gecoproject.TalentList\")\r\n",
+					"df_appCandidate.write.mode(\"overwrite\").saveAsTable(\"gecoproject.applications_noCohort\")\r\n",
 					""
 				],
 				"execution_count": 39
