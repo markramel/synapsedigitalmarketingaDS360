@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8c5d6cc6-9f8c-4a5c-b3ca-110f0e6c4c71"
+				"spark.autotune.trackingId": "9fd220fd-cc93-489e-a2aa-60eb2f5815a3"
 			}
 		},
 		"metadata": {
@@ -59,23 +59,12 @@
 				"source": [
 					"%%pyspark\r\n",
 					"#Load to Dataframe\r\n",
-					"df_app = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Application.csv', format='csv', header=True)\r\n",
-					"df_candidate = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Candidate.csv', format='csv', header=True)\r\n",
-					"df_department = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Department.csv', format='csv', header=True)\r\n",
-					"df_job = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Job.csv', format='csv', header=True)\r\n",
-					"df_joblist = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/JobList.csv', format='csv', header=True)\r\n",
-					"df_stage = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Stage.csv', format='csv', header=True)\r\n",
-					"\r\n",
-					"#loading CohortTableList.parquet to dataframe\r\n",
-					"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
-					"dg = dg.drop('Title')\r\n",
-					"\r\n",
-					"#loading CohortForm.parquet to dataframe\r\n",
-					"dh = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortForm.parquet', format='parquet')\r\n",
-					"\r\n",
-					"#loading Talentlist.parquet to dataframe\r\n",
-					"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
-					"\r\n",
+					"df_app = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Application.csv', format='csv', header=True).distinct()\r\n",
+					"df_candidate = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Candidate.csv', format='csv', header=True).distinct()\r\n",
+					"df_department = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Department.csv', format='csv', header=True).distinct()\r\n",
+					"df_job = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Job.csv', format='csv', header=True).distinct()\r\n",
+					"df_joblist = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/JobList.csv', format='csv', header=True).distinct()\r\n",
+					"df_stage = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Stage.csv', format='csv', header=True).distinct()\r\n",
 					"\r\n",
 					"#Change 'undefined' to empty space\r\n",
 					"df_app = df_app.fillna(value = \"\")\r\n",
@@ -85,18 +74,16 @@
 					"df_joblist = df_joblist.fillna(value = \"\")\r\n",
 					"df_stage = df_stage.fillna(value = \"\")\r\n",
 					"\r\n",
-					"dg = dg.fillna(value = \"\")\r\n",
-					"dh = dh.fillna(value = \"\")\r\n",
-					"dj = dj.fillna(value = \"\")\r\n",
-					"\r\n",
 					"#display(df_app.limit(5))\r\n",
 					"#display(df_candidate.limit(5))\r\n",
 					"#display(df_department.limit(5))\r\n",
 					"#display(df_job.limit(5))\r\n",
 					"#display(df_joblist.limit(5))\r\n",
-					"#display(df_stage.limit(5))"
+					"#display(df_stage.limit(5))\r\n",
+					"\r\n",
+					"#df_app.count()"
 				],
-				"execution_count": 15
+				"execution_count": 102
 			},
 			{
 				"cell_type": "code",
@@ -121,13 +108,14 @@
 					"df_appStage = df_app.join(df_stage, [df_stage['Id'] == df_app ['stageId'], df_stage['applicationId'] == df_app ['id']], 'left') \\\r\n",
 					"    .select(df_app['Id'], df_app['candidateId'], 'profileUrl', col('created').alias('appCreated'), col('disqualified').alias('appDisqualified')\r\n",
 					"        , col('disqualifiedAt').alias('appDisqualifiedAt'), col('disqualificationReason').alias('appDisqualificationReason')\r\n",
-					"        , df_app['stageId'], col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+					"        , df_app['stageId']\r\n",
+					"        , col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 					"\r\n",
 					"#display(df_appStage.limit(5))\r\n",
 					"#display(df_joblist.limit(5))\r\n",
-					""
+					"#df_appStage.count()"
 				],
-				"execution_count": 17
+				"execution_count": 103
 			},
 			{
 				"cell_type": "code",
@@ -150,13 +138,15 @@
 					"#AppStage + Job\r\n",
 					"\r\n",
 					"df_appstJob = df_appStage.join(df_joblist, [df_joblist['Id'] == df_appStage['jobId']], 'left') \\\r\n",
-					"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason', 'stageId', 'stage', 'type'\r\n",
+					"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason'\r\n",
+					"        , 'stageId', 'stage', 'type'\r\n",
 					"        , col('title').alias('job'), df_joblist['departmentId'], df_joblist['Country'], df_joblist['locationCountryCode'], df_joblist['region'], df_joblist['city'], df_joblist['zipCode'], df_joblist['status']\r\n",
 					"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 					"\r\n",
-					"#display(df_appstJob.limit(5))"
+					"#display(df_appstJob.limit(5))\r\n",
+					"#df_appstJob.count()"
 				],
-				"execution_count": 18
+				"execution_count": 104
 			},
 			{
 				"cell_type": "code",
@@ -199,9 +189,10 @@
 					"df_appstJob = df_appstJob.withColumn(\"JobDescNoChar\", f.lower(f.translate(f.col(\"Job\"),\"./–!-() \",\"\")))\r\n",
 					"\r\n",
 					"#display(df_appstJob.limit(5))\r\n",
-					"#display(df_department.limit(5))"
+					"#display(df_department.limit(5))\r\n",
+					"#df_appstJob.count()"
 				],
-				"execution_count": 19
+				"execution_count": 105
 			},
 			{
 				"cell_type": "code",
@@ -231,9 +222,10 @@
 					"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted','Job')\r\n",
 					"\r\n",
 					"#display(df_appstjobDept.limit(5))\r\n",
-					"#display(df_candidate.limit(5))"
+					"#display(df_candidate.limit(5))\r\n",
+					"#df_appstjobDept.count()"
 				],
-				"execution_count": 20
+				"execution_count": 106
 			},
 			{
 				"cell_type": "code",
@@ -259,11 +251,11 @@
 					"    .select(df_appStage['Id'].alias('ApplicationId'), col('candidateId').alias('CandidateId')\r\n",
 					"        , col('firstName').alias('FirstName'), col('lastName').alias('LastName'), col('created').alias('CandidateCreated'), col('lastModified').alias('CandidateLastModified')\r\n",
 					"        , col('profileUrl').alias('ProfileUrl'), col('appCreated').alias('AppliedOrSourcedDate'), col('appDisqualified').alias('Disqualified'), col('appDisqualifiedAt').alias('DisqualifiedAt'), col('appDisqualificationReason').alias('DisqualificationsReason')\r\n",
-					"        , col('conversion').alias('TrackerType'), col('isReach').alias('Reach'), col('isTest').alias('Test'), col('isInterview').alias('Interview'), col('isOffer').alias('Offer'), col('isConversion').alias('Conversion'), 'stageId', col('type').alias('Stage')\r\n",
+					"        , col('conversion').alias('TrackerType'), col('isReach').alias('Reach'), col('isTest').alias('Test'), col('isInterview').alias('Interview'), col('isOffer').alias('Offer'), col('isConversion').alias('Conversion')\r\n",
+					"        , 'stageId', col('type').alias('Stage')\r\n",
 					"        , col('JobDescNoChar').alias('Jobs'), col('department').alias('JobDepartment')\r\n",
 					"        , 'Country', col('locationCountryCode').alias('LocationCountryCode'), col('region').alias('Region'), col('city').alias('City'), col('zipCode').alias('ZipCode'), col('status').alias('Status')\r\n",
 					"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', col('sourceFormatted').alias('SourceSubType'),'Job')\r\n",
-					"\r\n",
 					"\r\n",
 					"#Create FullName column\r\n",
 					"df_appCandidate = df_appCandidate.withColumn('fullName', f.concat(f.col('firstName'),f.lit(' '),f.col('lastName')))\r\n",
@@ -274,9 +266,10 @@
 					"df_appCandidate = df_appCandidate.withColumn(\"LastName\", f.initcap(\"LastName\"))\r\n",
 					"df_appCandidate = df_appCandidate.withColumn(\"fullName\", f.initcap(\"fullName\"))\r\n",
 					"\r\n",
-					"#display(df_appCandidate.limit(5))"
+					"#display(df_appCandidate.limit(5))\r\n",
+					"#df_appCandidate.count()"
 				],
-				"execution_count": 21
+				"execution_count": 107
 			},
 			{
 				"cell_type": "code",
@@ -304,9 +297,10 @@
 					"\r\n",
 					"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
 					"\r\n",
-					"#display(df_appCandidate.limit(5))"
+					"#display(df_appCandidate.limit(5))\r\n",
+					"#df_appCandidate.count()"
 				],
-				"execution_count": 22
+				"execution_count": 108
 			},
 			{
 				"cell_type": "code",
@@ -328,7 +322,7 @@
 					"df_appCandidate.write.mode(\"overwrite\").saveAsTable(\"gecoproject.applications_noCohort\")\r\n",
 					""
 				],
-				"execution_count": 23
+				"execution_count": 109
 			}
 		]
 	}
