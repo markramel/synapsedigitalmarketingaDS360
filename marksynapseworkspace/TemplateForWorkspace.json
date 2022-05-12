@@ -2045,7 +2045,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f9d40ed6-d275-48d2-b509-62f6eb319bca"
+						"spark.autotune.trackingId": "dd230801-3df9-4f5d-9002-f6932d905703"
 					}
 				},
 				"metadata": {
@@ -2125,7 +2125,7 @@
 							"#display(df_stage.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 15
 					},
 					{
 						"cell_type": "code",
@@ -2150,14 +2150,14 @@
 							"df_appStage = df_app.join(df_stage, [df_stage['Id'] == df_app ['stageId'], df_stage['applicationId'] == df_app ['id']], 'left') \\\r\n",
 							"    .select(df_app['Id'], df_app['candidateId'], 'profileUrl', col('created').alias('appCreated'), col('disqualified').alias('appDisqualified')\r\n",
 							"        , col('disqualifiedAt').alias('appDisqualifiedAt'), col('disqualificationReason').alias('appDisqualificationReason')\r\n",
-							"        , col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+							"        , df_app['stageId'], col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 							"\r\n",
 							"#display(df_appStage.limit(5))\r\n",
 							"#display(df_joblist.limit(5))\r\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 17
 					},
 					{
 						"cell_type": "code",
@@ -2180,14 +2180,14 @@
 							"#AppStage + Job\r\n",
 							"\r\n",
 							"df_appstJob = df_appStage.join(df_joblist, [df_joblist['Id'] == df_appStage['jobId']], 'left') \\\r\n",
-							"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason', 'stage', 'type'\r\n",
+							"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason', 'stageId', 'stage', 'type'\r\n",
 							"        , col('title').alias('job'), df_joblist['departmentId'], df_joblist['Country'], df_joblist['locationCountryCode'], df_joblist['region'], df_joblist['city'], df_joblist['zipCode'], df_joblist['status']\r\n",
 							"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 							"\r\n",
 							"#display(df_appstJob.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 18
 					},
 					{
 						"cell_type": "code",
@@ -2233,7 +2233,7 @@
 							"#display(df_department.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 4
+						"execution_count": 19
 					},
 					{
 						"cell_type": "code",
@@ -2257,7 +2257,7 @@
 							"\r\n",
 							"df_appstjobDept = df_appstJob.join(df_department, [df_department['Id'] == df_appstJob['departmentId']], 'left') \\\r\n",
 							"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason'\r\n",
-							"        , 'stage', 'conversion', 'isReach', 'isTest', 'isInterview', 'isOffer', 'isConversion', 'type'\r\n",
+							"        , 'stageId', 'stage', 'conversion', 'isReach', 'isTest', 'isInterview', 'isOffer', 'isConversion', 'type'\r\n",
 							"        , 'JobDescNoChar', col('name').alias('department')\r\n",
 							"        , 'Country', 'locationCountryCode', 'region', 'city', 'zipCode', 'status'\r\n",
 							"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted','Job')\r\n",
@@ -2266,7 +2266,7 @@
 							"#display(df_candidate.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 5
+						"execution_count": 20
 					},
 					{
 						"cell_type": "code",
@@ -2292,7 +2292,7 @@
 							"    .select(df_appStage['Id'].alias('ApplicationId'), col('candidateId').alias('CandidateId')\r\n",
 							"        , col('firstName').alias('FirstName'), col('lastName').alias('LastName'), col('created').alias('CandidateCreated'), col('lastModified').alias('CandidateLastModified')\r\n",
 							"        , col('profileUrl').alias('ProfileUrl'), col('appCreated').alias('AppliedOrSourcedDate'), col('appDisqualified').alias('Disqualified'), col('appDisqualifiedAt').alias('DisqualifiedAt'), col('appDisqualificationReason').alias('DisqualificationsReason')\r\n",
-							"        , col('conversion').alias('TrackerType'), col('isReach').alias('Reach'), col('isTest').alias('Test'), col('isInterview').alias('Interview'), col('isOffer').alias('Offer'), col('isConversion').alias('Conversion'), col('type').alias('Stage')\r\n",
+							"        , col('conversion').alias('TrackerType'), col('isReach').alias('Reach'), col('isTest').alias('Test'), col('isInterview').alias('Interview'), col('isOffer').alias('Offer'), col('isConversion').alias('Conversion'), 'stageId', col('type').alias('Stage')\r\n",
 							"        , col('JobDescNoChar').alias('Jobs'), col('department').alias('JobDepartment')\r\n",
 							"        , 'Country', col('locationCountryCode').alias('LocationCountryCode'), col('region').alias('Region'), col('city').alias('City'), col('zipCode').alias('ZipCode'), col('status').alias('Status')\r\n",
 							"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', col('sourceFormatted').alias('SourceSubType'),'Job')\r\n",
@@ -2310,7 +2310,38 @@
 							"#display(df_appCandidate.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 6
+						"execution_count": 21
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as f\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"#Convert Dates Timezone to DateTime\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"CandidateCreatedDT\", to_timestamp(df_appCandidate[\"CandidateCreated\"]))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"CandidateLastModifiedDT\", to_timestamp(df_appCandidate[\"CandidateLastModified\"]))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"AppliedOrSourcedDateDT\", to_timestamp(df_appCandidate[\"AppliedOrSourcedDate\"]))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"DisqualifiedAtDT\", to_timestamp(df_appCandidate[\"DisqualifiedAt\"]))\r\n",
+							"\r\n",
+							"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
+							"\r\n",
+							"#display(df_appCandidate.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 22
 					},
 					{
 						"cell_type": "code",
@@ -2333,7 +2364,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 7
+						"execution_count": 23
 					}
 				]
 			},
@@ -2360,7 +2391,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c8a4cca1-ccb8-41af-bfd7-046b74c854f4"
+						"spark.autotune.trackingId": "8235f20c-2408-47c9-b4ac-7f73847f0cca"
 					}
 				},
 				"metadata": {
