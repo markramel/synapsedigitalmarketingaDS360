@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "capstone/tadashboard",
+				"folderPath": "capstone/GecoAPI",
 				"fileSystem": "dlsg2markfilesystem"
 			},
 			"compressionCodec": "snappy"
