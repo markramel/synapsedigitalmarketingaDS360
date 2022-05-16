@@ -2089,7 +2089,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "7727d74e-c09c-4f2e-bcbe-205906046f8f"
+						"spark.autotune.trackingId": "a3d39c5a-7754-431a-bf6a-3e9cc7c2e213"
 					}
 				},
 				"metadata": {
@@ -2182,7 +2182,7 @@
 							"    .select(df_app['Id'], df_app['candidateId'], 'profileUrl', col('created').alias('appCreated'), col('disqualified').alias('appDisqualified')\r\n",
 							"        , col('disqualifiedAt').alias('appDisqualifiedAt'), col('disqualificationReason').alias('appDisqualificationReason')\r\n",
 							"        , df_app['stageId']\r\n",
-							"        , col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+							"        , col('type').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 							"\r\n",
 							"#display(df_appStage.limit(5))\r\n",
 							"#display(df_joblist.limit(5))\r\n",
@@ -2429,7 +2429,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "08e8ef85-1597-4890-9518-dc77eeb43b07"
+						"spark.autotune.trackingId": "0d17bf03-7412-40cc-9e7a-173cb87e036c"
 					}
 				},
 				"metadata": {
@@ -2535,7 +2535,7 @@
 							"    .select(df_app['Id'], df_app['candidateId'], 'profileUrl', col('created').alias('appCreated'), col('disqualified').alias('appDisqualified')\r\n",
 							"        , col('disqualifiedAt').alias('appDisqualifiedAt'), col('disqualificationReason').alias('appDisqualificationReason')\r\n",
 							"        , df_app['stageId']\r\n",
-							"        , col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+							"        , col('type').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 							"\r\n",
 							"#display(df_appStage.limit(5))\r\n",
 							"#display(df_joblist.limit(5))\r\n",
@@ -4933,7 +4933,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "8c3a8194-6c1f-45b8-baf3-d4792a1a624e"
+						"spark.autotune.trackingId": "64575899-2f94-4de4-9079-01359912bd5f"
 					}
 				},
 				"metadata": {
