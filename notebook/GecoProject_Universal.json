@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4ea89f6a-608f-41e1-85e3-cea32548a3a8"
+				"spark.autotune.trackingId": "ddd50f14-40e6-42e1-9dbd-a735bbb4d06c"
 			}
 		},
 		"metadata": {
@@ -109,7 +109,7 @@
 					"    .select(df_app['Id'], df_app['candidateId'], 'profileUrl', col('created').alias('appCreated'), col('disqualified').alias('appDisqualified')\r\n",
 					"        , col('disqualifiedAt').alias('appDisqualifiedAt'), col('disqualificationReason').alias('appDisqualificationReason')\r\n",
 					"        , df_app['stageId']\r\n",
-					"        , col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+					"        , col('type').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 					"\r\n",
 					"#display(df_appStage.limit(5))\r\n",
 					"#display(df_joblist.limit(5))\r\n",
