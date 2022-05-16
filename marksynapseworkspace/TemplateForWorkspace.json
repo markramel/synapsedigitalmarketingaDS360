@@ -15,10 +15,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase2'"
 		},
-		"CandidateHistoryWebhook_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'CandidateHistoryWebhook'"
-		},
 		"SharePointOnlineList1_servicePrincipalKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'servicePrincipalKey' of 'SharePointOnlineList1'"
@@ -38,10 +34,6 @@
 		"ApplicationsHttpServer1_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://upskilltoday.sharepoint.com/sites/GecoTeamAsia/_api/web/GetFileByServerRelativeUrl ('@{linkedService().FileName}')/$value"
-		},
-		"CandidateHistoryWebhook_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://synapsedlakestgen2mark.dfs.core.windows.net"
 		},
 		"HttpServer1_properties_typeProperties_url": {
 			"type": "string",
@@ -64,77 +56,6 @@
 		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('workspaceName'), '/CandidateHistoryWebhook')]",
-			"type": "Microsoft.Synapse/workspaces/pipelines",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy_zt1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [
-							{
-								"name": "Source",
-								"value": "dbo.CandidateHistoryWebHook"
-							},
-							{
-								"name": "Destination",
-								"value": "dlsg2markfilesystem/capstone/tadashboard/"
-							}
-						],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false,
-							"validateDataConsistency": false
-						},
-						"inputs": [
-							{
-								"referenceName": "SourceDataset_zt1",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "DestinationDataset_zt1",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/datasets/SourceDataset_zt1')]",
-				"[concat(variables('workspaceId'), '/datasets/DestinationDataset_zt1')]"
-			]
-		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/TalentLyftPipeline')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
@@ -805,31 +726,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/marksynapseworkspace-WorkspaceDefaultStorage')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/DestinationDataset_zt1')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "CandidateHistoryWebhook",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "capstone/GecoAPI",
-						"fileSystem": "dlsg2markfilesystem"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/CandidateHistoryWebhook')]"
 			]
 		},
 		{
@@ -1770,29 +1666,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/CandidateHistoryWebhook')]",
-			"type": "Microsoft.Synapse/workspaces/linkedServices",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('CandidateHistoryWebhook_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('CandidateHistoryWebhook_accountKey')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "AutoResolveIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/HttpServer1')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
 			"apiVersion": "2019-06-01-preview",
@@ -2216,7 +2089,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "8c5d6cc6-9f8c-4a5c-b3ca-110f0e6c4c71"
+						"spark.autotune.trackingId": "7727d74e-c09c-4f2e-bcbe-205906046f8f"
 					}
 				},
 				"metadata": {
@@ -2241,7 +2114,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 5
 				},
@@ -2257,12 +2131,352 @@
 						"source": [
 							"%%pyspark\r\n",
 							"#Load to Dataframe\r\n",
-							"df_app = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Application.csv', format='csv', header=True)\r\n",
-							"df_candidate = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Candidate.csv', format='csv', header=True)\r\n",
-							"df_department = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Department.csv', format='csv', header=True)\r\n",
-							"df_job = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Job.csv', format='csv', header=True)\r\n",
-							"df_joblist = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/JobList.csv', format='csv', header=True)\r\n",
-							"df_stage = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Stage.csv', format='csv', header=True)\r\n",
+							"df_app = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Application.csv', format='csv', header=True).distinct()\r\n",
+							"df_candidate = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Candidate.csv', format='csv', header=True).distinct()\r\n",
+							"df_department = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Department.csv', format='csv', header=True).distinct()\r\n",
+							"df_job = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Job.csv', format='csv', header=True).distinct()\r\n",
+							"df_joblist = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/JobList.csv', format='csv', header=True).distinct()\r\n",
+							"df_stage = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Stage.csv', format='csv', header=True).distinct()\r\n",
+							"\r\n",
+							"#Change 'undefined' to empty space\r\n",
+							"df_app = df_app.fillna(value = \"\")\r\n",
+							"df_candidate = df_candidate.fillna(value = \"\")\r\n",
+							"df_department = df_department.fillna(value = \"\")\r\n",
+							"df_job = df_job.fillna(value = \"\")\r\n",
+							"df_joblist = df_joblist.fillna(value = \"\")\r\n",
+							"df_stage = df_stage.fillna(value = \"\")\r\n",
+							"\r\n",
+							"#display(df_app.limit(5))\r\n",
+							"#display(df_candidate.limit(5))\r\n",
+							"#display(df_department.limit(5))\r\n",
+							"#display(df_job.limit(5))\r\n",
+							"#display(df_joblist.limit(5))\r\n",
+							"#display(df_stage.limit(5))\r\n",
+							"\r\n",
+							"#df_app.count()"
+						],
+						"outputs": [],
+						"execution_count": 102
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as f\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"#Applications + Stage\r\n",
+							"\r\n",
+							"df_appStage = df_app.join(df_stage, [df_stage['Id'] == df_app ['stageId'], df_stage['applicationId'] == df_app ['id']], 'left') \\\r\n",
+							"    .select(df_app['Id'], df_app['candidateId'], 'profileUrl', col('created').alias('appCreated'), col('disqualified').alias('appDisqualified')\r\n",
+							"        , col('disqualifiedAt').alias('appDisqualifiedAt'), col('disqualificationReason').alias('appDisqualificationReason')\r\n",
+							"        , df_app['stageId']\r\n",
+							"        , col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+							"\r\n",
+							"#display(df_appStage.limit(5))\r\n",
+							"#display(df_joblist.limit(5))\r\n",
+							"#df_appStage.count()"
+						],
+						"outputs": [],
+						"execution_count": 103
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as f\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"#AppStage + Job\r\n",
+							"\r\n",
+							"df_appstJob = df_appStage.join(df_joblist, [df_joblist['Id'] == df_appStage['jobId']], 'left') \\\r\n",
+							"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason'\r\n",
+							"        , 'stageId', 'stage', 'type'\r\n",
+							"        , col('title').alias('job'), df_joblist['departmentId'], df_joblist['Country'], df_joblist['locationCountryCode'], df_joblist['region'], df_joblist['city'], df_joblist['zipCode'], df_joblist['status']\r\n",
+							"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+							"\r\n",
+							"#display(df_appstJob.limit(5))\r\n",
+							"#df_appstJob.count()"
+						],
+						"outputs": [],
+						"execution_count": 104
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"from pyspark.sql import functions as f\r\n",
+							"\r\n",
+							"#Create tagging for each Stage\r\n",
+							"df_appstJob = df_appstJob.withColumn(\"conversion\", \r\n",
+							"    f.when((f.col(\"Stage\") == \"Sourced\") | (f.col(\"Stage\") == \"Applied\"), \"Reach\")\r\n",
+							"    .when((f.col(\"Stage\") == \"Screen\") | (f.col(\"Stage\") == \"OfferToClient\"), \"Test\")\r\n",
+							"    .when((f.col(\"Stage\") == \"Interview\"), \"Interview\")\r\n",
+							"    .when((f.col(\"Stage\") == \"Shortlisted\") | (f.col(\"Stage\") == \"Offer\"), \"Offer\")\r\n",
+							"    .when((f.col(\"Stage\") == \"Hired\"), \"Conversion\")\r\n",
+							"    .otherwise(\"NA\"))\r\n",
+							"\r\n",
+							"#Tag as 1 if Conversion to get which stage are converted\r\n",
+							"df_appstJob = df_appstJob.withColumn(\"isReach\", f.when((f.col(\"conversion\") == \"Reach\"), 1).otherwise(0))\r\n",
+							"df_appstJob = df_appstJob.withColumn(\"isTest\", f.when((f.col(\"conversion\") == \"Test\"), 1).otherwise(0))\r\n",
+							"df_appstJob = df_appstJob.withColumn(\"isInterview\", f.when((f.col(\"conversion\") == \"Interview\"), 1).otherwise(0))\r\n",
+							"df_appstJob = df_appstJob.withColumn(\"isOffer\", f.when((f.col(\"conversion\") == \"Offer\"), 1).otherwise(0))\r\n",
+							"df_appstJob = df_appstJob.withColumn(\"isConversion\", f.when((f.col(\"conversion\") == \"Conversion\"), 1).otherwise(0))\r\n",
+							"\r\n",
+							"#Create new column with removed special characters\r\n",
+							"df_appstJob = df_appstJob.withColumn(\"JobDescNoChar\", f.lower(f.translate(f.col(\"Job\"),\"./–!-() \",\"\")))\r\n",
+							"\r\n",
+							"#display(df_appstJob.limit(5))\r\n",
+							"#display(df_department.limit(5))\r\n",
+							"#df_appstJob.count()"
+						],
+						"outputs": [],
+						"execution_count": 105
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as f\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"#AppStageJob + Department\r\n",
+							"\r\n",
+							"df_appstjobDept = df_appstJob.join(df_department, [df_department['Id'] == df_appstJob['departmentId']], 'left') \\\r\n",
+							"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason'\r\n",
+							"        , 'stageId', 'stage', 'conversion', 'isReach', 'isTest', 'isInterview', 'isOffer', 'isConversion', 'type'\r\n",
+							"        , 'JobDescNoChar', col('name').alias('department')\r\n",
+							"        , 'Country', 'locationCountryCode', 'region', 'city', 'zipCode', 'status'\r\n",
+							"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted','Job')\r\n",
+							"\r\n",
+							"#display(df_appstjobDept.limit(5))\r\n",
+							"#display(df_candidate.limit(5))\r\n",
+							"#df_appstjobDept.count()"
+						],
+						"outputs": [],
+						"execution_count": 106
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as f\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"#AppStageJobDepartment + Candidate\r\n",
+							"\r\n",
+							"df_appCandidate = df_appstjobDept.join(df_candidate, [df_candidate['Id'] == df_appstjobDept['candidateId']], 'left') \\\r\n",
+							"    .select(df_appStage['Id'].alias('ApplicationId'), col('candidateId').alias('CandidateId')\r\n",
+							"        , col('firstName').alias('FirstName'), col('lastName').alias('LastName'), col('created').alias('CandidateCreated'), col('lastModified').alias('CandidateLastModified')\r\n",
+							"        , col('profileUrl').alias('ProfileUrl'), col('appCreated').alias('AppliedOrSourcedDate'), col('appDisqualified').alias('Disqualified'), col('appDisqualifiedAt').alias('DisqualifiedAt'), col('appDisqualificationReason').alias('DisqualificationsReason')\r\n",
+							"        , col('conversion').alias('TrackerType'), col('isReach').alias('Reach'), col('isTest').alias('Test'), col('isInterview').alias('Interview'), col('isOffer').alias('Offer'), col('isConversion').alias('Conversion')\r\n",
+							"        , 'stageId', col('type').alias('Stage')\r\n",
+							"        , col('JobDescNoChar').alias('Jobs'), col('department').alias('JobDepartment')\r\n",
+							"        , 'Country', col('locationCountryCode').alias('LocationCountryCode'), col('region').alias('Region'), col('city').alias('City'), col('zipCode').alias('ZipCode'), col('status').alias('Status')\r\n",
+							"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', col('sourceFormatted').alias('SourceSubType'),'Job')\r\n",
+							"\r\n",
+							"#Create FullName column\r\n",
+							"df_appCandidate = df_appCandidate.withColumn('fullName', f.concat(f.col('firstName'),f.lit(' '),f.col('lastName')))\r\n",
+							"\r\n",
+							"#Remove undefined\r\n",
+							"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"FirstName\", f.initcap(\"FirstName\"))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"LastName\", f.initcap(\"LastName\"))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"fullName\", f.initcap(\"fullName\"))\r\n",
+							"\r\n",
+							"#display(df_appCandidate.limit(5))\r\n",
+							"#df_appCandidate.count()"
+						],
+						"outputs": [],
+						"execution_count": 107
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as f\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"#Convert Dates Timezone to DateTime\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"CandidateCreatedDT\", to_timestamp(df_appCandidate[\"CandidateCreated\"]))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"CandidateLastModifiedDT\", to_timestamp(df_appCandidate[\"CandidateLastModified\"]))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"AppliedOrSourcedDateDT\", to_timestamp(df_appCandidate[\"AppliedOrSourcedDate\"]))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"DisqualifiedAtDT\", to_timestamp(df_appCandidate[\"DisqualifiedAt\"]))\r\n",
+							"\r\n",
+							"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
+							"\r\n",
+							"#display(df_appCandidate.limit(5))\r\n",
+							"#df_appCandidate.count()"
+						],
+						"outputs": [],
+						"execution_count": 108
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#df_appCandidate = df_appCandidate.repartition(1)\r\n",
+							"#df_appCandidate.write.mode('overwrite').option(\"header\", True).csv(\"/capstone/GecoAPI/Output\")\r\n",
+							"\r\n",
+							"df_appCandidate.write.mode(\"overwrite\").saveAsTable(\"gecoproject.applications_noCohort\")\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 109
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/GecoProject_Universal_with_Cohort')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "Capstone",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "08e8ef85-1597-4890-9518-dc77eeb43b07"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/6a4ac82e-930e-4e4d-b385-3cc2c61db5c6/resourceGroups/digitalmarketingmark/providers/Microsoft.Synapse/workspaces/marksynapseworkspace/bigDataPools/Capstone",
+						"name": "Capstone",
+						"type": "Spark",
+						"endpoint": "https://marksynapseworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Capstone",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 5
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"#Load to Dataframe\r\n",
+							"df_app = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Application.csv', format='csv', header=True).distinct()\r\n",
+							"df_candidate = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Candidate.csv', format='csv', header=True).distinct()\r\n",
+							"df_department = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Department.csv', format='csv', header=True).distinct()\r\n",
+							"df_job = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Job.csv', format='csv', header=True).distinct()\r\n",
+							"df_joblist = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/JobList.csv', format='csv', header=True).distinct()\r\n",
+							"df_stage = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Stage.csv', format='csv', header=True).distinct()\r\n",
 							"\r\n",
 							"#loading CohortTableList.parquet to dataframe\r\n",
 							"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
@@ -2295,7 +2509,7 @@
 							"#display(df_stage.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 15
+						"execution_count": 3
 					},
 					{
 						"cell_type": "code",
@@ -2320,14 +2534,15 @@
 							"df_appStage = df_app.join(df_stage, [df_stage['Id'] == df_app ['stageId'], df_stage['applicationId'] == df_app ['id']], 'left') \\\r\n",
 							"    .select(df_app['Id'], df_app['candidateId'], 'profileUrl', col('created').alias('appCreated'), col('disqualified').alias('appDisqualified')\r\n",
 							"        , col('disqualifiedAt').alias('appDisqualifiedAt'), col('disqualificationReason').alias('appDisqualificationReason')\r\n",
-							"        , df_app['stageId'], col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
+							"        , df_app['stageId']\r\n",
+							"        , col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 							"\r\n",
 							"#display(df_appStage.limit(5))\r\n",
 							"#display(df_joblist.limit(5))\r\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 17
+						"execution_count": 4
 					},
 					{
 						"cell_type": "code",
@@ -2350,14 +2565,15 @@
 							"#AppStage + Job\r\n",
 							"\r\n",
 							"df_appstJob = df_appStage.join(df_joblist, [df_joblist['Id'] == df_appStage['jobId']], 'left') \\\r\n",
-							"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason', 'stageId', 'stage', 'type'\r\n",
+							"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason'\r\n",
+							"        , 'stageId', 'stage', 'type'\r\n",
 							"        , col('title').alias('job'), df_joblist['departmentId'], df_joblist['Country'], df_joblist['locationCountryCode'], df_joblist['region'], df_joblist['city'], df_joblist['zipCode'], df_joblist['status']\r\n",
 							"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
 							"\r\n",
 							"#display(df_appstJob.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 18
+						"execution_count": 5
 					},
 					{
 						"cell_type": "code",
@@ -2403,7 +2619,7 @@
 							"#display(df_department.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 19
+						"execution_count": 6
 					},
 					{
 						"cell_type": "code",
@@ -2436,7 +2652,7 @@
 							"#display(df_candidate.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 20
+						"execution_count": 7
 					},
 					{
 						"cell_type": "code",
@@ -2462,11 +2678,11 @@
 							"    .select(df_appStage['Id'].alias('ApplicationId'), col('candidateId').alias('CandidateId')\r\n",
 							"        , col('firstName').alias('FirstName'), col('lastName').alias('LastName'), col('created').alias('CandidateCreated'), col('lastModified').alias('CandidateLastModified')\r\n",
 							"        , col('profileUrl').alias('ProfileUrl'), col('appCreated').alias('AppliedOrSourcedDate'), col('appDisqualified').alias('Disqualified'), col('appDisqualifiedAt').alias('DisqualifiedAt'), col('appDisqualificationReason').alias('DisqualificationsReason')\r\n",
-							"        , col('conversion').alias('TrackerType'), col('isReach').alias('Reach'), col('isTest').alias('Test'), col('isInterview').alias('Interview'), col('isOffer').alias('Offer'), col('isConversion').alias('Conversion'), 'stageId', col('type').alias('Stage')\r\n",
+							"        , col('conversion').alias('TrackerType'), col('isReach').alias('Reach'), col('isTest').alias('Test'), col('isInterview').alias('Interview'), col('isOffer').alias('Offer'), col('isConversion').alias('Conversion')\r\n",
+							"        , 'stageId', col('type').alias('Stage')\r\n",
 							"        , col('JobDescNoChar').alias('Jobs'), col('department').alias('JobDepartment')\r\n",
 							"        , 'Country', col('locationCountryCode').alias('LocationCountryCode'), col('region').alias('Region'), col('city').alias('City'), col('zipCode').alias('ZipCode'), col('status').alias('Status')\r\n",
 							"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', col('sourceFormatted').alias('SourceSubType'),'Job')\r\n",
-							"\r\n",
 							"\r\n",
 							"#Create FullName column\r\n",
 							"df_appCandidate = df_appCandidate.withColumn('fullName', f.concat(f.col('firstName'),f.lit(' '),f.col('lastName')))\r\n",
@@ -2477,41 +2693,11 @@
 							"df_appCandidate = df_appCandidate.withColumn(\"LastName\", f.initcap(\"LastName\"))\r\n",
 							"df_appCandidate = df_appCandidate.withColumn(\"fullName\", f.initcap(\"fullName\"))\r\n",
 							"\r\n",
-							"#display(df_appCandidate.limit(5))"
-						],
-						"outputs": [],
-						"execution_count": 21
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"collapsed": false
-						},
-						"source": [
-							"from pyspark.sql import functions as f\r\n",
-							"from pyspark.sql.functions import *\r\n",
-							"\r\n",
-							"#Convert Dates Timezone to DateTime\r\n",
-							"df_appCandidate = df_appCandidate.withColumn(\"CandidateCreatedDT\", to_timestamp(df_appCandidate[\"CandidateCreated\"]))\r\n",
-							"df_appCandidate = df_appCandidate.withColumn(\"CandidateLastModifiedDT\", to_timestamp(df_appCandidate[\"CandidateLastModified\"]))\r\n",
-							"df_appCandidate = df_appCandidate.withColumn(\"AppliedOrSourcedDateDT\", to_timestamp(df_appCandidate[\"AppliedOrSourcedDate\"]))\r\n",
-							"df_appCandidate = df_appCandidate.withColumn(\"DisqualifiedAtDT\", to_timestamp(df_appCandidate[\"DisqualifiedAt\"]))\r\n",
-							"\r\n",
-							"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
 							"\r\n",
 							"#display(df_appCandidate.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 22
+						"execution_count": 8
 					},
 					{
 						"cell_type": "code",
@@ -2527,309 +2713,19 @@
 							}
 						},
 						"source": [
-							"#df_appCandidate = df_appCandidate.repartition(1)\r\n",
-							"#df_appCandidate.write.mode('overwrite').option(\"header\", True).csv(\"/capstone/GecoAPI/Output\")\r\n",
-							"\r\n",
-							"df_appCandidate.write.mode(\"overwrite\").saveAsTable(\"gecoproject.applications_noCohort\")\r\n",
-							""
-						],
-						"outputs": [],
-						"execution_count": 23
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/GecoProject_Universal_with_Cohort')]",
-			"type": "Microsoft.Synapse/workspaces/notebooks",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"nbformat": 4,
-				"nbformat_minor": 2,
-				"bigDataPool": {
-					"referenceName": "Capstone",
-					"type": "BigDataPoolReference"
-				},
-				"sessionProperties": {
-					"driverMemory": "28g",
-					"driverCores": 4,
-					"executorMemory": "28g",
-					"executorCores": 4,
-					"numExecutors": 2,
-					"conf": {
-						"spark.dynamicAllocation.enabled": "false",
-						"spark.dynamicAllocation.minExecutors": "2",
-						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c2ffca33-f1c1-4207-83ca-c2165be4d1eb"
-					}
-				},
-				"metadata": {
-					"saveOutput": true,
-					"enableDebugMode": false,
-					"kernelspec": {
-						"name": "synapse_pyspark",
-						"display_name": "Synapse PySpark"
-					},
-					"language_info": {
-						"name": "python"
-					},
-					"a365ComputeOptions": {
-						"id": "/subscriptions/6a4ac82e-930e-4e4d-b385-3cc2c61db5c6/resourceGroups/digitalmarketingmark/providers/Microsoft.Synapse/workspaces/marksynapseworkspace/bigDataPools/Capstone",
-						"name": "Capstone",
-						"type": "Spark",
-						"endpoint": "https://marksynapseworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Capstone",
-						"auth": {
-							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net"
-						},
-						"sparkVersion": "3.1",
-						"nodeCount": 10,
-						"cores": 4,
-						"memory": 28
-					},
-					"sessionKeepAliveTimeout": 5
-				},
-				"cells": [
-					{
-						"cell_type": "code",
-						"metadata": {
-							"microsoft": {
-								"language": "python"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%pyspark\r\n",
-							"#Load to Dataframe\r\n",
-							"df_app = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Application.csv', format='csv', header=True)\r\n",
-							"df_candidate = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Candidate.csv', format='csv', header=True)\r\n",
-							"df_department = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Department.csv', format='csv', header=True)\r\n",
-							"df_job = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Job.csv', format='csv', header=True)\r\n",
-							"df_joblist = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/JobList.csv', format='csv', header=True)\r\n",
-							"df_stage = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Stage.csv', format='csv', header=True)\r\n",
-							"\r\n",
-							"#loading CohortTableList.parquet to dataframe\r\n",
-							"dg = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortTableList.parquet', format='parquet')\r\n",
-							"dg = dg.drop('Title')\r\n",
-							"\r\n",
-							"#loading CohortForm.parquet to dataframe\r\n",
-							"dh = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/CohortForm.parquet', format='parquet')\r\n",
-							"\r\n",
-							"#loading Talentlist.parquet to dataframe\r\n",
-							"dj = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/output/TalentList.parquet', format='parquet')\r\n",
-							"\r\n",
-							"\r\n",
-							"#Change 'undefined' to empty space\r\n",
-							"df_app = df_app.fillna(value = \"\")\r\n",
-							"df_candidate = df_candidate.fillna(value = \"\")\r\n",
-							"df_department = df_department.fillna(value = \"\")\r\n",
-							"df_job = df_job.fillna(value = \"\")\r\n",
-							"df_joblist = df_joblist.fillna(value = \"\")\r\n",
-							"df_stage = df_stage.fillna(value = \"\")\r\n",
-							"\r\n",
-							"dg = dg.fillna(value = \"\")\r\n",
-							"dh = dh.fillna(value = \"\")\r\n",
-							"dj = dj.fillna(value = \"\")\r\n",
-							"\r\n",
-							"#display(df_app.limit(5))\r\n",
-							"#display(df_candidate.limit(5))\r\n",
-							"#display(df_department.limit(5))\r\n",
-							"#display(df_job.limit(5))\r\n",
-							"#display(df_joblist.limit(5))\r\n",
-							"#display(df_stage.limit(5))"
-						],
-						"outputs": [],
-						"execution_count": 2
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"collapsed": false
-						},
-						"source": [
 							"from pyspark.sql import functions as f\r\n",
 							"from pyspark.sql.functions import *\r\n",
 							"\r\n",
-							"#Applications + Stage\r\n",
+							"#Convert Dates Timezone to DateTime\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"CandidateCreatedDT\", to_timestamp(df_appCandidate[\"CandidateCreated\"]))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"CandidateLastModifiedDT\", to_timestamp(df_appCandidate[\"CandidateLastModified\"]))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"AppliedOrSourcedDateDT\", to_timestamp(df_appCandidate[\"AppliedOrSourcedDate\"]))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"DisqualifiedAtDT\", to_timestamp(df_appCandidate[\"DisqualifiedAt\"]))\r\n",
 							"\r\n",
-							"df_appStage = df_app.join(df_stage, [df_stage['Id'] == df_app ['stageId'], df_stage['applicationId'] == df_app ['id']], 'left') \\\r\n",
-							"    .select(df_app['Id'], df_app['candidateId'], 'profileUrl', col('created').alias('appCreated'), col('disqualified').alias('appDisqualified')\r\n",
-							"        , col('disqualifiedAt').alias('appDisqualifiedAt'), col('disqualificationReason').alias('appDisqualificationReason')\r\n",
-							"        , col('name').alias('stage'), 'type', 'jobId', 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
-							"\r\n",
-							"#display(df_appStage.limit(5))\r\n",
-							"#display(df_joblist.limit(5))\r\n",
-							""
+							"df_appCandidate = df_appCandidate.fillna(value = \"\")"
 						],
 						"outputs": [],
-						"execution_count": 3
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"collapsed": false
-						},
-						"source": [
-							"from pyspark.sql import functions as f\r\n",
-							"from pyspark.sql.functions import *\r\n",
-							"\r\n",
-							"#AppStage + Job\r\n",
-							"\r\n",
-							"df_appstJob = df_appStage.join(df_joblist, [df_joblist['Id'] == df_appStage['jobId']], 'left') \\\r\n",
-							"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason', 'stage', 'type'\r\n",
-							"        , col('title').alias('job'), df_joblist['departmentId'], df_joblist['Country'], df_joblist['locationCountryCode'], df_joblist['region'], df_joblist['city'], df_joblist['zipCode'], df_joblist['status']\r\n",
-							"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted')\r\n",
-							"\r\n",
-							"#display(df_appstJob.limit(5))"
-						],
-						"outputs": [],
-						"execution_count": 4
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"microsoft": {
-								"language": "python"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%pyspark\r\n",
-							"from pyspark.sql import functions as f\r\n",
-							"\r\n",
-							"#Create tagging for each Stage\r\n",
-							"df_appstJob = df_appstJob.withColumn(\"conversion\", \r\n",
-							"    f.when((f.col(\"Stage\") == \"Sourced\") | (f.col(\"Stage\") == \"Applied\"), \"Reach\")\r\n",
-							"    .when((f.col(\"Stage\") == \"Screen\") | (f.col(\"Stage\") == \"OfferToClient\"), \"Test\")\r\n",
-							"    .when((f.col(\"Stage\") == \"Interview\"), \"Interview\")\r\n",
-							"    .when((f.col(\"Stage\") == \"Shortlisted\") | (f.col(\"Stage\") == \"Offer\"), \"Offer\")\r\n",
-							"    .when((f.col(\"Stage\") == \"Hired\"), \"Conversion\")\r\n",
-							"    .otherwise(\"NA\"))\r\n",
-							"\r\n",
-							"#Tag as 1 if Conversion to get which stage are converted\r\n",
-							"df_appstJob = df_appstJob.withColumn(\"isReach\", f.when((f.col(\"conversion\") == \"Reach\"), 1).otherwise(0))\r\n",
-							"df_appstJob = df_appstJob.withColumn(\"isTest\", f.when((f.col(\"conversion\") == \"Test\"), 1).otherwise(0))\r\n",
-							"df_appstJob = df_appstJob.withColumn(\"isInterview\", f.when((f.col(\"conversion\") == \"Interview\"), 1).otherwise(0))\r\n",
-							"df_appstJob = df_appstJob.withColumn(\"isOffer\", f.when((f.col(\"conversion\") == \"Offer\"), 1).otherwise(0))\r\n",
-							"df_appstJob = df_appstJob.withColumn(\"isConversion\", f.when((f.col(\"conversion\") == \"Conversion\"), 1).otherwise(0))\r\n",
-							"\r\n",
-							"#Create new column with removed special characters\r\n",
-							"df_appstJob = df_appstJob.withColumn(\"JobDescNoChar\", f.lower(f.translate(f.col(\"Job\"),\"./–!-() \",\"\")))\r\n",
-							"\r\n",
-							"#display(df_appstJob.limit(5))\r\n",
-							"#display(df_department.limit(5))"
-						],
-						"outputs": [],
-						"execution_count": 5
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"collapsed": false
-						},
-						"source": [
-							"from pyspark.sql import functions as f\r\n",
-							"from pyspark.sql.functions import *\r\n",
-							"\r\n",
-							"#AppStageJob + Department\r\n",
-							"\r\n",
-							"df_appstjobDept = df_appstJob.join(df_department, [df_department['Id'] == df_appstJob['departmentId']], 'left') \\\r\n",
-							"    .select(df_appStage['Id'], df_appStage['candidateId'], 'profileUrl', 'appCreated', 'appDisqualified', 'appDisqualifiedAt', 'appDisqualificationReason'\r\n",
-							"        , 'stage', 'conversion', 'isReach', 'isTest', 'isInterview', 'isOffer', 'isConversion', 'type'\r\n",
-							"        , 'JobDescNoChar', col('name').alias('department')\r\n",
-							"        , 'Country', 'locationCountryCode', 'region', 'city', 'zipCode', 'status'\r\n",
-							"        , 'sourceType', 'sourceBy', 'sourceFrom', 'sourceChanel', 'sourceFormatted','Job')\r\n",
-							"\r\n",
-							"#display(df_appstjobDept.limit(5))\r\n",
-							"#display(df_candidate.limit(5))"
-						],
-						"outputs": [],
-						"execution_count": 6
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"collapsed": false
-						},
-						"source": [
-							"from pyspark.sql import functions as f\r\n",
-							"from pyspark.sql.functions import *\r\n",
-							"\r\n",
-							"#AppStageJobDepartment + Candidate\r\n",
-							"\r\n",
-							"df_appCandidate = df_appstjobDept.join(df_candidate, [df_candidate['Id'] == df_appstjobDept['candidateId']], 'left') \\\r\n",
-							"    .select(df_appStage['Id'].alias('ApplicationId'), col('candidateId').alias('CandidateId')\r\n",
-							"        , col('firstName').alias('FirstName'), col('lastName').alias('LastName'), col('created').alias('CandidateCreated'), col('lastModified').alias('CandidateLastModified')\r\n",
-							"        , col('profileUrl').alias('ProfileUrl'), col('appCreated').alias('AppliedOrSourcedDate'), col('appDisqualified').alias('Disqualified'), col('appDisqualifiedAt').alias('DisqualifiedAt'), col('appDisqualificationReason').alias('DisqualificationsReason')\r\n",
-							"        , col('conversion').alias('TrackerType'), col('isReach').alias('Reach'), col('isTest').alias('Test'), col('isInterview').alias('Interview'), col('isOffer').alias('Offer'), col('isConversion').alias('Conversion'), col('type').alias('Stage')\r\n",
-							"        , col('JobDescNoChar').alias('Jobs'), col('department').alias('JobDepartment')\r\n",
-							"        , 'Country', col('locationCountryCode').alias('LocationCountryCode'), col('region').alias('Region'), col('city').alias('City'), col('zipCode').alias('ZipCode'), col('status').alias('Status')\r\n",
-							"        , col('sourceType').alias('Source'), 'sourceBy', 'sourceFrom', 'sourceChanel', col('sourceFormatted').alias('SourceSubType'),'Job')\r\n",
-							"\r\n",
-							"\r\n",
-							"#Create FullName column\r\n",
-							"df_appCandidate = df_appCandidate.withColumn('fullName', f.concat(f.col('firstName'),f.lit(' '),f.col('lastName')))\r\n",
-							"\r\n",
-							"#Remove undefined\r\n",
-							"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
-							"\r\n",
-							"df_appCandidate = df_appCandidate.withColumn(\"FirstName\", f.initcap(\"FirstName\"))\r\n",
-							"\r\n",
-							"df_appCandidate = df_appCandidate.withColumn(\"LastName\", f.initcap(\"LastName\"))\r\n",
-							"\r\n",
-							"df_appCandidate = df_appCandidate.withColumn(\"fullName\", f.initcap(\"fullName\"))\r\n",
-							"\r\n",
-							"\r\n",
-							"#display(df_appCandidate.limit(5))"
-						],
-						"outputs": [],
-						"execution_count": 7
+						"execution_count": 9
 					},
 					{
 						"cell_type": "code",
@@ -2875,7 +2771,7 @@
 							"#display(ds.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 8
+						"execution_count": 10
 					},
 					{
 						"cell_type": "code",
@@ -2905,7 +2801,7 @@
 							"#display(ds.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 9
+						"execution_count": 11
 					},
 					{
 						"cell_type": "code",
@@ -2949,7 +2845,7 @@
 							"display(ds.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 10
+						"execution_count": 12
 					},
 					{
 						"cell_type": "markdown",
@@ -3021,7 +2917,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 11
+						"execution_count": 13
 					}
 				]
 			},
@@ -5015,6 +4911,234 @@
 			},
 			"dependsOn": [],
 			"location": "southeastasia"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/GecoProject_CandidateStageHistory')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "Capstone",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "8c3a8194-6c1f-45b8-baf3-d4792a1a624e"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/6a4ac82e-930e-4e4d-b385-3cc2c61db5c6/resourceGroups/digitalmarketingmark/providers/Microsoft.Synapse/workspaces/marksynapseworkspace/bigDataPools/Capstone",
+						"name": "Capstone",
+						"type": "Spark",
+						"endpoint": "https://marksynapseworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Capstone",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 5
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"\r\n",
+							"#Load to Dataframe (CSV)\r\n",
+							"df_app = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Application.csv', format='csv', header=True).distinct()\r\n",
+							"df_candidate = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Candidate.csv', format='csv', header=True).distinct()\r\n",
+							"df_department = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Department.csv', format='csv', header=True).distinct()\r\n",
+							"df_job = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Job.csv', format='csv', header=True).distinct()\r\n",
+							"df_joblist = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/JobList.csv', format='csv', header=True).distinct()\r\n",
+							"df_stage = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/Stage.csv', format='csv', header=True).distinct()\r\n",
+							"\r\n",
+							"#Load to Dataframe (Parquet)\r\n",
+							"df_canstghist = spark.read.load('abfss://dlsg2markfilesystem@synapsedlakestgen2mark.dfs.core.windows.net/capstone/GecoAPI/dbo.CandidateHistoryWebHook.parquet', format='parquet', header=True).distinct()\r\n",
+							"\r\n",
+							"#Change 'undefined' to empty space\r\n",
+							"df_app = df_app.fillna(value = \"\")\r\n",
+							"df_candidate = df_candidate.fillna(value = \"\")\r\n",
+							"df_department = df_department.fillna(value = \"\")\r\n",
+							"df_job = df_job.fillna(value = \"\")\r\n",
+							"df_joblist = df_joblist.fillna(value = \"\")\r\n",
+							"df_stage = df_stage.fillna(value = \"\")\r\n",
+							"df_canstghist = df_canstghist.fillna(value = \"\")\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 28
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as f\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"#Applications + Stage\r\n",
+							"\r\n",
+							"df_appStage = df_app.join(df_stage, [df_stage['Id'] == df_app ['stageId'], df_stage['applicationId'] == df_app ['id']], 'left') \\\r\n",
+							"    .select(df_app['Id'], df_app['candidateId'], df_app['stageId'], col('type').alias('stage'), 'jobId')\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 29
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as f\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"#AppStage + Job\r\n",
+							"\r\n",
+							"df_appstJob = df_appStage.join(df_joblist, [df_joblist['Id'] == df_appStage['jobId']], 'left') \\\r\n",
+							"    .select(df_appStage['Id'], df_appStage['candidateId'], 'stageId', 'stage', df_joblist['departmentId'])\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 30
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as f\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"#AppStageJob + Department\r\n",
+							"\r\n",
+							"df_appstjobDept = df_appstJob.join(df_department, [df_department['Id'] == df_appstJob['departmentId']], 'left') \\\r\n",
+							"    .select(df_appStage['Id'], df_appStage['candidateId'], 'stageId', 'stage', col('name').alias('department'))\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 31
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as f\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"#AppStageJobDepartment + Candidate\r\n",
+							"\r\n",
+							"df_appCandidate = df_appstjobDept.join(df_candidate, [df_candidate['Id'] == df_appstjobDept['candidateId']], 'left') \\\r\n",
+							"    .select(df_appStage['Id'].alias('applicationId'), 'candidateId'\r\n",
+							"        , 'stageId', 'stage', col('department').alias('jobDepartment'))\r\n",
+							"\r\n",
+							"#Remove undefined\r\n",
+							"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
+							"\r\n",
+							"#Add offer columns\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"softOffer\", lit(False))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"hardOffer\", lit(False))\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 32
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#Save to Table\r\n",
+							"df_appCandidate.write.mode(\"overwrite\").saveAsTable(\"gecoproject.candidateStageHistory\")\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 33
+					}
+				]
+			},
+			"dependsOn": []
 		}
 	]
 }
