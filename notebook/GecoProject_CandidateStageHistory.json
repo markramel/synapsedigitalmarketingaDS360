@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "23d5233b-d1d7-4d23-be6a-b4aaf2f03d51"
+				"spark.autotune.trackingId": "c3323320-0b8d-4c47-86f5-66e29b8976c4"
 			}
 		},
 		"metadata": {
@@ -80,7 +80,7 @@
 					"df_canstghist = df_canstghist.fillna(value = \"\")\r\n",
 					""
 				],
-				"execution_count": 28
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -106,7 +106,7 @@
 					"    .select(df_app['Id'], df_app['candidateId'], df_app['stageId'], col('type').alias('stage'), 'jobId')\r\n",
 					""
 				],
-				"execution_count": 29
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -132,7 +132,7 @@
 					"    .select(df_appStage['Id'], df_appStage['candidateId'], 'stageId', 'stage', df_joblist['departmentId'])\r\n",
 					""
 				],
-				"execution_count": 30
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -158,7 +158,7 @@
 					"    .select(df_appStage['Id'], df_appStage['candidateId'], 'stageId', 'stage', col('name').alias('department'))\r\n",
 					""
 				],
-				"execution_count": 31
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -190,9 +190,15 @@
 					"#Add offer columns\r\n",
 					"df_appCandidate = df_appCandidate.withColumn(\"softOffer\", lit(False))\r\n",
 					"df_appCandidate = df_appCandidate.withColumn(\"hardOffer\", lit(False))\r\n",
+					"\r\n",
+					"stageList = [75570, 75570]\r\n",
+					"\r\n",
+					"df_appCandidate = df_appCandidate.filter(df_appCandidate['stageID'].isin(stageList))\r\n",
+					"\r\n",
+					"#display(df_appCandidate.limit(10))\r\n",
 					""
 				],
-				"execution_count": 32
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -210,9 +216,14 @@
 				"source": [
 					"#Save to Table\r\n",
 					"df_appCandidate.write.mode(\"overwrite\").saveAsTable(\"gecoproject.candidateStageHistory\")\r\n",
+					"\r\n",
+					"#Save to CSV\r\n",
+					"df_appCandidate = df_appCandidate.repartition(1)\r\n",
+					"df_appCandidate.write.mode('overwrite').option(\"header\", True).csv(\"/capstone/GecoAPI/Output\")\r\n",
+					"\r\n",
 					""
 				],
-				"execution_count": 33
+				"execution_count": 11
 			}
 		]
 	}
