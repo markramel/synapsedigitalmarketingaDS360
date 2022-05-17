@@ -2089,7 +2089,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "81cf5b4b-0116-4b9f-9adf-779794627c4a"
+						"spark.autotune.trackingId": "b9bd193c-f4fd-40ba-95ca-cf76d90f8b63"
 					}
 				},
 				"metadata": {
@@ -2153,7 +2153,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 2
 					},
 					{
 						"cell_type": "code",
@@ -2180,7 +2180,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 4
+						"execution_count": 3
 					},
 					{
 						"cell_type": "code",
@@ -2207,7 +2207,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 5
+						"execution_count": 4
 					},
 					{
 						"cell_type": "code",
@@ -2234,7 +2234,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 6
+						"execution_count": 5
 					},
 					{
 						"cell_type": "code",
@@ -2257,8 +2257,12 @@
 							"#AppStageJobDepartment + Candidate\r\n",
 							"\r\n",
 							"df_appCandidate = df_appstjobDept.join(df_candidate, [df_candidate['Id'] == df_appstjobDept['candidateId']], 'left') \\\r\n",
-							"    .select(df_appStage['Id'].alias('applicationId'), 'candidateId'\r\n",
+							"    .select(df_appStage['Id'].alias('applicationId'), 'candidateId', col('firstName').alias('FirstName'), col('lastName').alias('LastName')\r\n",
 							"        , 'stageId', 'stage', col('department').alias('jobDepartment'))\r\n",
+							"\r\n",
+							"#Create FullName column\r\n",
+							"df_appCandidate = df_appCandidate.withColumn('fullName', f.concat(f.col('firstName'),f.lit(' '),f.col('lastName')))\r\n",
+							"df_appCandidate = df_appCandidate.withColumn(\"fullName\", f.initcap(\"fullName\"))\r\n",
 							"\r\n",
 							"#Remove undefined\r\n",
 							"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
@@ -2275,7 +2279,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 9
+						"execution_count": 6
 					},
 					{
 						"cell_type": "code",
@@ -2301,7 +2305,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 11
+						"execution_count": 7
 					}
 				]
 			},
@@ -2328,7 +2332,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "9d36db33-f94f-4aac-ba0d-d454396219ac"
+						"spark.autotune.trackingId": "ddd50f14-40e6-42e1-9dbd-a735bbb4d06c"
 					}
 				},
 				"metadata": {
@@ -2353,8 +2357,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 5
 				},
