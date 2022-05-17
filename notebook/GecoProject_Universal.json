@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ddd50f14-40e6-42e1-9dbd-a735bbb4d06c"
+				"spark.autotune.trackingId": "59487a30-78cd-40b8-b141-89aafef4821e"
 			}
 		},
 		"metadata": {
@@ -83,7 +83,7 @@
 					"\r\n",
 					"#df_app.count()"
 				],
-				"execution_count": 102
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -115,7 +115,7 @@
 					"#display(df_joblist.limit(5))\r\n",
 					"#df_appStage.count()"
 				],
-				"execution_count": 103
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -146,7 +146,7 @@
 					"#display(df_appstJob.limit(5))\r\n",
 					"#df_appstJob.count()"
 				],
-				"execution_count": 104
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -192,7 +192,7 @@
 					"#display(df_department.limit(5))\r\n",
 					"#df_appstJob.count()"
 				],
-				"execution_count": 105
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -225,7 +225,7 @@
 					"#display(df_candidate.limit(5))\r\n",
 					"#df_appstjobDept.count()"
 				],
-				"execution_count": 106
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -269,7 +269,7 @@
 					"#display(df_appCandidate.limit(5))\r\n",
 					"#df_appCandidate.count()"
 				],
-				"execution_count": 107
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -297,10 +297,33 @@
 					"\r\n",
 					"df_appCandidate = df_appCandidate.fillna(value = \"\")\r\n",
 					"\r\n",
-					"#display(df_appCandidate.limit(5))\r\n",
+					"display(df_appCandidate.limit(5))\r\n",
 					"#df_appCandidate.count()"
 				],
-				"execution_count": 108
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql.functions import *\r\n",
+					"\r\n",
+					"df_appCandidate = df_appCandidate.withColumn('SourceSubType', regexp_replace('SourceSubType', 'Sourced by ', ''))\r\n",
+					"\r\n",
+					"#display(df_appCandidate.limit(5))"
+				],
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -322,7 +345,7 @@
 					"df_appCandidate.write.mode(\"overwrite\").saveAsTable(\"gecoproject.applications_noCohort\")\r\n",
 					""
 				],
-				"execution_count": 109
+				"execution_count": 9
 			}
 		]
 	}
