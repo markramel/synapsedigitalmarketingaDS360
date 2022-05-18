@@ -2089,7 +2089,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b9bd193c-f4fd-40ba-95ca-cf76d90f8b63"
+						"spark.autotune.trackingId": "51701db5-02b7-4a60-aa99-87f1e6dca515"
 					}
 				},
 				"metadata": {
@@ -2114,8 +2114,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 5
 				},
@@ -2357,8 +2356,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 5
 				},
@@ -2696,7 +2694,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c674002b-25a5-47ab-b06c-afa0d2fa15a5"
+						"spark.autotune.trackingId": "bfea0a10-9ce3-47b9-be36-6558a00b95b8"
 					}
 				},
 				"metadata": {
@@ -3005,6 +3003,27 @@
 								"transient": {
 									"deleting": false
 								}
+							}
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"df_appCandidate = df_appCandidate.withColumn('SourceSubType', regexp_replace('SourceSubType', 'Sourced by ', ''))"
+						],
+						"outputs": [],
+						"execution_count": 8
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
 							},
 							"collapsed": false
 						},
@@ -3038,7 +3057,7 @@
 							"#display(ds.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 8
+						"execution_count": 9
 					},
 					{
 						"cell_type": "code",
@@ -3068,7 +3087,7 @@
 							"#display(ds.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 9
+						"execution_count": 10
 					},
 					{
 						"cell_type": "code",
@@ -3109,10 +3128,10 @@
 							"#<-- end of join tables to create a flat file applications dataframe-->\r\n",
 							"\r\n",
 							"\r\n",
-							"display(ds.limit(5))"
+							"#display(ds.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 10
+						"execution_count": 11
 					},
 					{
 						"cell_type": "markdown",
@@ -3147,27 +3166,6 @@
 							"\r\n",
 							"#display(df_appCandidate.limit(5))"
 						]
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"from pyspark.sql.functions import *\r\n",
-							"\r\n",
-							"ds = ds.withColumn('SourceSubType', regexp_replace('SourceSubType', 'Sourced by ', ''))"
-						],
-						"outputs": [],
-						"execution_count": 11
 					},
 					{
 						"cell_type": "code",
